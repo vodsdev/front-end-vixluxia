@@ -1,6 +1,8 @@
 import './globals.css';
 import { Inter } from 'next/font/google';
 import { Toaster } from 'sonner';
+import { Suspense } from 'react';
+import { CommandPalette } from '@/components/command-palette';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -33,7 +35,10 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>✨</text></svg>" />
       </head>
       <body className="font-sans antialiased text-foreground selection:bg-primary/20 dark:selection:bg-primary/30">
-        {children}
+        <Suspense fallback={null}>
+          {children}
+        </Suspense>
+        <CommandPalette />
         <Toaster
           position="bottom-right"
           theme="system"
