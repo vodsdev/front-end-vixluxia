@@ -9,21 +9,28 @@ export const metadata = {
   description: 'AI-powered smart bookmarking and knowledge management.',
 };
 
+const themeScript = `
+try {
+  var t = localStorage.getItem('vixluxia-theme');
+  if (!t) { t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+  if (t === 'dark') document.documentElement.classList.add('dark');
+} catch(e) {}
+`;
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="font-sans antialiased bg-[#fafaf9] text-neutral-900 selection:bg-violet-200/60">
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className="font-sans antialiased text-neutral-900 dark:text-neutral-100 selection:bg-violet-200/60 dark:selection:bg-violet-500/30">
         {children}
         <Toaster
           position="bottom-right"
+          theme="system"
           toastOptions={{
-            style: {
-              background: 'rgba(255,255,255,0.85)',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(0,0,0,0.05)',
-              borderRadius: '14px',
-              boxShadow: '0 10px 40px -10px rgba(0,0,0,0.15)',
-              color: '#0a0a0a',
+            classNames: {
+              toast: 'backdrop-blur-xl border rounded-2xl shadow-soft-lg',
             },
           }}
         />
