@@ -1,7 +1,7 @@
 'use client';
 // Live, animated previews approximating each component. These re-implement the visual
 // of each prompt so the user sees what they'll get — not literally the same source.
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { X, ArrowRight, Star, Rocket, Sparkles, Play, CheckCircle2, AlertCircle, AlertTriangle, Info, Quote, ArrowUpDown } from 'lucide-react';
 
@@ -514,5 +514,238 @@ export function TestimonialQuotePreview() {
       <blockquote className="text-[12px] font-medium italic">"Beautifully crafted, every detail counts."</blockquote>
       <figcaption className="mt-2 text-[10px] text-neutral-500">— Anna · CEO</figcaption>
     </figure>
+  );
+}
+
+// ============ POWERFUL NEW DROPS ============
+
+export function OrbitLoaderPreview() {
+  const rings = [
+    { r: 28, speed: '2s', color: 'rgb(139,92,246)' },
+    { r: 18, speed: '1.4s', color: 'rgb(236,72,153)' },
+    { r: 10, speed: '0.9s', color: 'rgb(245,158,11)' },
+  ];
+  return (
+    <div className="relative w-16 h-16">
+      {rings.map((ring, i) => (
+        <div key={i} className="absolute inset-0 flex items-center justify-center"
+          style={{ animation: `orbS ${ring.speed} linear infinite` }}>
+          <div className="absolute rounded-full border border-neutral-300/40 dark:border-white/10"
+            style={{ width: ring.r * 2, height: ring.r * 2 }}/>
+          <span className="absolute w-2 h-2 rounded-full"
+            style={{ top: `calc(50% - ${ring.r}px - 4px)`, left: 'calc(50% - 4px)', background: ring.color, boxShadow: `0 0 12px ${ring.color}` }}/>
+        </div>
+      ))}
+      <style>{`@keyframes orbS { to{transform:rotate(360deg)} }`}</style>
+    </div>
+  );
+}
+
+export function GlowToastPreview() {
+  return (
+    <motion.div initial={{ y: 8, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+      className="relative max-w-[240px] p-[1.5px] rounded-2xl"
+      style={{ background: 'conic-gradient(from 0deg, #8b5cf6, #ec4899, #f59e0b, #8b5cf6)', animation: 'gtRot 3s linear infinite' }}>
+      <div className="relative flex items-center gap-2.5 p-2.5 rounded-2xl bg-white dark:bg-neutral-900"
+        style={{ boxShadow: '0 0 40px -8px rgba(139,92,246,0.5)' }}>
+        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center shrink-0">
+          <Sparkles className="w-3.5 h-3.5 text-white"/>
+        </div>
+        <div className="min-w-0">
+          <p className="text-[11.5px] font-semibold">Pro upgraded</p>
+          <p className="text-[10px] text-neutral-500">Welcome aboard ✨</p>
+        </div>
+      </div>
+      <style>{`@keyframes gtRot { to{filter:hue-rotate(360deg)} }`}</style>
+    </motion.div>
+  );
+}
+
+export function GlassSheetPreview() {
+  return (
+    <div className="relative w-48 h-32 rounded-xl overflow-hidden">
+      <div className="absolute inset-0" style={{
+        background: 'radial-gradient(120px 80px at 20% 30%, rgba(139,92,246,0.55), transparent), radial-gradient(120px 80px at 80% 70%, rgba(236,72,153,0.5), transparent)',
+      }}/>
+      <motion.div initial={{ y: 8, opacity: 0, scale: 0.97 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ duration: 0.6 }}
+        className="absolute inset-3 rounded-xl p-3 bg-white/30 dark:bg-white/10 backdrop-blur-xl border border-white/40 dark:border-white/15">
+        <div className="flex items-center justify-between mb-1.5">
+          <p className="text-[11px] font-semibold text-white drop-shadow">Glass Sheet</p>
+          <X className="w-3 h-3 text-white/70"/>
+        </div>
+        <div className="space-y-1">
+          <div className="h-1.5 rounded bg-white/40 dark:bg-white/20 w-full"/>
+          <div className="h-1.5 rounded bg-white/40 dark:bg-white/20 w-4/5"/>
+          <div className="h-1.5 rounded bg-white/40 dark:bg-white/20 w-2/3"/>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+export function MagneticTabsPreview() {
+  const items = ['Design', 'Build', 'Ship'];
+  const [hovered, setHovered] = useState(0);
+  useEffect(() => { const i = setInterval(() => setHovered(h => (h+1) % items.length), 1500); return () => clearInterval(i); }, []);
+  return (
+    <div className="relative inline-flex p-1 rounded-2xl bg-neutral-100 dark:bg-neutral-800 border">
+      {items.map((l, i) => (
+        <button key={l} className="relative px-4 py-1.5 text-[12px] font-medium z-10">
+          {i === hovered && <motion.span layoutId="mgPrev" className="absolute inset-0 rounded-xl bg-white dark:bg-neutral-700 shadow-md"
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}/>}
+          <span className={`relative ${i === hovered ? 'text-violet-600 dark:text-violet-300' : ''}`}>{l}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export function ExpandableTablePreview() {
+  const [open, setOpen] = useState(0);
+  useEffect(() => { const i = setInterval(() => setOpen(o => (o+1) % 3), 2000); return () => clearInterval(i); }, []);
+  const rows = [{ t: 'Q1 Goals', m: '5 items' }, { t: 'Q2 Sprint', m: '12 items' }, { t: 'Roadmap', m: '24 items' }];
+  return (
+    <div className="w-52 rounded-lg border bg-white dark:bg-neutral-800 overflow-hidden text-[10.5px]">
+      {rows.map((r, i) => (
+        <div key={i} className={i > 0 ? 'border-t' : ''}>
+          <div className="flex items-center gap-2 px-2.5 py-1.5">
+            <motion.span animate={{ rotate: open === i ? 90 : 0 }}>▸</motion.span>
+            <span className="flex-1 font-medium">{r.t}</span>
+            <span className="text-neutral-400">{r.m}</span>
+          </div>
+          <AnimatePresence>
+            {open === i && (
+              <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }}
+                className="overflow-hidden bg-neutral-50 dark:bg-neutral-900/50">
+                <div className="px-3 py-1.5 text-[10px] text-neutral-500">Details unfold here…</div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function AIAvatarPreview() {
+  return (
+    <div className="relative w-16 h-16">
+      <div className="absolute inset-0 rounded-full p-[2.5px]"
+        style={{ background: 'conic-gradient(from 0deg, #8b5cf6, #ec4899, #f59e0b, #10b981, #8b5cf6)', animation: 'aiSpin 3s linear infinite' }}>
+        <div className="w-full h-full rounded-full bg-white dark:bg-neutral-900"/>
+      </div>
+      <img src={AV[2]} alt="" className="absolute inset-[3px] rounded-full object-cover"/>
+      <style>{`@keyframes aiSpin { to{transform:rotate(360deg)} }`}</style>
+    </div>
+  );
+}
+
+export function Badge3DPreview() {
+  return (
+    <div className="[perspective:600px]">
+      <motion.div className="relative inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-white font-bold text-sm cursor-pointer"
+        style={{
+          background: 'linear-gradient(135deg, #8b5cf6, #ec4899, #f59e0b)',
+          boxShadow: '0 8px 30px -6px rgba(236,72,153,0.5)',
+        }}
+        animate={{ rotateX: [10, -10, 10], rotateY: [-15, 15, -15] }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}>
+        <Star className="w-3.5 h-3.5 fill-white drop-shadow" />
+        PRO
+        <motion.span className="absolute inset-0 rounded-xl pointer-events-none"
+          style={{ background: 'linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.45), transparent 70%)' }}
+          animate={{ backgroundPosition: ['0% 0%', '100% 100%'] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}/>
+      </motion.div>
+    </div>
+  );
+}
+
+export function RadialMenuPreview() {
+  const radius = 36;
+  const arc = Math.PI;
+  const items = ['📷', '🎵', '📍', '💬', '⭐'];
+  const [open, setOpen] = useState(true);
+  useEffect(() => { const i = setInterval(() => setOpen(o => !o), 2200); return () => clearInterval(i); }, []);
+  return (
+    <div className="relative w-32 h-20 flex items-end justify-center">
+      <button className="relative z-10 w-10 h-10 rounded-full text-white shadow-xl flex items-center justify-center"
+        style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }}>
+        <motion.span animate={{ rotate: open ? 45 : 0 }} className="text-lg">+</motion.span>
+      </button>
+      <AnimatePresence>
+        {open && items.map((emoji, i) => {
+          const angle = -arc / 2 + (arc / (items.length - 1)) * i;
+          const x = Math.cos(angle) * radius;
+          const y = Math.sin(angle) * radius;
+          return (
+            <motion.div key={i}
+              initial={{ x: 0, y: 0, scale: 0, opacity: 0 }}
+              animate={{ x, y, scale: 1, opacity: 1 }}
+              exit={{ x: 0, y: 0, scale: 0, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 22, delay: i * 0.03 }}
+              className="absolute bottom-5 w-7 h-7 rounded-full bg-white dark:bg-neutral-800 shadow-md border flex items-center justify-center text-sm">
+              {emoji}
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+export function TooltipPathPreview() {
+  const [show, setShow] = useState(true);
+  useEffect(() => { const i = setInterval(() => setShow(s => !s), 2200); return () => clearInterval(i); }, []);
+  return (
+    <div className="relative inline-block">
+      <div className="px-3 py-1.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-[11.5px]">Trigger</div>
+      <AnimatePresence>
+        {show && (
+          <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 px-2.5 py-1.5 rounded-xl bg-neutral-900 text-white text-[10.5px] whitespace-nowrap shadow-xl">
+            ✨ Drawn callout
+            <svg viewBox="0 0 60 30" className="absolute top-full left-1/2 -translate-x-1/2 -mt-px w-12 h-6">
+              <motion.path d="M 0 0 Q 30 30, 60 0" fill="none" stroke="currentColor" strokeWidth="2"
+                className="text-neutral-900"
+                initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.4 }}/>
+            </svg>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+export function TestimonialDeckPreview() {
+  const [n, setN] = useState(0);
+  useEffect(() => { const i = setInterval(() => setN(x => x+1), 1800); return () => clearInterval(i); }, []);
+  const cards = [
+    { q: 'Game changer for our workflow.', name: 'Mia', av: AV[1] },
+    { q: 'Pure design joy.', name: 'Leo', av: AV[2] },
+    { q: 'Ships pixel-perfect every time.', name: 'Zoe', av: AV[3] },
+  ];
+  return (
+    <div className="relative w-44 h-24">
+      <AnimatePresence>
+        {[0, 1, 2].map(i => {
+          const c = cards[(n + i) % cards.length];
+          const z = i === 0;
+          return (
+            <motion.div key={n + '-' + i}
+              initial={{ scale: 0.92, y: 14, opacity: 0 }}
+              animate={{ scale: 1 - (2 - i) * 0.04, y: (2 - i) * 5, opacity: 1, x: z ? 0 : 0 }}
+              exit={{ x: 200, opacity: 0, transition: { duration: 0.5 } }}
+              className="absolute inset-0 p-2.5 rounded-xl bg-white dark:bg-neutral-800 border shadow-lg">
+              <p className="text-[10px] leading-snug">"{c.q}"</p>
+              <div className="flex items-center gap-1.5 mt-1.5 pt-1.5 border-t">
+                <img src={c.av} className="w-4 h-4 rounded-full" alt=""/>
+                <p className="text-[9px] font-medium">{c.name}</p>
+              </div>
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
+    </div>
   );
 }
