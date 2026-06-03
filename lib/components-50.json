@@ -1,0 +1,338 @@
+[
+  {
+    "id": "mega-menu",
+    "name": "Mega Menu",
+    "tagline": "Rich dropdown menu with categories and quick links",
+    "category": "navigation",
+    "prompt": "Create a mega menu dropdown component with:\n- Multiple columns showing categories\n- Quick links section\n- Featured components section\n- Search bar inside the menu\n- Smooth animations on hover\n- Keyboard navigation support\n- Responsive design for mobile\nUse Tailwind CSS, Framer Motion, and Lucide React icons."
+  },
+  {
+    "id": "pagination-advanced",
+    "name": "Advanced Pagination",
+    "tagline": "Pagination with page size selector and quick navigation",
+    "category": "navigation",
+    "prompt": "Create an advanced pagination component with:\n- Previous/Next buttons\n- Page number buttons with ellipsis\n- Current page indicator\n- Page size selector (10, 25, 50 items)\n- Jump to page input\n- Total items display\n- Responsive design\nUse Tailwind CSS and Lucide React icons."
+  },
+  {
+    "id": "scroll-to-top",
+    "name": "Scroll to Top Button",
+    "tagline": "Floating button to scroll to top of page",
+    "category": "navigation",
+    "prompt": "Create a scroll-to-top button component with:\n- Floating position (bottom-right)\n- Only shows when scrolled down\n- Smooth scroll animation\n- Hover effects\n- Keyboard shortcut (Ctrl+Home)\n- Customizable position and colors\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "input-validation",
+    "name": "Input with Validation",
+    "tagline": "Text input with real-time validation feedback",
+    "category": "forms",
+    "prompt": "Create an input component with validation:\n- Real-time validation feedback\n- Success/error/warning states\n- Helper text display\n- Icon indicators\n- Animated state transitions\n- Support for custom validators\n- Accessible with proper labels\nUse Tailwind CSS, Framer Motion, and Lucide React."
+  },
+  {
+    "id": "custom-checkbox",
+    "name": "Custom Checkbox",
+    "tagline": "Styled checkbox with animation",
+    "category": "forms",
+    "prompt": "Create a custom checkbox component with:\n- Smooth check animation\n- Indeterminate state support\n- Disabled state\n- Custom colors\n- Accessible with proper ARIA labels\n- Keyboard navigation\n- Hover effects\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "toggle-switch",
+    "name": "Toggle Switch",
+    "tagline": "On/off toggle switch component",
+    "category": "forms",
+    "prompt": "Create a toggle switch component with:\n- Smooth animation between states\n- Disabled state\n- Custom colors and sizes\n- Accessible with proper ARIA labels\n- Keyboard support (Space/Enter)\n- Loading state option\n- Customizable labels\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "range-slider",
+    "name": "Range Slider",
+    "tagline": "Slider for selecting a range of values",
+    "category": "forms",
+    "prompt": "Create a range slider component with:\n- Dual thumb for min/max selection\n- Value labels above thumbs\n- Track visualization\n- Step increments\n- Keyboard navigation\n- Disabled state\n- Custom colors\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "date-picker",
+    "name": "Date Picker",
+    "tagline": "Calendar-based date selection",
+    "category": "forms",
+    "prompt": "Create a date picker component with:\n- Calendar view with month/year navigation\n- Date selection\n- Range selection support\n- Today button\n- Keyboard navigation\n- Disabled dates support\n- Custom date formats\nUse Tailwind CSS, Framer Motion, and date-fns library."
+  },
+  {
+    "id": "file-uploader",
+    "name": "File Uploader",
+    "tagline": "Drag-and-drop file upload with progress",
+    "category": "forms",
+    "prompt": "Create a file uploader component with:\n- Drag-and-drop area\n- File input button\n- File list display\n- Upload progress bar\n- File size validation\n- Multiple file support\n- Remove file option\n- File type validation\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "multi-select",
+    "name": "Multi-Select Dropdown",
+    "tagline": "Dropdown allowing multiple selections",
+    "category": "forms",
+    "prompt": "Create a multi-select dropdown with:\n- Search/filter functionality\n- Checkboxes for each option\n- Selected items display\n- Clear all button\n- Select all option\n- Keyboard navigation\n- Custom rendering for items\nUse Tailwind CSS, Framer Motion, and Lucide React."
+  },
+  {
+    "id": "tags-input",
+    "name": "Tags Input",
+    "tagline": "Input field for adding tags with autocomplete",
+    "category": "forms",
+    "prompt": "Create a tags input component with:\n- Add tags by typing and pressing Enter\n- Remove tags with backspace or X button\n- Autocomplete suggestions\n- Duplicate prevention\n- Tag validation\n- Custom styling for tags\n- Keyboard navigation\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "rich-text-editor",
+    "name": "Rich Text Editor",
+    "tagline": "WYSIWYG text editor with formatting",
+    "category": "forms",
+    "prompt": "Create a simple rich text editor with:\n- Bold, italic, underline buttons\n- Link insertion\n- List formatting (ordered/unordered)\n- Heading levels\n- Code block support\n- Text alignment\n- Undo/redo functionality\n- Markdown preview\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "rating-component",
+    "name": "Rating Component",
+    "tagline": "Star rating with hover effects",
+    "category": "forms",
+    "prompt": "Create a rating component with:\n- 5-star display\n- Hover preview of rating\n- Click to set rating\n- Disabled state\n- Custom colors\n- Half-star support\n- Animated transitions\n- Accessibility support\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "data-table",
+    "name": "Data Table",
+    "tagline": "Sortable and filterable data table",
+    "category": "display",
+    "prompt": "Create a data table component with:\n- Column headers with sort icons\n- Sortable columns\n- Filterable rows\n- Pagination integration\n- Row selection checkboxes\n- Responsive design\n- Hover row highlighting\n- Custom cell rendering\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "progress-bar",
+    "name": "Progress Bar",
+    "tagline": "Animated progress bar with percentage",
+    "category": "display",
+    "prompt": "Create a progress bar component with:\n- Smooth animation\n- Percentage display\n- Color states (success, warning, error)\n- Striped pattern option\n- Animated stripes option\n- Custom height\n- Label support\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "badge-tag",
+    "name": "Badge & Tag",
+    "tagline": "Small indicator badges and tags",
+    "category": "display",
+    "prompt": "Create badge and tag components with:\n- Multiple color variants\n- Sizes (sm, md, lg)\n- Icon support\n- Dismissible option\n- Animated entrance\n- Custom styling\n- Status indicators\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "avatar-group",
+    "name": "Avatar Group",
+    "tagline": "Overlapping avatars display",
+    "category": "display",
+    "prompt": "Create an avatar group component with:\n- Overlapping avatars\n- Maximum visible count\n- +N indicator for overflow\n- Tooltip on hover showing all\n- Customizable size\n- Border styling\n- Animated entrance\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "tooltip-popover",
+    "name": "Tooltip & Popover",
+    "tagline": "Context information on hover or click",
+    "category": "display",
+    "prompt": "Create tooltip and popover components with:\n- Hover trigger for tooltip\n- Click trigger for popover\n- Arrow pointing to trigger\n- Position auto-adjustment\n- Dark/light theme support\n- Animated entrance/exit\n- Keyboard dismiss support\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "accordion",
+    "name": "Accordion",
+    "tagline": "Expandable/collapsible sections",
+    "category": "display",
+    "prompt": "Create an accordion component with:\n- Multiple sections\n- Expand/collapse animation\n- Single or multiple open sections\n- Custom icons\n- Disabled state\n- Keyboard navigation\n- Smooth transitions\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "tabs",
+    "name": "Tabs",
+    "tagline": "Tab navigation for content sections",
+    "category": "display",
+    "prompt": "Create a tabs component with:\n- Horizontal tab navigation\n- Tab content display\n- Active tab indicator\n- Smooth content transition\n- Keyboard navigation (arrow keys)\n- Customizable colors\n- Responsive design\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "carousel",
+    "name": "Carousel/Slider",
+    "tagline": "Image carousel with navigation",
+    "category": "display",
+    "prompt": "Create a carousel component with:\n- Previous/Next buttons\n- Dot indicators\n- Auto-play option\n- Pause on hover\n- Smooth transitions\n- Keyboard navigation\n- Responsive design\n- Touch support for mobile\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "timeline",
+    "name": "Timeline",
+    "tagline": "Chronological event display",
+    "category": "display",
+    "prompt": "Create a timeline component with:\n- Vertical timeline layout\n- Event items with dates\n- Icons for events\n- Alternating left/right layout\n- Connecting line\n- Customizable colors\n- Responsive design\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "stat-card",
+    "name": "Statistic Card",
+    "tagline": "Card displaying key metrics",
+    "category": "display",
+    "prompt": "Create a statistic card component with:\n- Large number display\n- Label/description\n- Icon support\n- Trend indicator (up/down)\n- Percentage change\n- Custom colors\n- Hover effects\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "modal-dialog",
+    "name": "Modal Dialog",
+    "tagline": "Advanced modal with animations",
+    "category": "interaction",
+    "prompt": "Create a modal dialog component with:\n- Backdrop overlay\n- Close button\n- Header, body, footer sections\n- Smooth entrance/exit animation\n- Keyboard dismiss (Escape)\n- Focus trap\n- Custom sizes\n- Scrollable content\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "toast-notification",
+    "name": "Toast Notification",
+    "tagline": "Temporary notification messages",
+    "category": "interaction",
+    "prompt": "Create a toast notification component with:\n- Success, error, warning, info variants\n- Auto-dismiss timer\n- Manual dismiss button\n- Stack positioning\n- Smooth animations\n- Custom duration\n- Action button support\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "skeleton-loader",
+    "name": "Skeleton Loader",
+    "tagline": "Placeholder while content loads",
+    "category": "interaction",
+    "prompt": "Create a skeleton loader component with:\n- Pulsing animation\n- Multiple variants (text, card, avatar)\n- Customizable dimensions\n- Rounded corners option\n- Shimmer effect option\n- Responsive design\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "loading-spinner",
+    "name": "Loading Spinner",
+    "tagline": "Animated loading indicator",
+    "category": "interaction",
+    "prompt": "Create a loading spinner component with:\n- Rotating animation\n- Multiple sizes\n- Color variants\n- Overlay option\n- Text label support\n- Smooth animation\n- Accessibility support\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "empty-state",
+    "name": "Empty State",
+    "tagline": "Message when no data available",
+    "category": "interaction",
+    "prompt": "Create an empty state component with:\n- Icon display\n- Title and description\n- Action button\n- Illustration support\n- Customizable messaging\n- Animated entrance\n- Responsive design\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "share-button",
+    "name": "Share Button",
+    "tagline": "Social media sharing options",
+    "category": "interaction",
+    "prompt": "Create a share button component with:\n- Dropdown menu with platforms\n- Copy link option\n- Social icons\n- Custom share text\n- Analytics tracking ready\n- Keyboard navigation\n- Mobile-friendly\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "copy-button",
+    "name": "Copy to Clipboard",
+    "tagline": "Button to copy text with feedback",
+    "category": "interaction",
+    "prompt": "Create a copy button component with:\n- Click to copy functionality\n- Visual feedback (checkmark)\n- Tooltip confirmation\n- Custom copy text\n- Keyboard shortcut support\n- Accessibility labels\n- Animated state change\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "like-button",
+    "name": "Like/Favorite Button",
+    "tagline": "Heart button for favoriting",
+    "category": "interaction",
+    "prompt": "Create a like/favorite button component with:\n- Heart icon animation\n- Toggle on/off\n- Count display\n- Color change on like\n- Smooth animation\n- Disabled state\n- Keyboard support\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "component-search",
+    "name": "Component Search Filter",
+    "tagline": "Advanced search with filters",
+    "category": "registry",
+    "prompt": "Create a component search filter with:\n- Text search input\n- Tag filter chips\n- Author filter\n- Date range filter\n- Sort options\n- Clear filters button\n- Real-time results\n- Keyboard shortcuts\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "author-profile",
+    "name": "Author Profile Card",
+    "tagline": "Profile card for component authors",
+    "category": "registry",
+    "prompt": "Create an author profile card with:\n- Avatar image\n- Name and bio\n- Contribution count\n- Social links\n- Follow button\n- Components grid preview\n- Hover effects\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "submit-form",
+    "name": "Component Submission Form",
+    "tagline": "Form for submitting new components",
+    "category": "registry",
+    "prompt": "Create a component submission form with:\n- Component name input\n- Description textarea\n- Category selection\n- Code input with syntax highlighting\n- Preview generation\n- Tags input\n- Validation feedback\n- Submit button\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "code-sandbox",
+    "name": "Code Sandbox Integration",
+    "tagline": "Embedded code editor for testing",
+    "category": "registry",
+    "prompt": "Create a code sandbox component with:\n- Code editor pane\n- Live preview pane\n- Syntax highlighting\n- Auto-save functionality\n- Export code option\n- Share sandbox link\n- Error display\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "version-history",
+    "name": "Version History Display",
+    "tagline": "Show component version history",
+    "category": "registry",
+    "prompt": "Create a version history component with:\n- Timeline of versions\n- Version numbers\n- Release dates\n- Change descriptions\n- Changelog display\n- Revert option\n- Diff viewer\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "comments-section",
+    "name": "Comment Section",
+    "tagline": "Comments for components",
+    "category": "registry",
+    "prompt": "Create a comments section with:\n- Comment input field\n- Comment list display\n- User avatars\n- Timestamps\n- Reply functionality\n- Like comments\n- Delete own comments\n- Nested replies\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "voting-system",
+    "name": "Upvote/Downvote System",
+    "tagline": "Vote on component quality",
+    "category": "registry",
+    "prompt": "Create a voting system with:\n- Upvote button\n- Downvote button\n- Vote count display\n- User vote state tracking\n- Animated transitions\n- Disabled state\n- Tooltip hints\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "divider",
+    "name": "Separator/Divider",
+    "tagline": "Styled divider line",
+    "category": "utility",
+    "prompt": "Create a separator/divider component with:\n- Horizontal and vertical options\n- Custom colors\n- Dashed/solid styles\n- Text in middle option\n- Margins customization\n- Responsive design\nUse Tailwind CSS."
+  },
+  {
+    "id": "gradient-text",
+    "name": "Gradient Text",
+    "tagline": "Text with gradient color",
+    "category": "utility",
+    "prompt": "Create a gradient text component with:\n- Multiple gradient presets\n- Custom gradient support\n- Animation option\n- Responsive sizing\n- Text shadow option\n- Accessibility support\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "blur-background",
+    "name": "Blurry Background Effect",
+    "tagline": "Blur effect for backgrounds",
+    "category": "utility",
+    "prompt": "Create a blur background component with:\n- Adjustable blur amount\n- Color overlay option\n- Opacity control\n- Responsive design\n- Animation support\n- Performance optimized\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "parallax-scroll",
+    "name": "Parallax Scroll Effect",
+    "tagline": "Parallax effect on scroll",
+    "category": "utility",
+    "prompt": "Create a parallax scroll component with:\n- Scroll-based animation\n- Multiple layers\n- Customizable speed\n- Mobile optimization\n- Smooth transitions\n- Performance optimized\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "responsive-image",
+    "name": "Responsive Image",
+    "tagline": "Optimized image component",
+    "category": "utility",
+    "prompt": "Create a responsive image component with:\n- Lazy loading\n- Responsive srcset\n- Aspect ratio preservation\n- Placeholder support\n- Error handling\n- Loading state\n- Accessibility alt text\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "video-player",
+    "name": "Video Player",
+    "tagline": "Simple video player",
+    "category": "utility",
+    "prompt": "Create a video player component with:\n- Play/pause controls\n- Progress bar\n- Volume control\n- Fullscreen option\n- Time display\n- Keyboard shortcuts\n- Mobile controls\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "audio-player",
+    "name": "Audio Player",
+    "tagline": "Simple audio player",
+    "category": "utility",
+    "prompt": "Create an audio player component with:\n- Play/pause button\n- Progress bar\n- Volume control\n- Time display\n- Playlist support\n- Keyboard shortcuts\n- Mobile friendly\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "color-picker",
+    "name": "Color Picker",
+    "tagline": "Color selection component",
+    "category": "utility",
+    "prompt": "Create a color picker component with:\n- Color gradient selector\n- Hue slider\n- Opacity slider\n- Hex/RGB input\n- Color presets\n- Copy color code\n- Keyboard navigation\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "countdown-timer",
+    "name": "Countdown Timer",
+    "tagline": "Animated countdown display",
+    "category": "utility",
+    "prompt": "Create a countdown timer component with:\n- Time display (days, hours, minutes, seconds)\n- Auto-start option\n- Pause/resume controls\n- Completion callback\n- Custom styling\n- Sound notification option\n- Responsive design\nUse Tailwind CSS and Framer Motion."
+  },
+  {
+    "id": "confetti-animation",
+    "name": "Confetti Animation",
+    "tagline": "Celebratory confetti effect",
+    "category": "utility",
+    "prompt": "Create a confetti animation component with:\n- Trigger button\n- Customizable colors\n- Particle count\n- Duration control\n- Physics simulation\n- Sound effect option\n- Performance optimized\nUse Tailwind CSS and Framer Motion."
+  }
+]

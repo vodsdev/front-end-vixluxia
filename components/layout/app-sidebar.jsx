@@ -50,12 +50,6 @@ export function AppSidebar({ search, onSearchChange }) {
   return (
     <Sidebar className="border-r border-border/50">
       <SidebarHeader className="p-4 flex flex-row items-center gap-2 border-b border-border/50">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-orange-400 flex items-center justify-center shadow-sm">
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
-          <span className="font-bold text-sm tracking-tight">21st</span>
-        </Link>
       </SidebarHeader>
 
       <SidebarContent>
