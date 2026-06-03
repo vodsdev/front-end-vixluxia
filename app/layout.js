@@ -7,12 +7,12 @@ import { CommandPalette } from '@/components/command-palette';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata = {
-  title: '21st Clone — Component Registry',
+  title: 'VixLuxia — Component Registry',
   description: 'A community-driven registry of high-quality React UI components powered by Tailwind CSS and Radix UI.',
-  keywords: 'react, components, ui, tailwind, radix, shadcn',
+  keywords: 'react, components, ui, tailwind, radix, shadcn, vixluxia',
   authors: [{ name: 'Vixluxia Team' }],
   openGraph: {
-    title: '21st Clone — Component Registry',
+    title: 'VixLuxia — Component Registry',
     description: 'A community-driven registry of high-quality React UI components.',
     type: 'website',
   },
@@ -34,7 +34,14 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>✨</text></svg>" />
       </head>
-      <body className="font-sans antialiased text-foreground selection:bg-primary/20 dark:selection:bg-primary/30">
+      <body className="font-sans antialiased text-foreground selection:bg-primary/20 dark:selection:bg-primary/30 min-h-screen relative">
+        {/* Global Ambient Glow Background */}
+        <div className="fixed inset-0 -z-50 overflow-hidden pointer-events-none bg-background transition-colors duration-300">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-violet-500/15 dark:bg-violet-500/10 blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-orange-500/15 dark:bg-orange-500/10 blur-[120px] animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
+          <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] rounded-full bg-fuchsia-500/15 dark:bg-fuchsia-500/10 blur-[100px] animate-pulse" style={{ animationDuration: '12s', animationDelay: '4s' }} />
+        </div>
+        
         <Suspense fallback={null}>
           {children}
         </Suspense>

@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/layout/app-sidebar';
@@ -14,6 +15,7 @@ import { Card } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Bell, Lock, User, Palette, Shield, LogOut, Save } from 'lucide-react';
 import { toast } from 'sonner';
+import { getCurrentSession, signOut } from '@/lib/supabase';
 
 const SETTINGS_TABS = [
   { id: 'profile', label: 'Profile', icon: User },
@@ -24,10 +26,11 @@ const SETTINGS_TABS = [
 ];
 
 export default function SettingsPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('profile');
   const [formData, setFormData] = useState({
     name: 'John Doe',
-    email: 'john@example.com',
+    email: '',
     bio: 'UI/UX Designer & Developer',
     website: 'https://example.com',
   });
@@ -43,6 +46,21 @@ export default function SettingsPage() {
     showEmail: false,
     allowMessages: true,
   });
+
+  useEffect(() => {
+    async function loadSession() {
+      const session = await getCurrentSession();
+      if (session?.user) {
+        setFormData(prev => ({ ...prev, email: session.user.email, name: session.user.user_metadata?.full_name || 'My Account' }));
+      }
+    }
+    loadSession();
+  }, []);
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push('/');
+  };
 
   const handleSave = () => {
     toast.success('Settings saved successfully!');
@@ -247,10 +265,15 @@ export default function SettingsPage() {
                       <p className="text-sm text-red-600 dark:text-red-400 mb-4">
                         These actions cannot be undone. Please be careful.
                       </p>
-                      <Button variant="destructive" className="gap-2">
-                        <LogOut className="w-4 h-4" />
-                        Delete Account
-                      </Button>
+                      <div className="flex gap-4">
+                        <Button variant="destructive" className="gap-2" onClick={handleSignOut}>
+                          <LogOut className="w-4 h-4" />
+                          Sign Out
+                        </Button>
+                        <Button variant="outline" className="gap-2 border-red-200 text-red-600 hover:bg-red-100 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950">
+                          Delete Account
+                        </Button>
+                      </div>
                     </Card>
                   </TabsContent>
                 </Tabs>

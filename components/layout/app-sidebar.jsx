@@ -1,7 +1,7 @@
 'use client';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Sparkles, LayoutGrid, Clock, Trophy, Palette, Users, Search, Settings, Sun, Moon } from 'lucide-react';
+import { Sparkles, LayoutGrid, Clock, Trophy, Palette, Users, Search, Settings, Sun, Moon, ChevronDown, FolderClosed } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import {
   Sidebar,
@@ -15,6 +15,11 @@ import {
   SidebarGroupContent,
   SidebarFooter,
 } from '@/components/ui/sidebar';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { CATEGORIES, PROMPTS } from '@/lib/prompts-data';
@@ -27,11 +32,15 @@ const NAV_ITEMS = [
   { href: '/week', label: 'Best of Week', icon: Trophy },
   { href: '/themes', label: 'Themes', icon: Palette },
   { href: '/authors', label: 'Top Authors', icon: Users },
-  { href: '/components', label: '50 New Components', icon: Sparkles },
 ];
+
+import { Outfit } from 'next/font/google';
+
+const outfit = Outfit({ subsets: ['latin'], weight: ['700', '900'] });
 
 export function AppSidebar({ search, onSearchChange }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [theme, setTheme] = useState('light');
 
   useEffect(() => {
@@ -49,11 +58,32 @@ export function AppSidebar({ search, onSearchChange }) {
   };
 
   return (
-    <Sidebar className="border-r border-border/50">
-      <SidebarHeader className="p-4 flex flex-row items-center gap-2 border-b border-border/50">
+    <Sidebar className="overflow-hidden relative border-none">
+      <SidebarHeader className="p-4 flex flex-row items-center gap-2 relative">
+        <Link href="/" className="relative flex items-center gap-2.5 w-full pl-1 group p-2">
+          <span 
+            className={cn(
+              outfit.className,
+              "relative font-black text-[26px] tracking-tight bg-clip-text text-transparent group-hover:scale-[1.03] transition-transform duration-300",
+              "bg-gradient-to-r from-violet-600 via-pink-400 via-white to-violet-600 dark:from-violet-400 dark:via-fuchsia-300 dark:via-white dark:to-violet-400"
+            )}
+            style={{ 
+              backgroundSize: '300% auto', 
+              animation: 'logo-shimmer 3s linear infinite' 
+            }}
+          >
+            VixLuxia
+          </span>
+          <style>{`
+            @keyframes logo-shimmer {
+              0% { background-position: 0% center; }
+              100% { background-position: -300% center; }
+            }
+          `}</style>
+        </Link>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="bg-transparent">
         {/* Search */}
         <SidebarGroup>
           <SidebarGroupContent className="px-3 pt-4">
@@ -63,9 +93,9 @@ export function AppSidebar({ search, onSearchChange }) {
                 value={search || ''}
                 onChange={(e) => onSearchChange?.(e.target.value)}
                 placeholder="Search"
-                className="pl-9 h-8 text-xs bg-muted/50 border-none rounded-md"
+                className="pl-9 h-8 text-xs bg-background/50 border-transparent rounded-md shadow-sm backdrop-blur-sm focus-visible:ring-1 focus-visible:ring-border/50"
               />
-              <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground bg-background border border-border rounded px-1.5 py-0.5">⌘K</kbd>
+              <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground bg-background/50 border-transparent rounded px-1.5 py-0.5">⌘K</kbd>
             </div>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -79,7 +109,11 @@ export function AppSidebar({ search, onSearchChange }) {
                 const isActive = pathname === item.href;
                 return (
                   <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild isActive={isActive}>
+                    <SidebarMenuButton 
+                      asChild 
+                      isActive={isActive}
+                      className="hover:bg-foreground/5 data-[active=true]:bg-foreground/10 hover:text-foreground data-[active=true]:text-foreground transition-all duration-200"
+                    >
                       <Link href={item.href} className="text-xs">
                         <Icon className="w-4 h-4" />
                         <span>{item.label}</span>
@@ -92,57 +126,50 @@ export function AppSidebar({ search, onSearchChange }) {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Marketing Blocks */}
+        {/* Marketing Blocks & UI Components as direct links */}
         <SidebarGroup>
           <SidebarGroupLabel className="px-4 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-            Marketing Blocks
+            Collections
           </SidebarGroupLabel>
           <SidebarGroupContent className="px-2">
             <SidebarMenu>
-              {CATEGORIES.filter((_, i) => i < 10).map((cat) => (
-                <SidebarMenuItem key={cat.slug}>
-                  <SidebarMenuButton asChild isActive={pathname === `/category/${cat.slug}`}>
-                    <Link href={`/?category=${cat.slug}`} className="text-xs">
-                      <span className="text-sm">{cat.emoji}</span>
-                      <span className="truncate">{cat.name}</span>
-                      <span className="ml-auto text-[10px] text-muted-foreground tabular-nums">
-                        {(PROMPTS[cat.slug] || []).length}
-                      </span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* UI Components */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="px-4 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-            UI Components
-          </SidebarGroupLabel>
-          <SidebarGroupContent className="px-2">
-            <SidebarMenu>
-              {CATEGORIES.filter((_, i) => i >= 10).map((cat) => (
-                <SidebarMenuItem key={cat.slug}>
-                  <SidebarMenuButton asChild isActive={pathname === `/category/${cat.slug}`}>
-                    <Link href={`/?category=${cat.slug}`} className="text-xs">
-                      <span className="text-sm">{cat.emoji}</span>
-                      <span className="truncate">{cat.name}</span>
-                      <span className="ml-auto text-[10px] text-muted-foreground tabular-nums">
-                        {(PROMPTS[cat.slug] || []).length}
-                      </span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={searchParams.get('group') === 'marketing'}
+                  className="hover:bg-foreground/5 data-[active=true]:bg-foreground/10 hover:text-foreground data-[active=true]:text-foreground transition-all duration-200"
+                >
+                  <Link href="/?group=marketing" className="text-xs">
+                    <FolderClosed className="w-4 h-4" />
+                    <span>Marketing Blocks</span>
+                    <span className="ml-auto text-[10px] text-muted-foreground tabular-nums">
+                      10
+                    </span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={searchParams.get('group') === 'ui'}
+                  className="hover:bg-foreground/5 data-[active=true]:bg-foreground/10 hover:text-foreground data-[active=true]:text-foreground transition-all duration-200"
+                >
+                  <Link href="/?group=ui" className="text-xs">
+                    <LayoutGrid className="w-4 h-4" />
+                    <span>UI Components</span>
+                    <span className="ml-auto text-[10px] text-muted-foreground tabular-nums">
+                      10
+                    </span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
       {/* Footer */}
-      <SidebarFooter className="p-3 border-t border-border/50">
+      <SidebarFooter className="p-3 border-none">
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"

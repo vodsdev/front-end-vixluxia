@@ -35,7 +35,7 @@ export function AppFooter() {
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-orange-400 flex items-center justify-center shadow-sm">
                 <Sparkles className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="font-bold text-sm">21st</span>
+              <span className="font-bold text-sm bg-gradient-to-r from-violet-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">VixLuxia</span>
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed max-w-[200px]">
               The open-source registry for UI components. Built by the community, for the community.
@@ -102,7 +102,7 @@ export function AppFooter() {
             Built with Next.js, Tailwind CSS, and Radix UI.
           </p>
           <p className="text-[11px] text-muted-foreground">
-            &copy; {new Date().getFullYear()} 21st Clone. All rights reserved.
+            &copy; {new Date().getFullYear()} VixLuxia. All rights reserved.
           </p>
         </div>
       </div>

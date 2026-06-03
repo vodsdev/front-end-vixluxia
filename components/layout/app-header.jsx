@@ -7,7 +7,7 @@ import { Settings } from 'lucide-react';
 
 export function AppHeader({ title, children }) {
   return (
-    <header className="h-14 border-b border-border/50 flex items-center justify-between px-6 sticky top-0 bg-background/80 backdrop-blur-sm z-10">
+    <header className="h-14 flex items-center justify-between px-6 sticky top-0 bg-transparent backdrop-blur-md z-10">
       <div className="flex items-center gap-3">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="h-4" />

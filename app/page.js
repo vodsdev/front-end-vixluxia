@@ -25,6 +25,7 @@ function HomeContent() {
   const [sortBy, setSortBy] = useState('newest');
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get('category');
+  const groupParam = searchParams.get('group');
 
   const allComponents = useMemo(() => {
     return Object.entries(PROMPTS).flatMap(([slug, items]) =>
@@ -43,9 +44,15 @@ function HomeContent() {
   const currentCategory = categoryParam ? CATEGORIES.find(c => c.slug === categoryParam) : null;
   const currentPrompts = categoryParam ? (PROMPTS[categoryParam] || []) : [];
 
+  const groupCategories = useMemo(() => {
+    if (groupParam === 'marketing') return CATEGORIES.filter((_, i) => i < 10);
+    if (groupParam === 'ui') return CATEGORIES.filter((_, i) => i >= 10);
+    return [];
+  }, [groupParam]);
+
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-background">
+      <div className="flex min-h-screen w-full bg-transparent">
         <AppSidebar search={search} onSearchChange={setSearch} />
 
         <main className="flex-1 flex flex-col min-w-0">
@@ -139,8 +146,32 @@ function HomeContent() {
                 </div>
               )}
 
+              {/* Group View */}
+              {!search && !currentCategory && groupParam && groupCategories.length > 0 && (
+                <div className="space-y-4">
+                  <AnimateIn variant="fadeUp">
+                    <div className="flex items-center gap-4 mb-8">
+                      <div>
+                        <h1 className="text-3xl font-black tracking-tight">
+                          {groupParam === 'marketing' ? 'Marketing Blocks' : 'UI Components'}
+                        </h1>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          Browse all categories in this collection. Select a category to view its components.
+                        </p>
+                      </div>
+                    </div>
+                  </AnimateIn>
+                  <CategoryGrid
+                    categories={groupCategories}
+                    onSelect={(slug) => {
+                      window.location.href = `/?category=${slug}`;
+                    }}
+                  />
+                </div>
+              )}
+
               {/* Default Home View */}
-              {!search && !currentCategory && (
+              {!search && !currentCategory && !groupParam && (
                 <div className="space-y-16">
                   {/* Hero */}
                   <HeroSection />
