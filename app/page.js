@@ -1,6 +1,7 @@
 'use client';
 import { useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { AppHeader } from '@/components/layout/app-header';
@@ -13,8 +14,10 @@ import { CategoryGrid } from '@/components/category-grid';
 import { HeroSection } from '@/components/hero-section';
 import { AnimateIn, StaggerContainer, StaggerItem } from '@/components/animate-in';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { CATEGORIES, PROMPTS } from '@/lib/prompts-data';
 import * as Previews from '@/components/previews';
+import { Sparkles, ArrowRight } from 'lucide-react';
 
 function HomeContent() {
   const [search, setSearch] = useState('');
@@ -141,6 +144,41 @@ function HomeContent() {
                 <div className="space-y-16">
                   {/* Hero */}
                   <HeroSection />
+
+                  {/* New Components Section */}
+                  <section>
+                    <AnimateIn variant="fadeUp">
+                      <div className="flex items-center justify-between mb-5">
+                        <div>
+                          <h3 className="text-lg font-bold tracking-tight flex items-center gap-2">
+                            <Sparkles className="w-5 h-5 text-violet-500" />
+                            50 New Components
+                          </h3>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Freshly designed UI components with detailed prompts
+                          </p>
+                        </div>
+                        <Link href="/components">
+                          <Button variant="link" size="sm" className="text-xs text-muted-foreground">
+                            View all →
+                          </Button>
+                        </Link>
+                      </div>
+                    </AnimateIn>
+                    <Link href="/components">
+                      <Card className="p-6 hover:border-border/80 hover:bg-accent/20 transition-all cursor-pointer group">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="font-bold text-sm">Browse 50 New Components</h4>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Navigation, Forms, Display, Interaction, Registry, Utilities and more
+                            </p>
+                          </div>
+                          <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+                        </div>
+                      </Card>
+                    </Link>
+                  </section>
 
                   {/* Featured */}
                   <section>

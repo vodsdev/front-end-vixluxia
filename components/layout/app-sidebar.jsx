@@ -27,6 +27,7 @@ const NAV_ITEMS = [
   { href: '/week', label: 'Best of Week', icon: Trophy },
   { href: '/themes', label: 'Themes', icon: Palette },
   { href: '/authors', label: 'Top Authors', icon: Users },
+  { href: '/components', label: '50 New Components', icon: Sparkles },
 ];
 
 export function AppSidebar({ search, onSearchChange }) {
