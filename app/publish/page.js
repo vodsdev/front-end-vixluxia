@@ -73,13 +73,52 @@ export default function PublishPage() {
 
   const updateForm = (key, value) => setForm((current) => ({ ...current, [key]: value }));
 
-  const publish = () => {
-    const id = `local-${slugify(form.name)}-${Date.now()}`;
-    const item = { ...previewComponent, id, meta: { ...previewComponent.meta, status: 'Published' } };
-    const existing = JSON.parse(localStorage.getItem('vixluxia-published-components') || '[]');
-    localStorage.setItem('vixluxia-published-components', JSON.stringify([item, ...existing]));
-    setSavedId(id);
-    toast.success('Composant publie en local');
+  const [isPublishing, setIsPublishing] = useState(false);
+
+  const publish = async () => {
+    if (!form.name.trim() || !form.code.trim()) return;
+    setIsPublishing(true);
+
+    try {
+      const { createClient } = await import('@/utils/supabase/client');
+      const supabase = createClient();
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Vous devez être connecté pour publier un composant.');
+        setIsPublishing(false);
+        return;
+      }
+
+      const id = slugify(form.name) + '-' + Date.now().toString(36);
+      const previewName = form.name.replace(/[^a-zA-Z0-9 ]/g, '').split(' ').filter(Boolean).map((part) => part[0].toUpperCase() + part.slice(1)).join('') + 'Preview';
+      
+      const { error } = await supabase.from('components').insert({
+        id: id,
+        user_id: user.id,
+        name: form.name,
+        tagline: form.tagline,
+        category: form.categorySlug,
+        prompt: form.prompt,
+        code: form.code,
+        preview: previewName,
+        tags: [category.name, form.premium ? 'Premium' : 'Free'],
+        status: 'published',
+        premium: form.premium,
+        metadata: {
+          dependencies: form.dependencies.split(',').map((item) => item.trim()).filter(Boolean)
+        }
+      });
+
+      if (error) throw error;
+      
+      setSavedId(id);
+      toast.success('Composant publié avec succès sur Vixluxia !');
+    } catch (err) {
+      toast.error("Erreur lors de la publication : " + err.message);
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
   return (
@@ -152,9 +191,9 @@ export default function PublishPage() {
                 <Save className="h-4 w-4" />
                 Brouillon
               </Button>
-              <Button className="rounded-md" onClick={publish} disabled={!form.name.trim() || !form.code.trim()}>
-                <Send className="h-4 w-4" />
-                Publier
+              <Button className="rounded-md" onClick={publish} disabled={!form.name.trim() || !form.code.trim() || isPublishing}>
+                {isPublishing ? null : <Send className="h-4 w-4" />}
+                {isPublishing ? 'Publication en cours...' : 'Publier'}
               </Button>
             </div>
           </Card>
