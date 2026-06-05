@@ -53,7 +53,7 @@ export default function IaPage() {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input?.trim() || isLoading) return;
     handleSubmit(e);
   };
 
@@ -182,7 +182,7 @@ export default function IaPage() {
                 <Button 
                   type="submit" 
                   size="icon" 
-                  disabled={isLoading || !input.trim()} 
+                  disabled={isLoading || !input?.trim()} 
                   className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full"
                 >
                   {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
