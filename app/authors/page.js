@@ -1,154 +1,111 @@
 'use client';
-import { useState } from 'react';
-import { SidebarProvider } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/layout/app-sidebar';
-import { AppHeader } from '@/components/layout/app-header';
+
+import { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { ExternalLink, Github, Package, ThumbsUp, TrendingUp } from 'lucide-react';
+import { PageShell } from '@/components/layout/page-shell';
+import { AnimateIn } from '@/components/animate-in';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Github } from 'lucide-react';
-
-const AUTHORS = [
-  {
-    id: 'serafimcloud',
-    name: 'Serafim',
-    username: '@serafimcloud',
-    avatar: '🧑‍💻',
-    components: 42,
-    likes: 1280,
-    bio: 'Building 21st.dev — npm for design engineers',
-    tags: ['UI', 'Animations', 'Layout'],
-  },
-  {
-    id: 'shadcnblocks',
-    name: 'Shadcn Blocks',
-    username: '@shadcnblockscom',
-    avatar: '🎨',
-    components: 36,
-    likes: 980,
-    bio: 'Hundreds of finely crafted components built with React & Tailwind',
-    tags: ['Blocks', 'Marketing', 'Landing'],
-  },
-  {
-    id: 'magicui',
-    name: 'Magic UI',
-    username: '@magicuidesign',
-    avatar: '✨',
-    components: 28,
-    likes: 850,
-    bio: 'Beautiful animated components for modern web apps',
-    tags: ['Animations', 'Effects', 'Motion'],
-  },
-  {
-    id: 'aceternity',
-    name: 'Aceternity',
-    username: '@acetaboratory',
-    avatar: '🌟',
-    components: 24,
-    likes: 720,
-    bio: 'Copy paste the most trending components and use them in your websites',
-    tags: ['3D', 'Shaders', 'Interactive'],
-  },
-  {
-    id: 'luxeui',
-    name: 'Luxe UI',
-    username: '@luxeui',
-    avatar: '💎',
-    components: 18,
-    likes: 540,
-    bio: 'Premium quality UI components for Next.js',
-    tags: ['Premium', 'Elegant', 'Modern'],
-  },
-  {
-    id: 'ibelick',
-    name: 'Ibelick',
-    username: '@ibelick',
-    avatar: '🔥',
-    components: 15,
-    likes: 460,
-    bio: 'Creative developer building unique UI experiences',
-    tags: ['Creative', 'Backgrounds', 'Experimental'],
-  },
-];
+import { Badge } from '@/components/ui/badge';
+import { getAuthorsWithStats } from '@/lib/component-registry';
 
 export default function AuthorsPage() {
   const [search, setSearch] = useState('');
+  const authors = useMemo(() => getAuthorsWithStats(), []);
 
-  const filteredAuthors = search
-    ? AUTHORS.filter(a =>
-        a.name.toLowerCase().includes(search.toLowerCase()) ||
-        a.username.toLowerCase().includes(search.toLowerCase())
-      )
-    : AUTHORS;
+  const filteredAuthors = useMemo(() => {
+    const q = search.toLowerCase();
+    if (!q) return authors;
+    return authors.filter((author) => {
+      const haystack = [
+        author.name,
+        author.username,
+        author.bio,
+        author.role,
+        ...(author.tags || []),
+      ].join(' ').toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [authors, search]);
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-background">
-        <AppSidebar search={search} onSearchChange={setSearch} />
-        <main className="flex-1 flex flex-col min-w-0">
-          <AppHeader title="Top Authors" />
-          <div className="flex-1 overflow-auto">
-            <div className="p-6 lg:p-8 max-w-[1400px] mx-auto w-full">
-              <div className="mb-8">
-                <h1 className="text-2xl font-bold tracking-tight">Top Authors</h1>
-                <p className="text-sm text-muted-foreground mt-1">Discover the most active contributors in the community</p>
+    <PageShell title="Top Authors" maxWidth="max-w-[1200px]" search={search} onSearchChange={setSearch}>
+      <div className="space-y-6">
+        <AnimateIn variant="fadeUp">
+          <div>
+            <h1 className="text-2xl font-black tracking-tight">Top Authors</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Profils fictifs mais realistes pour simuler une marketplace complete.
+            </p>
+          </div>
+        </AnimateIn>
+
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          {filteredAuthors.map((author, index) => (
+            <Card key={author.id} className="rounded-lg border-border/50 bg-card/80 p-5 transition-colors hover:bg-accent/20">
+              <div className="flex items-start gap-4">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-foreground text-sm font-black text-background">
+                  {author.avatar}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="text-base font-black">{author.name}</h2>
+                    {index < 3 && <Badge>Top {index + 1}</Badge>}
+                  </div>
+                  <p className="text-xs text-muted-foreground">{author.username} · {author.role}</p>
+                  <p className="mt-2 text-xs leading-5 text-muted-foreground">{author.bio}</p>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredAuthors.map((author, idx) => (
-                  <Card key={author.id} className="overflow-hidden border-none bg-muted/30 hover:bg-muted/50 transition-colors rounded-2xl">
-                    <div className="p-6">
-                      <div className="flex items-start gap-4">
-                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center text-2xl shrink-0">
-                          {author.avatar}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-bold text-sm truncate">{author.name}</h3>
-                            {idx < 3 && (
-                              <span className="text-[10px] font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-1.5 py-0.5 rounded-full">
-                                Top {idx + 1}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground">{author.username}</p>
-                          <p className="text-xs text-foreground/80 mt-2 line-clamp-2">{author.bio}</p>
-                        </div>
-                      </div>
+              <div className="mt-5 grid grid-cols-3 gap-2">
+                <div className="rounded-md border border-border/50 bg-background p-3">
+                  <Package className="mb-2 h-4 w-4 text-muted-foreground" />
+                  <p className="text-sm font-black">{author.stats.components}</p>
+                  <p className="text-[10px] text-muted-foreground">Components</p>
+                </div>
+                <div className="rounded-md border border-border/50 bg-background p-3">
+                  <ThumbsUp className="mb-2 h-4 w-4 text-muted-foreground" />
+                  <p className="text-sm font-black">{author.stats.likes.toLocaleString()}</p>
+                  <p className="text-[10px] text-muted-foreground">Likes</p>
+                </div>
+                <div className="rounded-md border border-border/50 bg-background p-3">
+                  <TrendingUp className="mb-2 h-4 w-4 text-muted-foreground" />
+                  <p className="text-sm font-black">{author.stats.downloads.toLocaleString()}</p>
+                  <p className="text-[10px] text-muted-foreground">Downloads</p>
+                </div>
+              </div>
 
-                      {/* Tags */}
-                      <div className="flex flex-wrap gap-1.5 mt-4">
-                        {author.tags.map(tag => (
-                          <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-background border border-border/50 text-muted-foreground">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-
-                      {/* Stats */}
-                      <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border/30">
-                        <div className="text-center">
-                          <p className="text-sm font-bold">{author.components}</p>
-                          <p className="text-[10px] text-muted-foreground">Components</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-sm font-bold">{author.likes.toLocaleString()}</p>
-                          <p className="text-[10px] text-muted-foreground">Likes</p>
-                        </div>
-                        <div className="ml-auto">
-                          <Button variant="outline" size="sm" className="text-xs h-7 rounded-full px-3">
-                            <Github className="w-3 h-3 mr-1" />
-                            Follow
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {(author.tags || []).map((tag) => (
+                  <Badge key={tag} variant="outline">{tag}</Badge>
                 ))}
               </div>
-            </div>
-          </div>
-        </main>
+
+              <div className="mt-5 space-y-2">
+                <p className="text-xs font-semibold text-muted-foreground">Composants recents</p>
+                {author.featuredComponents.map((component) => (
+                  <Link
+                    key={component.id}
+                    href={`/component?id=${component.id}`}
+                    className="flex items-center justify-between gap-3 rounded-md border border-border/50 bg-background px-3 py-2 text-xs transition-colors hover:bg-accent/50"
+                  >
+                    <span className="truncate font-medium">{component.name}</span>
+                    <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                  </Link>
+                ))}
+              </div>
+
+              <div className="mt-5 flex justify-end">
+                <Button variant="outline" size="sm" className="rounded-md">
+                  <Github className="h-3.5 w-3.5" />
+                  Follow
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
       </div>
-    </SidebarProvider>
+    </PageShell>
   );
 }

@@ -6,6 +6,10 @@ export async function updateSession(request) {
     request,
   })
 
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return supabaseResponse
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
@@ -27,7 +31,14 @@ export async function updateSession(request) {
     }
   )
 
-  await supabase.auth.getUser()
+  try {
+    await Promise.race([
+      supabase.auth.getUser(),
+      new Promise((resolve) => setTimeout(resolve, 2000)),
+    ])
+  } catch {
+    return supabaseResponse
+  }
 
   return supabaseResponse
 }

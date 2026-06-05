@@ -6,11 +6,13 @@ import { toast } from 'sonner';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { useComponentInteractions } from '@/hooks/use-component-interactions';
 import { cn } from '@/lib/utils';
 
 export function ComponentCard({ component, preview: Preview, onCopy }) {
   const [copied, setCopied] = useState(false);
-  const [liked, setLiked] = useState(false);
+  const interactions = useComponentInteractions(component.id);
 
   const handleCopy = (e) => {
     e.preventDefault();
@@ -25,7 +27,7 @@ export function ComponentCard({ component, preview: Preview, onCopy }) {
   const handleLike = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setLiked(!liked);
+    interactions.toggleFavorite();
   };
 
   return (
@@ -56,10 +58,21 @@ export function ComponentCard({ component, preview: Preview, onCopy }) {
           {/* Content Section */}
           <div className="p-4 flex-1 flex flex-col">
             <div className="flex-1">
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <Badge variant="outline" className="max-w-[130px] truncate text-[10px]">
+                  {component.categoryName || component.categorySlug || 'Component'}
+                </Badge>
+                {component.meta?.premium && <Badge className="text-[10px]">Pro</Badge>}
+              </div>
               <h4 className="font-semibold text-sm leading-tight">{component.name}</h4>
               <p className="text-[11px] text-muted-foreground mt-1.5 line-clamp-2">
                 {component.tagline}
               </p>
+              {component.author && (
+                <p className="mt-2 text-[10px] text-muted-foreground">
+                  by <span className="text-foreground/80">{component.author.name}</span>
+                </p>
+              )}
             </div>
 
             {/* Actions */}
@@ -91,12 +104,17 @@ export function ComponentCard({ component, preview: Preview, onCopy }) {
                 <Heart
                   className={cn(
                     'w-3 h-3 transition-colors',
-                    liked
+                    interactions.isFavorite
                       ? 'fill-red-500 text-red-500'
                       : 'text-muted-foreground hover:text-foreground'
                   )}
                 />
               </Button>
+              {component.stats && (
+                <span className="ml-auto text-[10px] tabular-nums text-muted-foreground">
+                  {component.stats.likes}
+                </span>
+              )}
             </div>
           </div>
         </Card>

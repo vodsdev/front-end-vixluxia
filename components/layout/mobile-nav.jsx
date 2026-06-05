@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Sparkles, LayoutGrid, Clock, Trophy, Palette, Users, Search } from 'lucide-react';
+import { Menu, X, Sparkles, LayoutGrid, Clock, Trophy, Palette, Users, Code2, CreditCard, Share2, Bot, Upload, KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const NAV_ITEMS = [
@@ -13,6 +13,12 @@ const NAV_ITEMS = [
   { href: '/week', label: 'Best of Week', icon: Trophy },
   { href: '/themes', label: 'Themes', icon: Palette },
   { href: '/authors', label: 'Top Authors', icon: Users },
+  { href: '/api', label: 'API', icon: Code2 },
+  { href: '/abonnement', label: 'Abonnement', icon: CreditCard },
+  { href: '/affiliation', label: 'Affiliation', icon: Share2 },
+  { href: '/ia', label: 'IA Premium', icon: Bot },
+  { href: '/publish', label: 'Publish', icon: Upload },
+  { href: '/api-keys', label: 'API Keys', icon: KeyRound },
 ];
 
 export function MobileNav() {
@@ -91,8 +97,8 @@ export function MobileNav() {
 
               {/* Footer */}
               <div className="p-4 border-t border-border/50">
-                <Button className="w-full rounded-xl text-xs" size="sm">
-                  Publish Component
+                <Button className="w-full rounded-xl text-xs" size="sm" asChild>
+                  <Link href="/publish" onClick={() => setOpen(false)}>Publish Component</Link>
                 </Button>
               </div>
             </motion.div>

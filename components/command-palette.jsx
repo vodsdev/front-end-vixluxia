@@ -3,7 +3,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Command } from 'cmdk';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Sparkles, LayoutGrid, Clock, Trophy, Palette, Users, X } from 'lucide-react';
+import { Search, Sparkles, LayoutGrid, Clock, Trophy, Palette, Users, X, Code2, CreditCard, Share2, Bot, Upload, KeyRound } from 'lucide-react';
 import { CATEGORIES, PROMPTS } from '@/lib/prompts-data';
 
 export function CommandPalette() {
@@ -101,6 +101,30 @@ export function CommandPalette() {
                     <Command.Item onSelect={() => navigate('/authors')} className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-sm data-[selected=true]:bg-accent">
                       <Users className="w-4 h-4 text-muted-foreground" />
                       <span>Top Authors</span>
+                    </Command.Item>
+                    <Command.Item onSelect={() => navigate('/api')} className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-sm data-[selected=true]:bg-accent">
+                      <Code2 className="w-4 h-4 text-muted-foreground" />
+                      <span>API</span>
+                    </Command.Item>
+                    <Command.Item onSelect={() => navigate('/abonnement')} className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-sm data-[selected=true]:bg-accent">
+                      <CreditCard className="w-4 h-4 text-muted-foreground" />
+                      <span>Abonnement</span>
+                    </Command.Item>
+                    <Command.Item onSelect={() => navigate('/affiliation')} className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-sm data-[selected=true]:bg-accent">
+                      <Share2 className="w-4 h-4 text-muted-foreground" />
+                      <span>Affiliation</span>
+                    </Command.Item>
+                    <Command.Item onSelect={() => navigate('/ia')} className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-sm data-[selected=true]:bg-accent">
+                      <Bot className="w-4 h-4 text-muted-foreground" />
+                      <span>IA Premium</span>
+                    </Command.Item>
+                    <Command.Item onSelect={() => navigate('/publish')} className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-sm data-[selected=true]:bg-accent">
+                      <Upload className="w-4 h-4 text-muted-foreground" />
+                      <span>Publish</span>
+                    </Command.Item>
+                    <Command.Item onSelect={() => navigate('/api-keys')} className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-sm data-[selected=true]:bg-accent">
+                      <KeyRound className="w-4 h-4 text-muted-foreground" />
+                      <span>API Keys</span>
                     </Command.Item>
                   </Command.Group>
 

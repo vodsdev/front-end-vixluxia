@@ -1,0 +1,45 @@
+  ▲ Next.js 14.2.3
+  - Local:        http://localhost:3001
+  - Network:      http://0.0.0.0:3001
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 8.8s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 634ms (128 modules)
+ ○ Compiling /api/[...path] ...
+ ✓ Compiled /api/[...path] in 2.1s (72 modules)
+ ✓ Compiled in 835ms (128 modules)
+ ○ Compiling /api ...
+ GET /api/health 200 in 6200ms
+ ✓ Compiled /api in 19.8s (1559 modules)
+ ✓ Compiled in 1988ms (757 modules)
+ GET /api 200 in 163ms
+ GET /api/health 200 in 168ms
+ GET /api 200 in 153ms
+ ○ Compiling / ...
+ ✓ Compiled / in 35.2s (1618 modules)
+ GET / 200 in 46039ms
+ ✓ Compiled in 26.2s (1760 modules)
+ ✓ Compiled in 7.1s (826 modules)
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 9.2s (1621 modules)
+ GET / 200 in 5206ms
+ ✓ Compiled in 29.5s (1636 modules)
+ ✓ Compiled in 24.9s (1636 modules)
+ ✓ Compiled in 13s (1750 modules)
+ ✓ Compiled in 12s (1750 modules)
+ ✓ Compiled in 24.8s (1638 modules)
+ ✓ Compiled in 5.4s (829 modules)
+ ✓ Compiled in 4.4s (829 modules)
+ ✓ Compiled in 5s (829 modules)
+ ✓ Compiled in 5.3s (829 modules)
+ ✓ Compiled in 17.3s (1766 modules)
+ ✓ Compiled in 5s (829 modules)
+ ✓ Compiled in 4.5s (829 modules)
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 4.5s (1627 modules)
+ GET / 200 in 4558ms
+ ✓ Compiled in 5.4s (829 modules)
+ ✓ Compiled in 5.6s (829 modules)
+ ✓ Compiled in 15s (1638 modules)

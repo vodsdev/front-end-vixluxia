@@ -20,11 +20,11 @@ export function AppHeader({ title, children }) {
             <Settings className="w-4 h-4" />
           </Button>
         </Link>
-        <Button variant="ghost" size="sm" className="text-xs font-medium">
-          Log in
+        <Button variant="ghost" size="sm" className="text-xs font-medium" asChild>
+          <Link href="/auth">Log in</Link>
         </Button>
-        <Button size="sm" className="text-xs font-medium rounded-full px-4 bg-primary text-primary-foreground hover:bg-primary/90">
-          Publish
+        <Button size="sm" className="text-xs font-medium rounded-full px-4 bg-primary text-primary-foreground hover:bg-primary/90" asChild>
+          <Link href="/publish">Publish</Link>
         </Button>
       </div>
     </header>

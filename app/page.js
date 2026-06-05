@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo, Suspense } from 'react';
+import { useEffect, useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -12,10 +12,12 @@ import { ComponentCard } from '@/components/component-card';
 import { ComponentListItem } from '@/components/component-list-item';
 import { CategoryGrid } from '@/components/category-grid';
 import { HeroSection } from '@/components/hero-section';
+import { PlatformFeatureGrid } from '@/components/platform/platform-feature-grid';
 import { AnimateIn, StaggerContainer, StaggerItem } from '@/components/animate-in';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { CATEGORIES, PROMPTS } from '@/lib/prompts-data';
+import { CATEGORIES } from '@/lib/prompts-data';
+import { getAllRegistryComponents } from '@/lib/component-registry';
 import * as Previews from '@/components/previews';
 import { Sparkles, ArrowRight } from 'lucide-react';
 
@@ -26,11 +28,20 @@ function HomeContent() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get('category');
   const groupParam = searchParams.get('group');
+  const referralParam = searchParams.get('ref');
+
+  useEffect(() => {
+    if (!referralParam) return;
+    localStorage.setItem('vixluxia-referral-code', referralParam);
+    fetch('/api/referrals/track', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ referralCode: referralParam }),
+    }).catch(() => {});
+  }, [referralParam]);
 
   const allComponents = useMemo(() => {
-    return Object.entries(PROMPTS).flatMap(([slug, items]) =>
-      items.map(item => ({ ...item, categorySlug: slug }))
-    );
+    return getAllRegistryComponents();
   }, []);
 
   const filteredComponents = useMemo(() => {
@@ -42,7 +53,7 @@ function HomeContent() {
   }, [search, allComponents]);
 
   const currentCategory = categoryParam ? CATEGORIES.find(c => c.slug === categoryParam) : null;
-  const currentPrompts = categoryParam ? (PROMPTS[categoryParam] || []) : [];
+  const currentPrompts = categoryParam ? allComponents.filter((item) => item.categorySlug === categoryParam) : [];
 
   const groupCategories = useMemo(() => {
     if (groupParam === 'marketing') return CATEGORIES.filter((_, i) => i < 10);
@@ -175,6 +186,8 @@ function HomeContent() {
                 <div className="space-y-16">
                   {/* Hero */}
                   <HeroSection />
+
+                  <PlatformFeatureGrid />
 
                   {/* New Components Section */}
                   <section>

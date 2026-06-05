@@ -4,16 +4,14 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { AppHeader } from '@/components/layout/app-header';
 import { ComponentCard } from '@/components/component-card';
-import { PROMPTS } from '@/lib/prompts-data';
+import { getAllRegistryComponents } from '@/lib/component-registry';
 import * as Previews from '@/components/previews';
 
 export default function FeaturedPage() {
   const [search, setSearch] = useState('');
 
   const allComponents = useMemo(() => {
-    return Object.entries(PROMPTS).flatMap(([slug, items]) =>
-      items.map(item => ({ ...item, categorySlug: slug }))
-    );
+    return getAllRegistryComponents();
   }, []);
 
   const featured = useMemo(() => {

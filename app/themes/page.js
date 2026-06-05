@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { AppHeader } from '@/components/layout/app-header';
@@ -14,6 +14,7 @@ const THEMES = [
     description: 'Clean and minimal with neutral tones',
     colors: ['#ffffff', '#f4f4f5', '#18181b', '#a1a1aa'],
     accent: '#18181b',
+    primary: '240 5.9% 10%',
   },
   {
     id: 'violet',
@@ -21,6 +22,7 @@ const THEMES = [
     description: 'Rich purple accents for a modern feel',
     colors: ['#faf5ff', '#ede9fe', '#7c3aed', '#c4b5fd'],
     accent: '#7c3aed',
+    primary: '262 83% 58%',
   },
   {
     id: 'ocean',
@@ -28,6 +30,7 @@ const THEMES = [
     description: 'Cool blue tones inspired by the sea',
     colors: ['#eff6ff', '#dbeafe', '#2563eb', '#93c5fd'],
     accent: '#2563eb',
+    primary: '221 83% 53%',
   },
   {
     id: 'forest',
@@ -35,6 +38,7 @@ const THEMES = [
     description: 'Natural green palette for a calm interface',
     colors: ['#f0fdf4', '#dcfce7', '#16a34a', '#86efac'],
     accent: '#16a34a',
+    primary: '142 71% 45%',
   },
   {
     id: 'sunset',
@@ -42,6 +46,7 @@ const THEMES = [
     description: 'Warm orange and amber gradients',
     colors: ['#fffbeb', '#fef3c7', '#d97706', '#fcd34d'],
     accent: '#d97706',
+    primary: '32 95% 44%',
   },
   {
     id: 'rose',
@@ -49,12 +54,27 @@ const THEMES = [
     description: 'Soft pink tones for an elegant look',
     colors: ['#fff1f2', '#ffe4e6', '#e11d48', '#fda4af'],
     accent: '#e11d48',
+    primary: '347 77% 50%',
   },
 ];
 
 export default function ThemesPage() {
   const [search, setSearch] = useState('');
   const [selectedTheme, setSelectedTheme] = useState('default');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('vixluxia-color-theme') || 'default';
+    const theme = THEMES.find((item) => item.id === saved) || THEMES[0];
+    applyTheme(theme);
+  }, []);
+
+  const applyTheme = (theme) => {
+    setSelectedTheme(theme.id);
+    localStorage.setItem('vixluxia-color-theme', theme.id);
+    document.documentElement.style.setProperty('--primary', theme.primary);
+    document.documentElement.style.setProperty('--ring', theme.primary);
+    document.documentElement.style.setProperty('--sidebar-primary', theme.primary);
+  };
 
   return (
     <SidebarProvider>
@@ -79,7 +99,7 @@ export default function ThemesPage() {
                         ? 'ring-2 ring-primary border-primary'
                         : 'border-border/50 hover:border-border'
                     )}
-                    onClick={() => setSelectedTheme(theme.id)}
+                    onClick={() => applyTheme(theme)}
                   >
                     {/* Color Preview */}
                     <div className="h-32 relative overflow-hidden">

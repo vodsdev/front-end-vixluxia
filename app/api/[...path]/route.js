@@ -172,6 +172,11 @@ async function handler(request, { params }) {
   const method = request.method;
 
   try {
+    // GET /api/health -> health
+    if (method === 'GET' && route === '/health') {
+      return json({ ok: true, app: 'VixLuxia', version: '1.0' });
+    }
+
     const db = await getDb();
 
     // POST /api/bookmarks/enrich -> preview metadata for a URL
@@ -296,11 +301,6 @@ async function handler(request, { params }) {
         ])
         .toArray();
       return json(agg.map((t) => ({ name: t._id, count: t.count })));
-    }
-
-    // GET /api/ -> health
-    if (method === 'GET' && (route === '/' || route === '')) {
-      return json({ ok: true, app: 'VixLuxia', version: '1.0' });
     }
 
     return json({ error: 'Not found', route, method }, 404);

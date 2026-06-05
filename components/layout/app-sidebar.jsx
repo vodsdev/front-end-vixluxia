@@ -1,7 +1,7 @@
 'use client';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Sparkles, LayoutGrid, Clock, Trophy, Palette, Users, Search, Settings, Sun, Moon, ChevronDown, FolderClosed } from 'lucide-react';
+import { Sparkles, LayoutGrid, Clock, Trophy, Palette, Users, Search, Settings, Sun, Moon, FolderClosed, Code2, CreditCard, Share2, Bot, Upload, KeyRound } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import {
   Sidebar,
@@ -32,6 +32,15 @@ const NAV_ITEMS = [
   { href: '/week', label: 'Best of Week', icon: Trophy },
   { href: '/themes', label: 'Themes', icon: Palette },
   { href: '/authors', label: 'Top Authors', icon: Users },
+];
+
+const PLATFORM_ITEMS = [
+  { href: '/api', label: 'API', icon: Code2 },
+  { href: '/abonnement', label: 'Abonnement', icon: CreditCard },
+  { href: '/affiliation', label: 'Affiliation', icon: Share2 },
+  { href: '/ia', label: 'IA Premium', icon: Bot },
+  { href: '/publish', label: 'Publish', icon: Upload },
+  { href: '/api-keys', label: 'API Keys', icon: KeyRound },
 ];
 
 import { Outfit } from 'next/font/google';
@@ -111,6 +120,34 @@ export function AppSidebar({ search, onSearchChange }) {
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton 
                       asChild 
+                      isActive={isActive}
+                      className="hover:bg-foreground/5 data-[active=true]:bg-foreground/10 hover:text-foreground data-[active=true]:text-foreground transition-all duration-200"
+                    >
+                      <Link href={item.href} className="text-xs">
+                        <Icon className="w-4 h-4" />
+                        <span>{item.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-4 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+            Platform
+          </SidebarGroupLabel>
+          <SidebarGroupContent className="px-2">
+            <SidebarMenu>
+              {PLATFORM_ITEMS.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+                return (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      asChild
                       isActive={isActive}
                       className="hover:bg-foreground/5 data-[active=true]:bg-foreground/10 hover:text-foreground data-[active=true]:text-foreground transition-all duration-200"
                     >
