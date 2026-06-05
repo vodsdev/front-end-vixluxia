@@ -35,7 +35,7 @@ export function AppFooter() {
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-orange-400 flex items-center justify-center shadow-sm">
                 <Sparkles className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="font-bold text-sm bg-gradient-to-r from-violet-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">VixLuxia</span>
+              <span className="font-bold text-sm bg-[linear-gradient(110deg,#9333ea,45%,#f9a8d4,55%,#f97316)] bg-[length:200%_100%] animate-shimmer bg-clip-text text-transparent">VixLuxia</span>
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed max-w-[200px]">
               The open-source registry for UI components. Built by the community, for the community.

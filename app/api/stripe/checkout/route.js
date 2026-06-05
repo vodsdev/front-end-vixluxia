@@ -4,7 +4,11 @@ import { getPriceId, getStripe } from '@/lib/server/stripe';
 
 function appUrl(request) {
   const origin = request.headers.get('origin');
-  return process.env.NEXT_PUBLIC_APP_URL || origin || 'http://localhost:3000';
+  let url = process.env.NEXT_PUBLIC_APP_URL || origin || 'http://localhost:3000';
+  if (!url.startsWith('http')) {
+    url = `https://${url}`;
+  }
+  return url;
 }
 
 async function createCheckout(request, body = {}) {

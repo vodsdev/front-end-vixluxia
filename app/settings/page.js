@@ -13,12 +13,13 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Bell, Lock, User, Palette, Shield, LogOut, Save, Loader2 } from 'lucide-react';
+import { Bell, Lock, User, Palette, Shield, LogOut, Save, Loader2, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 import { getCurrentSession, signOut, getUserProfile, upsertUserProfile, supabase } from '@/lib/supabase';
 
 const SETTINGS_TABS = [
   { id: 'profile', label: 'Profile', icon: User },
+  { id: 'payments', label: 'Paiements', icon: CreditCard },
   { id: 'appearance', label: 'Appearance', icon: Palette },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'privacy', label: 'Privacy', icon: Shield },
@@ -38,6 +39,7 @@ export default function SettingsPage() {
     email: '',
     bio: '',
     website: '',
+    rib: '',
   });
 
   const [notifications, setNotifications] = useState({
@@ -69,6 +71,7 @@ export default function SettingsPage() {
             name: profile.name || currentSession.user.user_metadata?.full_name || '',
             bio: profile.bio || '',
             website: profile.website || '',
+            rib: profile.rib || '',
           }));
         } else {
           setFormData(prev => ({
@@ -97,6 +100,7 @@ export default function SettingsPage() {
         name: formData.name,
         bio: formData.bio,
         website: formData.website,
+        rib: formData.rib,
         updated_at: new Date().toISOString()
       });
       
@@ -163,7 +167,7 @@ export default function SettingsPage() {
                 transition={{ duration: 0.4 }}
               >
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="grid w-full grid-cols-5 mb-8">
+                  <TabsList className="grid w-full grid-cols-6 mb-8">
                     {SETTINGS_TABS.map((tab) => {
                       const Icon = tab.icon;
                       return (
@@ -225,6 +229,32 @@ export default function SettingsPage() {
                       <Button className="mt-6 gap-2" onClick={handleSaveProfile} disabled={loading}>
                         {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                         Sauvegarder le profil
+                      </Button>
+                    </Card>
+                  </TabsContent>
+
+                  {/* Payments Tab */}
+                  <TabsContent value="payments" className="space-y-6">
+                    <Card className="p-6">
+                      <h3 className="text-lg font-bold mb-4">Informations Bancaires (RIB)</h3>
+                      <p className="text-sm text-muted-foreground mb-6">
+                        Ajoute ton RIB/IBAN pour recevoir automatiquement l'argent généré par tes affiliations et le coffre de ton équipe VixLuxia.
+                      </p>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="rib" className="text-sm font-medium">IBAN / RIB</Label>
+                          <Input
+                            id="rib"
+                            value={formData.rib}
+                            onChange={(e) => setFormData({ ...formData, rib: e.target.value })}
+                            placeholder="FR76 1234 5678 9101 1121 3141 516"
+                            className="mt-1.5 font-mono"
+                          />
+                        </div>
+                      </div>
+                      <Button className="mt-6 gap-2" onClick={handleSaveProfile} disabled={loading}>
+                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        Sauvegarder le RIB
                       </Button>
                     </Card>
                   </TabsContent>

@@ -72,7 +72,7 @@ export default function AuthPage() {
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-orange-400 flex items-center justify-center shadow-lg">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-xl text-white tracking-tight">VixLuxia</span>
+            <span className="font-bold text-xl bg-gradient-to-r from-violet-400 via-pink-400 to-orange-400 bg-clip-text text-transparent animate-pulse">VixLuxia</span>
           </a>
 
           {/* Center content */}
@@ -118,7 +118,7 @@ export default function AuthPage() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-orange-400 flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-lg">VixLuxia</span>
+            <span className="font-bold text-lg bg-gradient-to-r from-violet-500 via-pink-500 to-orange-400 bg-clip-text text-transparent animate-pulse">VixLuxia</span>
           </div>
 
           <h2 className="text-2xl font-bold mb-1">

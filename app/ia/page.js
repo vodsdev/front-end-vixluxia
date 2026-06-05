@@ -121,11 +121,11 @@ export default function IaPage() {
                 messages.map(m => (
                   <div key={m.id} className={`flex gap-4 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     {m.role === 'assistant' && (
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                        <Bot className="w-4 h-4 text-primary" />
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-orange-400 flex items-center justify-center shrink-0 shadow-sm">
+                        <Bot className="w-4 h-4 text-white" />
                       </div>
                     )}
-                    <div className={`max-w-[85%] rounded-2xl p-4 ${m.role === 'user' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-muted/50 rounded-bl-none'}`}>
+                    <div className={`max-w-[85%] rounded-2xl p-5 shadow-sm border border-border/50 backdrop-blur-md ${m.role === 'user' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card/90 rounded-bl-none'}`}>
                       {m.role === 'user' ? (
                         <p className="text-sm whitespace-pre-wrap">{m.content}</p>
                       ) : (
@@ -134,7 +134,17 @@ export default function IaPage() {
                             if (index % 2 === 1) {
                               const [lang, ...codeLines] = part.split('\n');
                               const code = codeLines.join('\n');
-                              return <CodeBlock key={index} code={code} filename={`code.${lang || 'txt'}`} />;
+                              return (
+                                <div key={index} className="my-4 rounded-lg overflow-hidden border border-border/50 bg-background/50">
+                                  <div className="flex items-center justify-between px-4 py-2 border-b border-border/50 bg-muted/50">
+                                    <span className="text-xs font-mono text-muted-foreground">{lang || 'tsx'}</span>
+                                    <div className="flex gap-2">
+                                      <Badge variant="outline" className="text-[10px] cursor-help" title="Preview is not available for complex React components yet.">Preview Unavailable</Badge>
+                                    </div>
+                                  </div>
+                                  <CodeBlock code={code} filename={`generated.${lang || 'tsx'}`} />
+                                </div>
+                              );
                             }
                             return <p key={index} className="whitespace-pre-wrap leading-relaxed">{part}</p>;
                           })}
@@ -142,7 +152,7 @@ export default function IaPage() {
                       )}
                     </div>
                     {m.role === 'user' && (
-                      <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center shrink-0 shadow-sm border border-border/50">
                         <User className="w-4 h-4" />
                       </div>
                     )}

@@ -3,7 +3,8 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { Eye, Plus, Save, Send } from 'lucide-react';
+import { Eye, Plus, Save, Send, Loader2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PageShell } from '@/components/layout/page-shell';
 import { AnimateIn } from '@/components/animate-in';
 import { Button } from '@/components/ui/button';
@@ -143,82 +144,100 @@ export default function PublishPage() {
           </div>
         </AnimateIn>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
-          <Card className="rounded-lg border-border/50 bg-card/80 p-5">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nom</Label>
-                <Input id="name" value={form.name} onChange={(event) => updateForm('name', event.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="category">Categorie</Label>
-                <Select value={form.categorySlug} onValueChange={(value) => updateForm('categorySlug', value)}>
-                  <SelectTrigger id="category"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {CATEGORIES.map((item) => (
-                      <SelectItem key={item.slug} value={item.slug}>{item.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="tagline">Tagline</Label>
-                <Input id="tagline" value={form.tagline} onChange={(event) => updateForm('tagline', event.target.value)} />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="dependencies">Dependances</Label>
-                <Input id="dependencies" value={form.dependencies} onChange={(event) => updateForm('dependencies', event.target.value)} />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="prompt">Prompt</Label>
-                <Textarea id="prompt" value={form.prompt} onChange={(event) => updateForm('prompt', event.target.value)} className="min-h-[120px]" />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="code">Code</Label>
-                <Textarea id="code" value={form.code} onChange={(event) => updateForm('code', event.target.value)} className="min-h-[220px] font-mono text-xs" />
-              </div>
-              <div className="flex items-center justify-between rounded-md border border-border/50 bg-background p-3 md:col-span-2">
-                <div>
-                  <Label htmlFor="premium">Premium</Label>
-                  <p className="text-xs text-muted-foreground">Reserve ce composant aux abonnes payants.</p>
-                </div>
-                <Switch id="premium" checked={form.premium} onCheckedChange={(value) => updateForm('premium', value)} />
-              </div>
-            </div>
+        <Tabs defaultValue="info" className="w-full">
+          <TabsList className="grid w-full max-w-md grid-cols-3 mb-8">
+            <TabsTrigger value="info">1. Infos</TabsTrigger>
+            <TabsTrigger value="code">2. Code</TabsTrigger>
+            <TabsTrigger value="preview">3. Aperçu</TabsTrigger>
+          </TabsList>
 
-            <div className="mt-5 flex justify-end gap-2">
-              <Button variant="outline" className="rounded-md" onClick={() => toast.message('Brouillon garde dans le formulaire')}>
-                <Save className="h-4 w-4" />
-                Brouillon
-              </Button>
-              <Button className="rounded-md" onClick={publish} disabled={!form.name.trim() || !form.code.trim() || isPublishing}>
-                {isPublishing ? null : <Send className="h-4 w-4" />}
-                {isPublishing ? 'Publication en cours...' : 'Publier'}
-              </Button>
-            </div>
-          </Card>
-
-          <div className="space-y-4">
-            <Card className="rounded-lg border-border/50 bg-card/80 p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <Badge variant="outline">{category.name}</Badge>
-                  <h2 className="mt-4 text-xl font-black">{form.name || 'Untitled component'}</h2>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{form.tagline}</p>
+          <TabsContent value="info" className="space-y-4">
+            <Card className="rounded-lg border-border/50 bg-card/80 p-6 shadow-sm">
+              <h2 className="text-lg font-bold mb-4">Informations du composant</h2>
+              <div className="grid gap-5 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Nom</Label>
+                  <Input id="name" value={form.name} onChange={(event) => updateForm('name', event.target.value)} placeholder="Ex: Bouton Magique" />
                 </div>
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-foreground text-background">
-                  <Plus className="h-4 w-4" />
+                <div className="space-y-2">
+                  <Label htmlFor="category">Catégorie</Label>
+                  <Select value={form.categorySlug} onValueChange={(value) => updateForm('categorySlug', value)}>
+                    <SelectTrigger id="category"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {CATEGORIES.map((item) => (
+                        <SelectItem key={item.slug} value={item.slug}>{item.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-              </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {previewComponent.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary">{tag}</Badge>
-                ))}
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="tagline">Tagline</Label>
+                  <Input id="tagline" value={form.tagline} onChange={(event) => updateForm('tagline', event.target.value)} placeholder="Courte description de ce que fait le composant..." />
+                </div>
+                <div className="flex items-center justify-between rounded-lg border border-border/50 bg-background/50 p-4 md:col-span-2">
+                  <div>
+                    <Label htmlFor="premium" className="text-base">Premium</Label>
+                    <p className="text-xs text-muted-foreground mt-1">Réserve ce composant aux abonnés payants (Pro/Studio).</p>
+                  </div>
+                  <Switch id="premium" checked={form.premium} onCheckedChange={(value) => updateForm('premium', value)} />
+                </div>
               </div>
             </Card>
-            <CodeBlock code={form.code} filename={`${slugify(form.name) || 'component'}.tsx`} />
-          </div>
-        </div>
+          </TabsContent>
+
+          <TabsContent value="code" className="space-y-4">
+            <Card className="rounded-lg border-border/50 bg-card/80 p-6 shadow-sm">
+              <h2 className="text-lg font-bold mb-4">Code et Dépendances</h2>
+              <div className="grid gap-5">
+                <div className="space-y-2">
+                  <Label htmlFor="dependencies">Dépendances (séparées par des virgules)</Label>
+                  <Input id="dependencies" value={form.dependencies} onChange={(event) => updateForm('dependencies', event.target.value)} placeholder="react, tailwindcss, framer-motion..." />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="prompt">Prompt original (optionnel)</Label>
+                  <Textarea id="prompt" value={form.prompt} onChange={(event) => updateForm('prompt', event.target.value)} className="min-h-[100px] resize-y" placeholder="Le prompt IA utilisé pour générer ceci..." />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="code">Code source (React/JSX)</Label>
+                  <Textarea id="code" value={form.code} onChange={(event) => updateForm('code', event.target.value)} className="min-h-[300px] font-mono text-sm bg-muted/30" />
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="preview" className="space-y-6">
+            <Card className="rounded-lg border-border/50 bg-card/80 p-6 shadow-sm">
+              <h2 className="text-lg font-bold mb-4">Vérification Finale</h2>
+              <div className="flex items-start justify-between gap-4 p-5 rounded-lg border border-border/50 bg-background">
+                <div>
+                  <div className="flex items-center gap-3">
+                    <Badge variant="outline" className="bg-primary/5">{category.name}</Badge>
+                    {form.premium && <Badge variant="default" className="bg-gradient-to-r from-violet-500 to-orange-400 border-none">Premium</Badge>}
+                  </div>
+                  <h2 className="mt-3 text-2xl font-black">{form.name || 'Composant sans nom'}</h2>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{form.tagline || 'Aucune description fournie.'}</p>
+                </div>
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+                  <Plus className="h-6 w-6" />
+                </div>
+              </div>
+              <div className="mt-6">
+                <CodeBlock code={form.code} filename={`${slugify(form.name) || 'component'}.tsx`} />
+              </div>
+              
+              <div className="mt-8 flex justify-end gap-3 pt-6 border-t border-border/50">
+                <Button variant="outline" className="rounded-md px-6" onClick={() => toast.message('Brouillon gardé dans le formulaire')}>
+                  <Save className="mr-2 h-4 w-4" />
+                  Brouillon
+                </Button>
+                <Button className="rounded-md px-8" onClick={publish} disabled={!form.name.trim() || !form.code.trim() || isPublishing}>
+                  {isPublishing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                  {isPublishing ? 'Publication...' : 'Publier le composant'}
+                </Button>
+              </div>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </PageShell>
   );

@@ -2,8 +2,21 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { ArrowRight, BookOpen, Code2, Copy, Database, KeyRound, Server, ShieldCheck } from 'lucide-react';
+import { ArrowRight, BookOpen, Code2, Copy, Database, KeyRound, Server, ShieldCheck, Plus, Trash2, Loader2 } from 'lucide-react';
 import { PageShell } from '@/components/layout/page-shell';
+import { AnimateIn, StaggerContainer, StaggerItem } from '@/components/animate-in';
+import { ApiEndpointCard } from '@/components/platform/api-endpoint-card';
+import { MetricCard } from '@/components/platform/metric-card';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { CodeBlock } from '@/components/code-block';
+import { useAuth } from '@/hooks/use-auth';
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 import { AnimateIn, StaggerContainer, StaggerItem } from '@/components/animate-in';
 import { ApiEndpointCard } from '@/components/platform/api-endpoint-card';
 import { MetricCard } from '@/components/platform/metric-card';
@@ -105,10 +118,76 @@ const CURL_SAMPLE = `curl -X POST "$BASE_URL/api/bookmarks/enrich" \\
 
 export default function ApiPage() {
   const [baseUrl, setBaseUrl] = useState('https://vixluxia.com');
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+  
+  const [name, setName] = useState('Production key');
+  const [createdKey, setCreatedKey] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [keys, setKeys] = useState([]);
+  const [loadingKeys, setLoadingKeys] = useState(true);
 
   useEffect(() => {
     setBaseUrl(window.location.origin);
   }, []);
+
+  const loadKeys = async () => {
+    if (!user) return;
+    setLoadingKeys(true);
+    try {
+      const { data, error } = await supabase
+        .from('api_keys')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+        
+      if (error) throw error;
+      setKeys(data || []);
+    } catch (error) {
+      console.error('Erreur lors du chargement des clés:', error);
+      toast.error('Impossible de charger vos clés API');
+    } finally {
+      setLoadingKeys(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      loadKeys();
+    }
+  }, [user]);
+
+  const createKey = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/v1/api-keys', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Impossible de creer la cle');
+      setCreatedKey(data.key);
+      toast.success('Clé API créée');
+      loadKeys();
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteKey = async (id) => {
+    try {
+      const { error } = await supabase.from('api_keys').delete().eq('id', id);
+      if (error) throw error;
+      toast.success('Clé supprimée');
+      loadKeys();
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   const copyBaseUrl = async () => {
     await navigator.clipboard.writeText(baseUrl);
@@ -134,17 +213,75 @@ export default function ApiPage() {
               </div>
               <div className="flex flex-col gap-2 sm:flex-row">
                 <Button variant="outline" className="rounded-md" onClick={copyBaseUrl}>
-                  <Copy className="h-4 w-4" />
+                  <Copy className="h-4 w-4 mr-2" />
                   Copier base URL
-                </Button>
-                <Button className="rounded-md">
-                  Demander une cle
-                  <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>
             </div>
           </section>
         </AnimateIn>
+
+        {user && (
+          <AnimateIn variant="fadeUp">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-6">
+                <Card className="rounded-lg border-border/50 bg-card/80 p-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="key-name">Nom de la clé</Label>
+                    <Input id="key-name" value={name} onChange={(event) => setName(event.target.value)} />
+                  </div>
+                  <Button className="mt-4 rounded-md w-full" onClick={createKey} disabled={loading}>
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
+                    {loading ? 'Création...' : 'Générer une nouvelle clé'}
+                  </Button>
+                </Card>
+
+                {createdKey && (
+                  <Card className="rounded-lg border-primary/50 bg-primary/5 p-5 border-2">
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <div>
+                        <h2 className="text-sm font-bold text-primary">Nouvelle clé</h2>
+                        <p className="mt-1 text-xs text-muted-foreground">Copie-la maintenant.</p>
+                      </div>
+                      <Button variant="outline" size="sm" className="rounded-md" onClick={() => {
+                        navigator.clipboard.writeText(createdKey);
+                        toast.success('Clé copiée');
+                      }}>
+                        <Copy className="h-3 w-3 mr-2" /> Copier
+                      </Button>
+                    </div>
+                    <CodeBlock code={createdKey} filename="api-key" />
+                  </Card>
+                )}
+              </div>
+
+              <Card className="rounded-lg border-border/50 bg-card/80 p-5 h-[240px] overflow-y-auto">
+                <h2 className="text-sm font-bold mb-4">Vos clés actives</h2>
+                {loadingKeys ? (
+                  <div className="py-4 flex justify-center"><Loader2 className="animate-spin w-5 h-5 text-muted-foreground" /></div>
+                ) : keys.length === 0 ? (
+                  <p className="text-xs text-muted-foreground py-4 text-center">Aucune clé API.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {keys.map((key) => (
+                      <div key={key.id} className="flex items-center justify-between p-3 border rounded-lg bg-background/50">
+                        <div>
+                          <h3 className="font-medium text-xs">{key.name}</h3>
+                          <div className="flex items-center gap-2 mt-1 text-[10px] text-muted-foreground">
+                            <code>{key.key_prefix}...</code>
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => deleteKey(key.id)}>
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Card>
+            </div>
+          </AnimateIn>
+        )}
 
         <div className="grid gap-4 md:grid-cols-3">
           <MetricCard icon={Code2} label="Endpoints" value={ENDPOINTS.length} detail="Routes principales deja referencees." tone="violet" />

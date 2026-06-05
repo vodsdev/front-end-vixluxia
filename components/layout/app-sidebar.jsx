@@ -40,7 +40,7 @@ const PLATFORM_ITEMS = [
   { href: '/affiliation', label: 'Affiliation', icon: Share2 },
   { href: '/ia', label: 'IA Premium', icon: Bot },
   { href: '/publish', label: 'Publish', icon: Upload },
-  { href: '/api-keys', label: 'API Keys', icon: KeyRound },
+
 ];
 
 import { MessageSquareQuote, Info } from 'lucide-react';
@@ -235,27 +235,45 @@ export function AppSidebar({ search, onSearchChange }) {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+          <SidebarGroupLabel className="px-4 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+            Collections
+          </SidebarGroupLabel>
+          <SidebarGroupContent className="px-2">
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={searchParams.get('group') === 'marketing'}
+                  className="hover:bg-foreground/5 data-[active=true]:bg-foreground/10 hover:text-foreground data-[active=true]:text-foreground transition-all duration-200"
+                >
+                  <Link href="/?group=marketing" className="text-xs">
+                    <FolderClosed className="w-4 h-4" />
+                    <span>Marketing Blocks</span>
+                    <span className="ml-auto text-[10px] text-muted-foreground tabular-nums">
+                      10
+                    </span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={searchParams.get('group') === 'ui'}
+                  className="hover:bg-foreground/5 data-[active=true]:bg-foreground/10 hover:text-foreground data-[active=true]:text-foreground transition-all duration-200"
+                >
+                  <Link href="/?group=ui" className="text-xs">
+                    <LayoutGrid className="w-4 h-4" />
+                    <span>UI Components</span>
+                    <span className="ml-auto text-[10px] text-muted-foreground tabular-nums">
+                      10
+                    </span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      {/* Footer */}
-      <SidebarFooter className="p-3 border-none">
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-8 h-8 p-0"
-            onClick={toggleTheme}
-          >
-            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </Button>
-          <Button variant="ghost" size="sm" className="w-8 h-8 p-0">
-            <Settings className="w-4 h-4" />
-          </Button>
-        </div>
-      </SidebarFooter>
     </Sidebar>
   );
 }

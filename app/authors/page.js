@@ -78,7 +78,13 @@ export default function AuthorsPage() {
 
               <div className="mt-4 flex flex-wrap gap-2">
                 {(author.tags || []).map((tag) => (
-                  <Badge key={tag} variant="outline">{tag}</Badge>
+                  <Badge 
+                    key={tag} 
+                    variant={tag === 'Owner' ? 'default' : 'outline'}
+                    className={tag === 'Owner' ? 'bg-primary text-primary-foreground font-bold shadow-sm' : ''}
+                  >
+                    {tag}
+                  </Badge>
                 ))}
               </div>
 

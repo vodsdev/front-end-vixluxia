@@ -48,20 +48,20 @@ export default function InfoPage() {
 
             <Card className="p-6 rounded-lg border-border/50 bg-card/80 flex flex-col items-center text-center">
               <div className="w-20 h-20 bg-secondary/10 rounded-full flex items-center justify-center mb-4">
-                <span className="text-2xl font-bold text-secondary-foreground">MX</span>
+                <span className="text-2xl font-bold text-secondary-foreground">BR</span>
               </div>
-              <h3 className="text-xl font-bold">Maxime</h3>
+              <h3 className="text-xl font-bold">bry Vods.off</h3>
               <p className="text-sm text-muted-foreground mt-1 mb-6">Co-fondateur & UI/UX Designer</p>
               
               <div className="flex gap-3 mt-auto w-full">
                 <Button variant="outline" className="flex-1 gap-2" asChild>
-                  <a href="https://github.com/Max_vods" target="_blank" rel="noreferrer">
-                    <Github className="w-4 h-4" /> MaxVods
+                  <a href="https://github.com/vodsdev" target="_blank" rel="noreferrer">
+                    <Github className="w-4 h-4" /> vodsdev
                   </a>
                 </Button>
                 <Button variant="secondary" className="flex-1 gap-2" asChild>
-                  <a href="https://instagram.com/max_vods" target="_blank" rel="noreferrer">
-                    <Instagram className="w-4 h-4" /> max_vods
+                  <a href="https://instagram.com/vods.off" target="_blank" rel="noreferrer">
+                    <Instagram className="w-4 h-4" /> vods.off
                   </a>
                 </Button>
               </div>

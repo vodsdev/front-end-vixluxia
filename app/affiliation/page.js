@@ -59,7 +59,15 @@ export default function AffiliationPage() {
                     Copier
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">Le code `creator` est temporaire jusqu au profil utilisateur.</p>
+                <div className="mt-4 flex flex-col gap-2">
+                  <p className="text-xs text-muted-foreground">Ou rejoins une équipe pour cumuler les gains dans un coffre commun !</p>
+                  <Button asChild variant="default" className="w-full gap-2">
+                    <a href="/teams">
+                      <Users className="w-4 h-4" />
+                      Voir les Teams
+                    </a>
+                  </Button>
+                </div>
               </div>
             </div>
           </section>
