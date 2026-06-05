@@ -17,9 +17,6 @@ import { CodeBlock } from '@/components/code-block';
 import { useAuth } from '@/hooks/use-auth';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import { AnimateIn, StaggerContainer, StaggerItem } from '@/components/animate-in';
-import { ApiEndpointCard } from '@/components/platform/api-endpoint-card';
-import { MetricCard } from '@/components/platform/metric-card';
 
 const ENDPOINTS = [
   {
