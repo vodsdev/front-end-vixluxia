@@ -20,10 +20,6 @@ import { useRouter } from 'next/navigation';
 import { AnimateIn, StaggerContainer, StaggerItem } from '@/components/animate-in';
 import { ApiEndpointCard } from '@/components/platform/api-endpoint-card';
 import { MetricCard } from '@/components/platform/metric-card';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const ENDPOINTS = [
   {
