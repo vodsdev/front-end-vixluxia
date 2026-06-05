@@ -11,7 +11,7 @@ import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { useChat } from 'ai/react';
+import { useChat } from '@ai-sdk/react';
 import { CodeBlock } from '@/components/code-block';
 
 const PAID_PLANS = ['pro', 'studio', 'paid', 'active', 'starter', 'enterprise'];
