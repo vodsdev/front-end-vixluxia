@@ -13,9 +13,9 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Bell, Lock, User, Palette, Shield, LogOut, Save } from 'lucide-react';
+import { Bell, Lock, User, Palette, Shield, LogOut, Save, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { getCurrentSession, signOut } from '@/lib/supabase';
+import { getCurrentSession, signOut, getUserProfile, upsertUserProfile, supabase } from '@/lib/supabase';
 
 const SETTINGS_TABS = [
   { id: 'profile', label: 'Profile', icon: User },
@@ -28,12 +28,18 @@ const SETTINGS_TABS = [
 export default function SettingsPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('profile');
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  
   const [formData, setFormData] = useState({
-    name: 'John Doe',
+    name: '',
     email: '',
-    bio: 'UI/UX Designer & Developer',
-    website: 'https://example.com',
+    bio: '',
+    website: '',
   });
+
   const [notifications, setNotifications] = useState({
     newComponents: true,
     weeklyDigest: true,
@@ -41,6 +47,7 @@ export default function SettingsPage() {
     likes: false,
     emails: true,
   });
+
   const [privacy, setPrivacy] = useState({
     profilePublic: true,
     showEmail: false,
@@ -48,23 +55,97 @@ export default function SettingsPage() {
   });
 
   useEffect(() => {
-    async function loadSession() {
-      const session = await getCurrentSession();
-      if (session?.user) {
-        setFormData(prev => ({ ...prev, email: session.user.email, name: session.user.user_metadata?.full_name || 'My Account' }));
+    async function loadData() {
+      const currentSession = await getCurrentSession();
+      if (currentSession?.user) {
+        setSession(currentSession);
+        setFormData(prev => ({ ...prev, email: currentSession.user.email }));
+        
+        // Load profile from database
+        const { data: profile } = await getUserProfile(currentSession.user.id);
+        if (profile) {
+          setFormData(prev => ({
+            ...prev,
+            name: profile.name || currentSession.user.user_metadata?.full_name || '',
+            bio: profile.bio || '',
+            website: profile.website || '',
+          }));
+        } else {
+          setFormData(prev => ({
+            ...prev,
+            name: currentSession.user.user_metadata?.full_name || '',
+          }));
+        }
+      } else {
+        router.push('/auth');
       }
     }
-    loadSession();
-  }, []);
+    loadData();
+  }, [router]);
 
   const handleSignOut = async () => {
     await signOut();
     router.push('/');
   };
 
-  const handleSave = () => {
-    toast.success('Settings saved successfully!');
+  const handleSaveProfile = async () => {
+    if (!session?.user) return;
+    setLoading(true);
+    try {
+      const { error } = await upsertUserProfile({
+        id: session.user.id,
+        name: formData.name,
+        bio: formData.bio,
+        website: formData.website,
+        updated_at: new Date().toISOString()
+      });
+      
+      // Also update auth user metadata for the name
+      await supabase.auth.updateUser({
+        data: { full_name: formData.name }
+      });
+
+      if (error) throw error;
+      toast.success('Profil mis à jour !');
+      router.refresh();
+    } catch (error) {
+      toast.error(error.message || 'Erreur lors de la mise à jour');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleSavePassword = async () => {
+    if (password !== confirmPassword) {
+      toast.error('Les mots de passe ne correspondent pas.');
+      return;
+    }
+    if (password.length < 6) {
+      toast.error('Le mot de passe doit faire au moins 6 caractères.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: password
+      });
+      if (error) throw error;
+      toast.success('Mot de passe mis à jour !');
+      setPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      toast.error(error.message || 'Erreur lors du changement de mot de passe');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveGeneric = () => {
+    toast.success('Préférences enregistrées !');
+  };
+
+  if (!session) return null;
 
   return (
     <SidebarProvider>
@@ -82,7 +163,6 @@ export default function SettingsPage() {
                 transition={{ duration: 0.4 }}
               >
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  {/* Tabs List */}
                   <TabsList className="grid w-full grid-cols-5 mb-8">
                     {SETTINGS_TABS.map((tab) => {
                       const Icon = tab.icon;
@@ -99,10 +179,10 @@ export default function SettingsPage() {
                   {/* Profile Tab */}
                   <TabsContent value="profile" className="space-y-6">
                     <Card className="p-6">
-                      <h3 className="text-lg font-bold mb-4">Profile Information</h3>
+                      <h3 className="text-lg font-bold mb-4">Informations du Profil</h3>
                       <div className="space-y-4">
                         <div>
-                          <Label htmlFor="name" className="text-sm font-medium">Full Name</Label>
+                          <Label htmlFor="name" className="text-sm font-medium">Nom complet</Label>
                           <Input
                             id="name"
                             value={formData.name}
@@ -111,13 +191,13 @@ export default function SettingsPage() {
                           />
                         </div>
                         <div>
-                          <Label htmlFor="email" className="text-sm font-medium">Email Address</Label>
+                          <Label htmlFor="email" className="text-sm font-medium">Adresse Email (lecture seule)</Label>
                           <Input
                             id="email"
                             type="email"
                             value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            className="mt-1.5"
+                            disabled
+                            className="mt-1.5 opacity-60"
                           />
                         </div>
                         <div>
@@ -126,24 +206,25 @@ export default function SettingsPage() {
                             id="bio"
                             value={formData.bio}
                             onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                            className="w-full mt-1.5 px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                            rows="3"
+                            className="w-full mt-1.5 px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary min-h-[100px]"
+                            placeholder="Décris-toi en quelques mots..."
                           />
                         </div>
                         <div>
-                          <Label htmlFor="website" className="text-sm font-medium">Website</Label>
+                          <Label htmlFor="website" className="text-sm font-medium">Site Web ou Portfolio</Label>
                           <Input
                             id="website"
                             type="url"
                             value={formData.website}
                             onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                            placeholder="https://..."
                             className="mt-1.5"
                           />
                         </div>
                       </div>
-                      <Button className="mt-6 gap-2" onClick={handleSave}>
-                        <Save className="w-4 h-4" />
-                        Save Changes
+                      <Button className="mt-6 gap-2" onClick={handleSaveProfile} disabled={loading}>
+                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        Sauvegarder le profil
                       </Button>
                     </Card>
                   </TabsContent>
@@ -151,12 +232,12 @@ export default function SettingsPage() {
                   {/* Appearance Tab */}
                   <TabsContent value="appearance" className="space-y-6">
                     <Card className="p-6">
-                      <h3 className="text-lg font-bold mb-4">Theme Settings</h3>
+                      <h3 className="text-lg font-bold mb-4">Thème</h3>
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-medium text-sm">Dark Mode</p>
-                            <p className="text-xs text-muted-foreground mt-0.5">Toggle between light and dark theme</p>
+                            <p className="font-medium text-sm">Mode Sombre</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">Basculer entre le thème clair et sombre</p>
                           </div>
                           <ThemeToggle />
                         </div>
@@ -167,19 +248,12 @@ export default function SettingsPage() {
                   {/* Notifications Tab */}
                   <TabsContent value="notifications" className="space-y-6">
                     <Card className="p-6">
-                      <h3 className="text-lg font-bold mb-4">Notification Preferences</h3>
+                      <h3 className="text-lg font-bold mb-4">Préférences de Notification</h3>
                       <div className="space-y-4">
                         {Object.entries(notifications).map(([key, value]) => (
                           <div key={key} className="flex items-center justify-between py-3 border-b border-border/50 last:border-0">
                             <div>
                               <p className="font-medium text-sm capitalize">{key.replace(/([A-Z])/g, ' $1')}</p>
-                              <p className="text-xs text-muted-foreground mt-0.5">
-                                {key === 'newComponents' && 'Get notified when new components are published'}
-                                {key === 'weeklyDigest' && 'Receive a weekly digest of popular components'}
-                                {key === 'comments' && 'Get notified when someone comments on your components'}
-                                {key === 'likes' && 'Get notified when someone likes your components'}
-                                {key === 'emails' && 'Receive email notifications'}
-                              </p>
                             </div>
                             <Switch
                               checked={value}
@@ -188,9 +262,9 @@ export default function SettingsPage() {
                           </div>
                         ))}
                       </div>
-                      <Button className="mt-6 gap-2" onClick={handleSave}>
+                      <Button className="mt-6 gap-2" onClick={handleSaveGeneric}>
                         <Save className="w-4 h-4" />
-                        Save Preferences
+                        Sauvegarder les préférences
                       </Button>
                     </Card>
                   </TabsContent>
@@ -198,17 +272,12 @@ export default function SettingsPage() {
                   {/* Privacy Tab */}
                   <TabsContent value="privacy" className="space-y-6">
                     <Card className="p-6">
-                      <h3 className="text-lg font-bold mb-4">Privacy Settings</h3>
+                      <h3 className="text-lg font-bold mb-4">Confidentialité</h3>
                       <div className="space-y-4">
                         {Object.entries(privacy).map(([key, value]) => (
                           <div key={key} className="flex items-center justify-between py-3 border-b border-border/50 last:border-0">
                             <div>
                               <p className="font-medium text-sm capitalize">{key.replace(/([A-Z])/g, ' $1')}</p>
-                              <p className="text-xs text-muted-foreground mt-0.5">
-                                {key === 'profilePublic' && 'Make your profile visible to everyone'}
-                                {key === 'showEmail' && 'Show your email address on your profile'}
-                                {key === 'allowMessages' && 'Allow other users to send you messages'}
-                              </p>
                             </div>
                             <Switch
                               checked={value}
@@ -217,9 +286,9 @@ export default function SettingsPage() {
                           </div>
                         ))}
                       </div>
-                      <Button className="mt-6 gap-2" onClick={handleSave}>
+                      <Button className="mt-6 gap-2" onClick={handleSaveGeneric}>
                         <Save className="w-4 h-4" />
-                        Save Privacy Settings
+                        Sauvegarder la confidentialité
                       </Button>
                     </Card>
                   </TabsContent>
@@ -227,51 +296,52 @@ export default function SettingsPage() {
                   {/* Security Tab */}
                   <TabsContent value="security" className="space-y-6">
                     <Card className="p-6">
-                      <h3 className="text-lg font-bold mb-4">Security Settings</h3>
+                      <h3 className="text-lg font-bold mb-4">Sécurité</h3>
                       <div className="space-y-4">
                         <div>
-                          <Label htmlFor="password" className="text-sm font-medium">Change Password</Label>
+                          <Label htmlFor="password" className="text-sm font-medium">Nouveau mot de passe</Label>
                           <Input
                             id="password"
                             type="password"
-                            placeholder="Enter new password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Entrez le nouveau mot de passe"
                             className="mt-1.5"
                           />
                         </div>
                         <div>
-                          <Label htmlFor="confirm-password" className="text-sm font-medium">Confirm Password</Label>
+                          <Label htmlFor="confirm-password" className="text-sm font-medium">Confirmer le mot de passe</Label>
                           <Input
                             id="confirm-password"
                             type="password"
-                            placeholder="Confirm new password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="Confirmez le nouveau mot de passe"
                             className="mt-1.5"
                           />
                         </div>
                         <div className="pt-4 border-t border-border/50">
-                          <p className="font-medium text-sm mb-3">Active Sessions</p>
-                          <p className="text-xs text-muted-foreground mb-3">You have 2 active sessions</p>
-                          <Button variant="outline" size="sm">Sign Out All Sessions</Button>
+                          <Button variant="outline" size="sm" onClick={handleSignOut}>Se déconnecter de tous les appareils</Button>
                         </div>
                       </div>
-                      <Button className="mt-6 gap-2" onClick={handleSave}>
-                        <Save className="w-4 h-4" />
-                        Update Security
+                      <Button className="mt-6 gap-2" onClick={handleSavePassword} disabled={loading || !password}>
+                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        Mettre à jour la sécurité
                       </Button>
                     </Card>
 
-                    {/* Danger Zone */}
                     <Card className="p-6 border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30">
-                      <h3 className="text-lg font-bold mb-4 text-red-600 dark:text-red-400">Danger Zone</h3>
+                      <h3 className="text-lg font-bold mb-4 text-red-600 dark:text-red-400">Zone de Danger</h3>
                       <p className="text-sm text-red-600 dark:text-red-400 mb-4">
-                        These actions cannot be undone. Please be careful.
+                        Ces actions sont irréversibles.
                       </p>
                       <div className="flex gap-4">
                         <Button variant="destructive" className="gap-2" onClick={handleSignOut}>
                           <LogOut className="w-4 h-4" />
-                          Sign Out
+                          Se déconnecter
                         </Button>
                         <Button variant="outline" className="gap-2 border-red-200 text-red-600 hover:bg-red-100 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950">
-                          Delete Account
+                          Supprimer le compte
                         </Button>
                       </div>
                     </Card>

@@ -213,15 +213,6 @@ export default function ComponentDetailPage() {
                     <p className="mt-2 text-xs leading-5 text-muted-foreground">{item.body}</p>
                   </div>
                 ))}
-                <div className="rounded-md border border-border/50 bg-background p-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs font-semibold">VixLuxia Team</span>
-                    <span className="text-[10px] text-muted-foreground">2j</span>
-                  </div>
-                  <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                    Preview, code, installation et prompt sont maintenant separes pour copier exactement ce qu il faut.
-                  </p>
-                </div>
               </div>
             </Card>
           </div>
@@ -299,19 +290,19 @@ export default function ComponentDetailPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Terminal className="h-4 w-4" />
-                  Install command genere automatiquement.
+                  Install command generé automatiquement.
                 </div>
                 <div className="flex items-center gap-2">
                   <Download className="h-4 w-4" />
-                  Donnees pretes pour API publique.
+                  Données prêtes pour API publique.
                 </div>
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4" />
-                  Auteur fictif pour demo marketplace.
+                  Profil Auteur Supabase disponible.
                 </div>
                 <div className="flex items-center gap-2">
                   <Star className="h-4 w-4" />
-                  Favoris et votes persistants en local.
+                  Favoris et votes persistants.
                 </div>
               </div>
             </Card>

@@ -1,49 +1,61 @@
+import { streamText } from 'ai';
+import { google } from '@ai-sdk/google';
 import { NextResponse } from 'next/server';
-import { generateWithNvidiaNim } from '@/lib/server/nvidia';
 import { getServerSubscription } from '@/lib/server/subscription';
 import { getSupabaseAdmin } from '@/lib/server/supabase-admin';
 
-export async function POST(request) {
-  const body = await request.json().catch(() => ({}));
-  const prompt = String(body.prompt || '').trim();
+// Optionnel: configurer le timeout
+export const maxDuration = 60;
 
-  if (!prompt) {
-    return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
-  }
-
-  const access = await getServerSubscription(request);
-  if (!access.isPremium) {
-    return NextResponse.json({
-      error: 'Premium subscription required',
-      code: 'premium_required',
-    }, { status: 402 });
-  }
-
+export async function POST(req) {
   try {
-    const result = await generateWithNvidiaNim({
-      prompt,
-      mode: body.mode || 'component',
-      maxTokens: Math.min(Number(body.maxTokens || 900), 1800),
-    });
-
-    const supabase = getSupabaseAdmin();
-    if (supabase && access.user?.id) {
-      await supabase.from('ai_generations').insert({
-        user_id: access.user.id,
-        prompt,
-        mode: body.mode || 'component',
-        model: result.model,
-        output: result.content,
-        usage: result.usage,
-        created_at: new Date().toISOString(),
-      });
+    const access = await getServerSubscription(req);
+    
+    // Vérification de l'abonnement
+    if (!access.isPremium) {
+      return NextResponse.json({
+        error: 'Abonnement Premium requis pour accéder à l\'IA.',
+        code: 'premium_required',
+      }, { status: 402 });
     }
 
-    return NextResponse.json(result);
+    const { messages, mode } = await req.json();
+
+    const systemPrompt = mode === 'component' 
+      ? 'Tu es un expert développeur React et Tailwind CSS. Génère ou modifie des composants UI modernes, propres et performants.'
+      : mode === 'code-review'
+      ? 'Tu es un ingénieur senior. Fais une revue de code détaillée, bienveillante et pertinente.'
+      : 'Tu es un assistant IA spécialisé dans l\'UX/UI et le développement web.';
+
+    // Appel à l'API Gemini via AI SDK
+    const result = await streamText({
+      model: google('gemini-1.5-pro-latest'),
+      system: systemPrompt,
+      messages,
+      onFinish: async ({ text, usage }) => {
+        // Enregistrer la génération dans Supabase après la fin du streaming
+        const supabase = getSupabaseAdmin();
+        if (supabase && access.user?.id) {
+          const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
+          await supabase.from('ai_generations').insert({
+            user_id: access.user.id,
+            prompt: lastUserMessage?.content || 'Conversation',
+            mode: mode || 'chat',
+            model: 'gemini-1.5-pro',
+            output: text,
+            usage: usage || {},
+            created_at: new Date().toISOString(),
+          });
+        }
+      }
+    });
+
+    return result.toDataStreamResponse();
   } catch (error) {
+    console.error('Erreur IA:', error);
     return NextResponse.json({
-      error: error.message,
-      hint: 'Start the local NVIDIA NIM on port 8000 or set NVIDIA_NIM_BASE_URL / NVIDIA_API_KEY.',
-    }, { status: 502 });
+      error: 'Erreur lors de la génération avec Gemini.',
+      details: error.message
+    }, { status: 500 });
   }
 }

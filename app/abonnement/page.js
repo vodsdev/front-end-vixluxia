@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { CreditCard, Rocket, ShieldCheck, Sparkles } from 'lucide-react';
+import { CreditCard, Rocket, ShieldCheck, Sparkles, Loader2 } from 'lucide-react';
 import { PageShell } from '@/components/layout/page-shell';
 import { AnimateIn } from '@/components/animate-in';
 import { MetricCard } from '@/components/platform/metric-card';
@@ -11,6 +11,9 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/use-auth';
+import { supabase } from '@/lib/supabase';
 
 const PLANS = [
   {
@@ -53,14 +56,58 @@ const PLANS = [
 ];
 
 export default function AbonnementPage() {
+  const { user } = useAuth();
   const [yearly, setYearly] = useState(false);
   const [loadingPlan, setLoadingPlan] = useState(null);
+  const [currentPlan, setCurrentPlan] = useState('free');
+  const [subscription, setSubscription] = useState(null);
+  const [loadingSubscription, setLoadingSubscription] = useState(true);
   const billingCycle = yearly ? 'yearly' : 'monthly';
+
+  useEffect(() => {
+    async function fetchSubscription() {
+      if (!user) {
+        setLoadingSubscription(false);
+        return;
+      }
+      
+      try {
+        const { data, error } = await supabase
+          .from('subscriptions')
+          .select('*')
+          .eq('user_id', user.id)
+          .in('status', ['active', 'trialing'])
+          .single();
+          
+        if (data) {
+          setSubscription(data);
+          setCurrentPlan(data.plan_id || 'free');
+        }
+      } catch (error) {
+        // No active subscription
+      } finally {
+        setLoadingSubscription(false);
+      }
+    }
+    fetchSubscription();
+  }, [user]);
+
+  useEffect(() => {
+    // Check URL params for Stripe checkout redirect
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('checkout') === 'success') {
+      toast.success('Paiement réussi ! Votre abonnement est actif.');
+      // Nettoyer l'URL
+      window.history.replaceState({}, document.title, '/abonnement');
+    } else if (params.get('checkout') === 'cancelled') {
+      toast.info('Paiement annulé.');
+      window.history.replaceState({}, document.title, '/abonnement');
+    }
+  }, []);
 
   const handleSelectPlan = async (plan) => {
     if (plan.id === 'free') {
-      localStorage.setItem('vixluxia-plan', 'free');
-      toast.success('Le plan Free est deja disponible');
+      toast.success('Le plan Free est deja actif');
       return;
     }
 
@@ -82,6 +129,11 @@ export default function AbonnementPage() {
     }
   };
 
+  const handleManageBilling = async () => {
+    toast.info('Portail de gestion Stripe à venir');
+    // Implement Stripe customer portal redirect here
+  };
+
   return (
     <PageShell title="Abonnement" maxWidth="max-w-[1180px]">
       <div className="space-y-8">
@@ -93,11 +145,23 @@ export default function AbonnementPage() {
                   <CreditCard className="h-3.5 w-3.5" />
                   Plans VixLuxia
                 </Badge>
-                <h1 className="text-3xl font-black tracking-tight lg:text-4xl">Abonnements propres et prets pour Stripe</h1>
+                <h1 className="text-3xl font-black tracking-tight lg:text-4xl">Abonnements propres et prêts pour Stripe</h1>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  Les offres sont structurees pour vendre l acces IA, les cles API et les avantages createurs sans
-                  melanger la partie interface avec la logique de paiement.
+                  Gérez votre abonnement et accédez aux avantages créateurs.
                 </p>
+                
+                {!loadingSubscription && user && (
+                  <div className="mt-6 flex items-center gap-4 p-4 bg-primary/5 rounded-lg border border-primary/20 inline-block">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Votre plan actuel : <span className="font-bold text-primary uppercase">{currentPlan}</span></p>
+                    </div>
+                    {currentPlan !== 'free' && (
+                      <Button variant="outline" size="sm" onClick={handleManageBilling}>
+                        Gérer mon abonnement
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-3 rounded-lg border border-border/50 bg-background px-4 py-3">
                 <Label htmlFor="billing-cycle" className="text-xs font-medium">
@@ -115,34 +179,30 @@ export default function AbonnementPage() {
 
         <div className="grid gap-4 md:grid-cols-3">
           <MetricCard icon={Sparkles} label="IA premium" value="Pro+" detail="La page IA est reservee aux abonnes." tone="violet" />
-          <MetricCard icon={ShieldCheck} label="Droits" value="A securiser" detail="Verification serveur requise." tone="emerald" delay={0.05} />
-          <MetricCard icon={Rocket} label="Paiement" value="Stripe" detail="Checkout et webhooks a brancher." tone="sky" delay={0.1} />
+          <MetricCard icon={ShieldCheck} label="Droits" value="Sécurisé" detail="Vos API keys sont protégées." tone="emerald" delay={0.05} />
+          <MetricCard icon={Rocket} label="Paiement" value="Stripe" detail="Checkout et webhooks actifs." tone="sky" delay={0.1} />
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {PLANS.map((plan, index) => (
-            <PricingCard
-              key={plan.id}
-              plan={plan}
-              billingCycle={billingCycle}
-              highlighted={plan.id === 'pro'}
-              delay={index * 0.06}
-              onSelect={handleSelectPlan}
-              loading={loadingPlan === plan.id}
-            />
-          ))}
+          {PLANS.map((plan, index) => {
+            const isCurrentPlan = currentPlan === plan.id;
+            return (
+              <PricingCard
+                key={plan.id}
+                plan={{
+                  ...plan,
+                  cta: isCurrentPlan ? 'Plan Actuel' : plan.cta
+                }}
+                billingCycle={billingCycle}
+                highlighted={plan.id === 'pro'}
+                delay={index * 0.06}
+                onSelect={() => !isCurrentPlan && handleSelectPlan(plan)}
+                loading={loadingPlan === plan.id}
+                disabled={isCurrentPlan}
+              />
+            );
+          })}
         </div>
-
-        <Card className="rounded-lg border-border/50 bg-card/80 p-5">
-          <h2 className="text-sm font-bold">Ce que l abonnement doit debloquer</h2>
-          <div className="mt-4 grid gap-3 md:grid-cols-3">
-            {['Acces IA verifie cote serveur', 'Quota API selon le plan', 'Dashboard factures et statut'].map((item) => (
-              <div key={item} className="rounded-md border border-border/50 bg-background p-3 text-xs text-muted-foreground">
-                {item}
-              </div>
-            ))}
-          </div>
-        </Card>
       </div>
     </PageShell>
   );

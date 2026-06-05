@@ -43,6 +43,13 @@ const PLATFORM_ITEMS = [
   { href: '/api-keys', label: 'API Keys', icon: KeyRound },
 ];
 
+import { MessageSquareQuote, Info } from 'lucide-react';
+
+const COMMUNITY_ITEMS = [
+  { href: '/avis', label: 'Avis', icon: MessageSquareQuote },
+  { href: '/info', label: 'Informations', icon: Info },
+];
+
 import { Outfit } from 'next/font/google';
 
 const outfit = Outfit({ subsets: ['latin'], weight: ['700', '900'] });
@@ -142,6 +149,34 @@ export function AppSidebar({ search, onSearchChange }) {
           <SidebarGroupContent className="px-2">
             <SidebarMenu>
               {PLATFORM_ITEMS.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+                return (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive}
+                      className="hover:bg-foreground/5 data-[active=true]:bg-foreground/10 hover:text-foreground data-[active=true]:text-foreground transition-all duration-200"
+                    >
+                      <Link href={item.href} className="text-xs">
+                        <Icon className="w-4 h-4" />
+                        <span>{item.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-4 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+            Communauté
+          </SidebarGroupLabel>
+          <SidebarGroupContent className="px-2">
+            <SidebarMenu>
+              {COMMUNITY_ITEMS.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
                 return (
