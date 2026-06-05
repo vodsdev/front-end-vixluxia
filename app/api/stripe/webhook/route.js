@@ -60,6 +60,32 @@ async function upsertSubscription(event) {
       converted_at: new Date().toISOString(),
     });
   }
+
+  // Bonus Affiliation Team (+3.00€)
+  if (subscription.status === 'active') {
+    const { data: member } = await supabase
+      .from('team_members')
+      .select('team_id')
+      .eq('user_id', userId)
+      .limit(1)
+      .maybeSingle();
+
+    if (member && member.team_id) {
+      // Get current vault balance
+      const { data: team } = await supabase
+        .from('teams')
+        .select('vault_balance')
+        .eq('id', member.team_id)
+        .single();
+      
+      if (team) {
+        await supabase
+          .from('teams')
+          .update({ vault_balance: Number(team.vault_balance) + 3.00 })
+          .eq('id', member.team_id);
+      }
+    }
+  }
 }
 
 export async function POST(request) {

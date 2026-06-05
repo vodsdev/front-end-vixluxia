@@ -106,30 +106,27 @@ export default function TeamsPage() {
     if (!selectedTeam || !joinPassword) return toast.error('Mot de passe requis.');
 
     try {
-      // Vérifier le mot de passe
-      const { data, error } = await supabase
-        .from('teams')
-        .select('password')
-        .eq('id', selectedTeam.id)
-        .single();
-
-      if (error || data?.password !== joinPassword) {
-        return toast.error('Mot de passe incorrect.');
-      }
-
-      // Rejoindre
-      await supabase.from('team_members').insert({
-        team_id: selectedTeam.id,
-        user_id: user.id,
-        role: 'member'
+      const res = await fetch('/api/teams/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teamId: selectedTeam.id, password: joinPassword, userId: user.id })
       });
 
-      // Bonus au coffre de la team pour une nouvelle inscription (+0.50)
-      // Logic backend/RPC idéale, ici simulée
-      toast.success('Bienvenue dans la team !');
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || 'Erreur lors de la connexion à la team.');
+      }
+
+      if (data.rewarded) {
+        toast.success('Bienvenue dans la team ! (+0.50€ ajoutés au coffre)');
+      } else {
+        toast.success('Bienvenue dans la team !');
+      }
+      
       router.push(`/teams/${selectedTeam.id}`);
     } catch (err) {
-      toast.error('Erreur lors de la connexion à la team.');
+      toast.error(err.message);
     }
   };
 
