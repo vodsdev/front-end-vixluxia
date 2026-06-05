@@ -39,6 +39,8 @@ export default function SettingsPage() {
     email: '',
     bio: '',
     website: '',
+    instagram: '',
+    tiktok: '',
     rib: '',
   });
 
@@ -71,6 +73,8 @@ export default function SettingsPage() {
             name: profile.name || currentSession.user.user_metadata?.full_name || '',
             bio: profile.bio || '',
             website: profile.website || '',
+            instagram: profile.instagram || '',
+            tiktok: profile.tiktok || '',
             rib: profile.rib || '',
           }));
         } else {
@@ -100,6 +104,8 @@ export default function SettingsPage() {
         name: formData.name,
         bio: formData.bio,
         website: formData.website,
+        instagram: formData.instagram,
+        tiktok: formData.tiktok,
         rib: formData.rib,
         updated_at: new Date().toISOString()
       });
@@ -224,6 +230,30 @@ export default function SettingsPage() {
                             placeholder="https://..."
                             className="mt-1.5"
                           />
+                        </div>
+                        <div className="grid gap-4 md:grid-cols-2">
+                          <div>
+                            <Label htmlFor="instagram" className="text-sm font-medium">Instagram</Label>
+                            <Input
+                              id="instagram"
+                              type="url"
+                              value={formData.instagram || ''}
+                              onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                              placeholder="https://instagram.com/..."
+                              className="mt-1.5"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="tiktok" className="text-sm font-medium">TikTok</Label>
+                            <Input
+                              id="tiktok"
+                              type="url"
+                              value={formData.tiktok || ''}
+                              onChange={(e) => setFormData({ ...formData, tiktok: e.target.value })}
+                              placeholder="https://tiktok.com/@..."
+                              className="mt-1.5"
+                            />
+                          </div>
                         </div>
                       </div>
                       <Button className="mt-6 gap-2" onClick={handleSaveProfile} disabled={loading}>

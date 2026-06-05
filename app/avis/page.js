@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { MessageSquareQuote, Star, Send, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { PageShell } from '@/components/layout/page-shell';
 import { AnimateIn } from '@/components/animate-in';
 import { Button } from '@/components/ui/button';
@@ -125,14 +126,18 @@ export default function AvisPage() {
                 <div>
                   <div className="flex gap-2 mb-2">
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <button
+                      <motion.button
                         key={star}
                         type="button"
                         onClick={() => setRating(star)}
-                        className="focus:outline-none transition-transform hover:scale-110"
+                        whileHover={{ scale: 1.2, rotate: 10 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="focus:outline-none transition-transform"
                       >
-                        <Star className={`w-6 h-6 ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                      </button>
+                        <motion.div animate={star <= rating ? { rotate: [0, 15, -15, 0], scale: [1, 1.1, 1] } : {}} transition={{ duration: 0.4 }}>
+                          <Star className={`w-7 h-7 ${star <= rating ? 'fill-yellow-400 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]' : 'text-muted-foreground/40'}`} />
+                        </motion.div>
+                      </motion.button>
                     ))}
                   </div>
                 </div>
@@ -180,9 +185,16 @@ export default function AvisPage() {
                       </Avatar>
                       <div>
                         <p className="font-medium text-sm">{review.profiles?.full_name || 'Utilisateur Anonyme'}</p>
-                        <div className="flex items-center mt-1">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star key={star} className={`w-3 h-3 ${star <= review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground/30'}`} />
+                        <div className="flex items-center mt-1 gap-0.5">
+                          {[1, 2, 3, 4, 5].map((star, i) => (
+                            <motion.div 
+                              key={star}
+                              initial={{ opacity: 0, scale: 0.5 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ delay: i * 0.1 }}
+                            >
+                              <Star className={`w-3.5 h-3.5 ${star <= review.rating ? 'fill-yellow-400 text-yellow-400 drop-shadow-[0_0_3px_rgba(250,204,21,0.5)]' : 'text-muted-foreground/20'}`} />
+                            </motion.div>
                           ))}
                         </div>
                       </div>

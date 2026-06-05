@@ -61,9 +61,11 @@ export function HeroSection() {
             Browse Components
             <ArrowRight className="w-4 h-4" />
           </Button>
-          <Button variant="outline" size="lg" className="rounded-full px-6 text-sm font-medium gap-2">
-            <Github className="w-4 h-4" />
-            GitHub
+          <Button asChild variant="outline" size="lg" className="rounded-full px-6 text-sm font-medium gap-2">
+            <a href="https://github.com/vodsdev" target="_blank" rel="noreferrer">
+              <Github className="w-4 h-4" />
+              GitHub
+            </a>
           </Button>
         </motion.div>
 

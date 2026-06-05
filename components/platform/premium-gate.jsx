@@ -19,49 +19,29 @@ export function PremiumGate({ allowed, children }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
     >
-      <Card className="overflow-hidden rounded-lg border-border/50 bg-card/90">
-        <div className="grid gap-0 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="p-6 lg:p-8">
-            <div className="flex h-11 w-11 items-center justify-center rounded-md bg-foreground text-background">
-              <Lock className="h-5 w-5" />
-            </div>
-            <h1 className="mt-6 text-3xl font-black tracking-tight">
-              {user ? "IA réservée aux abonnés" : "Connectez-vous pour l'IA"}
-            </h1>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
-              {user 
-                ? "Cette fonctionnalité est verrouillée car votre compte n'a pas d'abonnement actif. Découvrez nos offres pour y accéder." 
-                : "Veuillez vous connecter ou créer un compte pour utiliser l'assistant IA VixLuxia."}
-            </p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              {user ? (
-                <Button asChild className="rounded-md">
-                  <Link href="/abonnement">Voir les abonnements</Link>
-                </Button>
-              ) : (
-                <Button asChild className="rounded-md">
-                  <Link href="/auth">Se connecter</Link>
-                </Button>
-              )}
-            </div>
+      <Card className="overflow-hidden rounded-lg border-border/50 bg-card/90 max-w-xl mx-auto mt-12">
+        <div className="p-8 text-center flex flex-col items-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary mb-6">
+            <Lock className="h-6 w-6" />
           </div>
-          <div className="border-t border-border/50 bg-muted/40 p-6 lg:border-l lg:border-t-0 lg:p-8">
-            <div className="rounded-lg border border-border/50 bg-background p-4 shadow-sm">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-violet-500" />
-                <span className="text-xs font-semibold">Apercu premium</span>
-              </div>
-              <div className="mt-5 space-y-3">
-                <div className="h-3 w-5/6 rounded-full bg-muted" />
-                <div className="h-3 w-4/6 rounded-full bg-muted" />
-                <div className="h-24 rounded-md border border-dashed border-border bg-muted/40" />
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="h-9 rounded-md bg-muted" />
-                  <div className="h-9 rounded-md bg-muted" />
-                  <div className="h-9 rounded-md bg-foreground" />
-                </div>
-              </div>
-            </div>
+          <h1 className="text-3xl font-black tracking-tight mb-4">
+            {user ? "IA réservée aux abonnés" : "Connectez-vous pour l'IA"}
+          </h1>
+          <p className="text-base leading-relaxed text-muted-foreground mb-8">
+            {user 
+              ? "Cette fonctionnalité est verrouillée car votre compte n'a pas d'abonnement actif. Découvrez nos offres pour y accéder." 
+              : "Veuillez vous connecter ou créer un compte pour utiliser l'assistant IA VixLuxia."}
+          </p>
+          <div className="flex flex-col gap-3 sm:flex-row w-full sm:w-auto">
+            {user ? (
+              <Button asChild size="lg" className="rounded-full px-8">
+                <Link href="/abonnement">Voir les abonnements</Link>
+              </Button>
+            ) : (
+              <Button asChild size="lg" className="rounded-full px-8">
+                <Link href="/auth">Se connecter</Link>
+              </Button>
+            )}
           </div>
         </div>
       </Card>

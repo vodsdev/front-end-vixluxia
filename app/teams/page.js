@@ -52,10 +52,7 @@ export default function TeamsPage() {
       
       if (error) {
         // Fallback mockup if table doesn't exist
-        setTeams([
-          { id: '1', name: 'Vods Dev Team', instagram_url: 'https://instagram.com/vods.off', members_count: 12, vault: 25.50 },
-          { id: '2', name: 'UI/UX Masters', instagram_url: 'https://instagram.com/vixluxia', members_count: 8, vault: 12.00 },
-        ]);
+        setTeams([]);
       } else {
         setTeams(data || []);
       }
