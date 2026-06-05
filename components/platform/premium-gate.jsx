@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/use-auth';
 export function PremiumGate({ allowed, children }) {
   const { user, loading } = useAuth();
 
+  if (loading) return null;
   if (allowed) return children;
 
   return (

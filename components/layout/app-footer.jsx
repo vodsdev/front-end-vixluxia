@@ -3,6 +3,11 @@ import Link from 'next/link';
 import { Sparkles, Github, Twitter, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+import { cn } from '@/lib/utils';
+import { Outfit } from 'next/font/google';
+
+const outfit = Outfit({ subsets: ['latin'], weight: ['700', '900'] });
+
 const FOOTER_LINKS = {
   product: [
     { label: 'Components', href: '/' },
@@ -31,11 +36,20 @@ export function AppFooter() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-orange-400 flex items-center justify-center shadow-sm">
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-orange-400 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
                 <Sparkles className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="font-bold text-sm bg-[linear-gradient(110deg,#9333ea,45%,#f9a8d4,55%,#f97316)] bg-[length:200%_100%] animate-shimmer bg-clip-text text-transparent">VixLuxia</span>
+              <span 
+                className={cn(
+                  outfit.className,
+                  "relative font-black text-lg tracking-tight bg-clip-text text-transparent group-hover:scale-[1.03] transition-transform duration-300",
+                  "bg-gradient-to-r from-violet-600 via-pink-400 via-zinc-900 to-violet-600 dark:from-violet-400 dark:via-fuchsia-300 dark:via-white dark:to-violet-400"
+                )}
+                style={{ backgroundSize: '300% auto', animation: 'logo-shimmer 3s linear infinite' }}
+              >
+                VixLuxia
+              </span>
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed max-w-[200px]">
               The open-source registry for UI components. Built by the community, for the community.

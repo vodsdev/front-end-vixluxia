@@ -139,7 +139,7 @@ export default function IaPage() {
                                   <div className="flex items-center justify-between px-4 py-2 border-b border-border/50 bg-muted/50">
                                     <span className="text-xs font-mono text-muted-foreground">{lang || 'tsx'}</span>
                                     <div className="flex gap-2">
-                                      <Badge variant="outline" className="text-[10px] cursor-help" title="Preview is not available for complex React components yet.">Preview Unavailable</Badge>
+                                      <Button variant="ghost" size="sm" className="h-6 text-[10px] text-muted-foreground hover:text-foreground" onClick={() => navigator.clipboard.writeText(code)}>Copier le code</Button>
                                     </div>
                                   </div>
                                   <CodeBlock code={code} filename={`generated.${lang || 'tsx'}`} />

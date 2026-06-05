@@ -8,7 +8,7 @@ export function AnnouncementBar() {
   if (!visible) return null;
 
   return (
-    <div className="bg-background border-b border-border/40 overflow-hidden">
+    <div className="bg-transparent border-b border-border/40 overflow-hidden">
       <div className="flex items-center justify-center gap-2 px-4 py-2 text-xs relative">
         <Sparkles className="w-3.5 h-3.5 text-primary" />
         <span 
