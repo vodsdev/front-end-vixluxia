@@ -8,16 +8,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, TrendingUp, Medal, Star, Eye, ThumbsUp, Code, Sparkles, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
 import { AnimateIn } from '@/components/animate-in';
+import { supabase } from '@/lib/supabase';
+import { useEffect, useState } from 'react';
 
-// Mock Data
-const topCreators = [
-  { id: 1, name: "Alice Wonderland", username: "@alice", rank: 1, score: 2840, components: 45, avatar: "https://i.pravatar.cc/150?u=1", trend: "up" },
-  { id: 2, name: "Bob Builder", username: "@bob", rank: 2, score: 2100, components: 38, avatar: "https://i.pravatar.cc/150?u=2", trend: "up" },
-  { id: 3, name: "Charlie Chaplin", username: "@charlie", rank: 3, score: 1850, components: 30, avatar: "https://i.pravatar.cc/150?u=3", trend: "down" },
-  { id: 4, name: "Diana Prince", username: "@diana", rank: 4, score: 1640, components: 25, avatar: "https://i.pravatar.cc/150?u=4", trend: "neutral" },
-  { id: 5, name: "Ethan Hunt", username: "@ethan", rank: 5, score: 1420, components: 22, avatar: "https://i.pravatar.cc/150?u=5", trend: "up" },
-];
-
+// (Removed mock topCreators)
 const trendingComponents = [
   { id: 1, name: "Animated Glowing Search Bar", author: "@alice", rank: 1, views: "12.5k", likes: 840, type: "UI Component", trend: "up" },
   { id: 2, name: "Particle Text Effect", author: "@charlie", rank: 2, views: "10.2k", likes: 720, type: "Animation", trend: "up" },
@@ -40,6 +34,35 @@ function TrendIcon({ trend }) {
 }
 
 export default function LeaderboardPage() {
+  const [topCreators, setTopCreators] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchLeaderboard() {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('points', { ascending: false })
+        .limit(50);
+      
+      if (data) {
+        const formatted = data.map((profile, index) => ({
+          id: profile.id,
+          name: profile.full_name || profile.username || 'Anonymous',
+          username: profile.username ? `@${profile.username}` : '',
+          rank: index + 1,
+          score: profile.points || 0,
+          components: 0, 
+          avatar: profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.id}`,
+          trend: 'neutral'
+        }));
+        setTopCreators(formatted);
+      }
+      setLoading(false);
+    }
+    fetchLeaderboard();
+  }, []);
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-transparent">

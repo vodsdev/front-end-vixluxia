@@ -4,6 +4,8 @@ import { Copy, Check, Heart, ExternalLink } from 'lucide-react';
 import { useState, memo } from 'react';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { getCurrentUser, likeComponent, unlikeComponent } from '@/lib/supabase';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +15,9 @@ import { TiltCard } from '@/components/ui/tilt-card';
 
 export const ComponentCard = memo(function ComponentCard({ component, preview: Preview, onCopy }) {
   const [copied, setCopied] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
   const interactions = useComponentInteractions(component.id);
+  const router = useRouter();
 
   const handleCopy = (e) => {
     e.preventDefault();
@@ -25,10 +29,40 @@ export const ComponentCard = memo(function ComponentCard({ component, preview: P
     onCopy?.(component.id);
   };
 
-  const handleLike = (e) => {
+  const handleLike = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    interactions.toggleFavorite();
+    
+    if (isLiking) return;
+
+    try {
+      setIsLiking(true);
+      const user = await getCurrentUser();
+      
+      if (!user) {
+        toast.error('You must be logged in to like components');
+        router.push('/login');
+        return;
+      }
+
+      // Optimistic update
+      interactions.toggleFavorite();
+
+      if (interactions.isFavorite) {
+        // Was liked, now unliking
+        await unlikeComponent(component.id, user.id);
+      } else {
+        // Was unliked, now liking
+        await likeComponent(component.id, user.id);
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      toast.error('Failed to update like status');
+      // Revert optimistic update on failure
+      interactions.toggleFavorite();
+    } finally {
+      setIsLiking(false);
+    }
   };
 
   return (

@@ -23,11 +23,12 @@ async function createCheckout(request, body = {}) {
 
   const baseUrl = appUrl(request);
   const referralCode = body.referralCode || request.cookies.get('vixluxia_ref')?.value || '';
+  const returnPath = body.returnUrl || '/abonnement';
   const session = await stripe.checkout.sessions.create({
     mode: 'subscription',
     line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${baseUrl}/abonnement?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${baseUrl}/abonnement?checkout=cancelled`,
+    success_url: `${baseUrl}${returnPath}?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${baseUrl}${returnPath}?checkout=cancelled`,
     customer_email: body.email || subscription.user?.email || undefined,
     client_reference_id: subscription.user?.id || undefined,
     metadata: {

@@ -17,16 +17,37 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useAuth } from '@/hooks/use-auth';
-import { signOut } from '@/lib/supabase';
+import { getCurrentUser, signOut, getUserProfile } from '@/lib/supabase';
 
 export function AppHeader({ title, children }) {
-  const { user, loading } = useAuth();
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
 
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        const currentUser = await getCurrentUser();
+        setUser(currentUser);
+        if (currentUser) {
+          const { data } = await getUserProfile(currentUser.id);
+          setProfile(data);
+        }
+      } catch (err) {
+        console.error('Error loading user:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadUser();
+  }, []);
+
   const handleSignOut = async () => {
     await signOut();
+    setUser(null);
+    setProfile(null);
     router.refresh();
   };
 
@@ -49,9 +70,9 @@ export function AppHeader({ title, children }) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={user.user_metadata?.avatar_url} alt={user.user_metadata?.full_name || 'Avatar'} />
+                  <AvatarImage src={profile?.avatar_url || user.user_metadata?.avatar_url} alt={profile?.full_name || profile?.username || user.user_metadata?.full_name || 'Avatar'} />
                   <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                    {(user.user_metadata?.full_name || user.email || 'U').charAt(0).toUpperCase()}
+                    {(profile?.full_name || profile?.username || user.user_metadata?.full_name || user.email || 'U').charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -59,7 +80,7 @@ export function AppHeader({ title, children }) {
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{user.user_metadata?.full_name || 'My Account'}</p>
+                  <p className="text-sm font-medium leading-none">{profile?.full_name || profile?.username || user.user_metadata?.full_name || 'My Account'}</p>
                   <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
                 </div>
               </DropdownMenuLabel>

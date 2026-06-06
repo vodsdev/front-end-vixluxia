@@ -11,95 +11,18 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { CalendarIcon } from 'lucide-react';
 
-const mockPosts = [
-  {
-    id: 1,
-    title: 'The Future of Frontend Development in 2026',
-    slug: 'future-frontend-development',
-    excerpt: 'Explore the emerging trends, tools, and paradigms that are shaping the next generation of web applications and changing how developers work.',
-    author: {
-      name: 'Sarah Drasner',
-      avatar: 'https://i.pravatar.cc/150?u=sarah'
-    },
-    date: 'Jun 4, 2026',
-    category: 'Trends',
-    imageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&q=80',
-  },
-  {
-    id: 2,
-    title: 'Mastering Server Components in Next.js',
-    slug: 'mastering-server-components',
-    excerpt: 'A deep dive into React Server Components, how they work under the hood, and practical patterns for building high-performance applications.',
-    author: {
-      name: 'Dan Abramov',
-      avatar: 'https://i.pravatar.cc/150?u=dan'
-    },
-    date: 'May 28, 2026',
-    category: 'Tutorial',
-    imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80',
-  },
-  {
-    id: 3,
-    title: 'Design Systems at Scale',
-    slug: 'design-systems-scale',
-    excerpt: 'How to build and maintain a robust design system that works across multiple products, teams, and platforms without losing consistency.',
-    author: {
-      name: 'Diana Mounter',
-      avatar: 'https://i.pravatar.cc/150?u=diana'
-    },
-    date: 'May 15, 2026',
-    category: 'Design',
-    imageUrl: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80',
-  },
-  {
-    id: 4,
-    title: 'Optimizing Web Vitals for E-commerce',
-    slug: 'optimizing-web-vitals',
-    excerpt: 'Learn strategies to improve your LCP, INP, and CLS scores specifically tailored for complex e-commerce storefronts and high-traffic sites.',
-    author: {
-      name: 'Addy Osmani',
-      avatar: 'https://i.pravatar.cc/150?u=addy'
-    },
-    date: 'May 2, 2026',
-    category: 'Performance',
-    imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80',
-  },
-  {
-    id: 5,
-    title: 'State Management in 2026',
-    slug: 'state-management-2026',
-    excerpt: 'Evaluating the current ecosystem of state management libraries from Zustand to Jotai, and when to choose which tool for your project.',
-    author: {
-      name: 'Lee Robinson',
-      avatar: 'https://i.pravatar.cc/150?u=lee'
-    },
-    date: 'Apr 20, 2026',
-    category: 'Architecture',
-    imageUrl: 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=800&q=80',
-  },
-  {
-    id: 6,
-    title: 'Building Accessible Data Visualizations',
-    slug: 'accessible-data-visualizations',
-    excerpt: 'Practical techniques for ensuring your charts, graphs, and complex data representations are fully accessible to screen readers and keyboard users.',
-    author: {
-      name: 'Marcy Sutton',
-      avatar: 'https://i.pravatar.cc/150?u=marcy'
-    },
-    date: 'Apr 10, 2026',
-    category: 'Accessibility',
-    imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
-  }
-];
+import { getAllPosts } from '@/lib/blog-data';
 
 const categories = ['All', 'Trends', 'Tutorial', 'Design', 'Performance', 'Architecture', 'Accessibility'];
 
 export default function BlogHub() {
   const [activeCategory, setActiveCategory] = useState('All');
   
+  const posts = getAllPosts();
+  
   const filteredPosts = activeCategory === 'All' 
-    ? mockPosts 
-    : mockPosts.filter(post => post.category === activeCategory);
+    ? posts 
+    : posts.filter(post => post.category === activeCategory);
 
   return (
     <SidebarProvider>

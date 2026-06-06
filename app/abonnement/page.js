@@ -106,7 +106,11 @@ export default function AbonnementPage() {
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ plan: plan.id, referralCode }),
+        body: JSON.stringify({ 
+          plan: yearly ? `${plan.id}_yearly` : plan.id, 
+          referralCode,
+          returnUrl: window.location.pathname
+        }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Checkout Stripe indisponible');
