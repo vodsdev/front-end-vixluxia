@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import { CommandPalette } from '@/components/command-palette';
 import { AiSupportBubble } from '@/components/global/ai-support-bubble';
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -62,6 +63,7 @@ export default function RootLayout({ children }) {
         />
         <AiSupportBubble />
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
