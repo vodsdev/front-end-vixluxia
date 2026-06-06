@@ -116,7 +116,7 @@ export function CopilotPanel() {
                   />
                   <Button
                     type="submit"
-                    disabled={isLoading || !input.trim()}
+                    disabled={isLoading || !input?.trim()}
                     className="h-8 w-8 rounded-full bg-purple-600 p-0 text-white hover:bg-purple-500"
                   >
                     <Send className="h-4 w-4" />

@@ -20,6 +20,7 @@ export default function GenerateComponentPage() {
 
   // Extract code block if AI returned markdown
   const extractCode = (content) => {
+    if (!content) return '';
     const match = content.match(/```(?:jsx|tsx|javascript)?\n?([\s\S]*?)```/);
     return match ? match[1].trim() : content.trim();
   };
@@ -130,14 +131,14 @@ export default function GenerateComponentPage() {
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
-                  if (input.trim()) handleSubmit(e);
+                  if (input?.trim()) handleSubmit(e);
                 }
               }}
             />
             <div className="p-3">
               <button
                 type="submit"
-                disabled={isLoading || !input.trim()}
+                disabled={isLoading || !input?.trim()}
                 className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-neutral-800 disabled:text-neutral-600 text-white p-2.5 rounded-xl transition-colors flex items-center justify-center shadow-lg"
               >
                 {isLoading ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} />}
