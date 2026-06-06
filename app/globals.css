@@ -203,3 +203,8 @@
 .animate-slide-in {
   animation: slide-in-from-left 0.3s ease-out forwards;
 }
+
+@keyframes logo-shimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: -300% center; }
+}

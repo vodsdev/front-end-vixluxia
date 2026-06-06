@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 import { Suspense } from 'react';
 import { CommandPalette } from '@/components/command-palette';
 import { AiSupportBubble } from '@/components/global/ai-support-bubble';
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -60,6 +61,7 @@ export default function RootLayout({ children }) {
           }}
         />
         <AiSupportBubble />
+        <Analytics />
       </body>
     </html>
   );
