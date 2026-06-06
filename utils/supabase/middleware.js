@@ -44,6 +44,8 @@ export async function updateSession(request) {
       !user &&
       (pathname.startsWith('/settings') ||
         pathname.startsWith('/publish') ||
+        pathname.startsWith('/dashboard') ||
+        pathname.startsWith('/ai/generate') ||
         pathname.startsWith('/admin-secret-dashboard-8f92j3n4v8d9s0a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f'))
     ) {
       const url = request.nextUrl.clone()
@@ -57,6 +59,8 @@ export async function updateSession(request) {
     if (
       pathname.startsWith('/settings') ||
       pathname.startsWith('/publish') ||
+      pathname.startsWith('/dashboard') ||
+      pathname.startsWith('/ai/generate') ||
       pathname.startsWith('/admin-secret-dashboard-8f92j3n4v8d9s0a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f')
     ) {
       const url = request.nextUrl.clone()

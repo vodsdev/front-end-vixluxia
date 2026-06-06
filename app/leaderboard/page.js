@@ -8,7 +8,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, TrendingUp, Medal, Star, Eye, ThumbsUp, Code, Sparkles, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
 import { AnimateIn } from '@/components/animate-in';
-import { supabase } from '@/lib/supabase';
 import { useEffect, useState } from 'react';
 
 // (Removed mock topCreators)
@@ -39,26 +38,29 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     async function fetchLeaderboard() {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('points', { ascending: false })
-        .limit(50);
-      
-      if (data) {
-        const formatted = data.map((profile, index) => ({
-          id: profile.id,
-          name: profile.full_name || profile.username || 'Anonymous',
-          username: profile.username ? `@${profile.username}` : '',
-          rank: index + 1,
-          score: profile.points || 0,
-          components: 0, 
-          avatar: profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.id}`,
-          trend: 'neutral'
-        }));
-        setTopCreators(formatted);
+      try {
+        const res = await fetch('/api/leaderboard');
+        if (!res.ok) throw new Error('Failed to fetch');
+        const data = await res.json();
+        
+        if (data && !data.error) {
+          const formatted = data.map((profile, index) => ({
+            id: profile.id,
+            name: profile.full_name || profile.username || 'Anonymous',
+            username: profile.username ? `@${profile.username}` : '',
+            rank: index + 1,
+            score: profile.points || 0,
+            components: 0, 
+            avatar: profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.id}`,
+            trend: 'neutral'
+          }));
+          setTopCreators(formatted);
+        }
+      } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     fetchLeaderboard();
   }, []);

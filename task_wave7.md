@@ -1,0 +1,7 @@
+- [x] Implement Redis caching for the Leaderboard using @upstash/redis in lib/redis.js
+- [x] Create API route app/api/leaderboard/route.js
+- [x] Update app/leaderboard/page.js to use the new API route
+- [x] Create an end-to-end test in tests/navigation.spec.js and update package.json with test:e2e script
+- [x] Set up strict environment variable validation using t3-env and zod in env.mjs and import in next.config.mjs
+- [x] Implement Edge Middleware authentication using @supabase/ssr in middleware.js and protect /dashboard and /ai/generate
+- [x] Setup Storybook and create stories for Button and Badge components
