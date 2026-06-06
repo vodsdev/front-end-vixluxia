@@ -108,7 +108,6 @@ export function AiSupportBubble() {
           )}
         </div>
       </motion.button>
-      </motion.button>
     </div>
   );
 }
