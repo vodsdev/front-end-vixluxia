@@ -13,7 +13,7 @@ export async function POST(req) {
     // Vérification de l'abonnement
     if (!access.isPremium) {
       return NextResponse.json({
-        error: 'Abonnement Premium requis pour accéder à l\\'IA.',
+        error: 'Abonnement Premium requis pour accéder à l\'IA.',
         code: 'premium_required',
       }, { status: 402 });
     }
