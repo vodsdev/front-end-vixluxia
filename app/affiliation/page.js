@@ -2,25 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Copy, Gift, Share2, TrendingUp, Users } from 'lucide-react';
+import { Copy, Gift, Share2, TrendingUp, Users, ArrowRight, ShieldCheck, Sparkles, Wallet } from 'lucide-react';
 import { PageShell } from '@/components/layout/page-shell';
-import { AnimateIn } from '@/components/animate-in';
+import { AnimateIn, StaggerContainer, StaggerItem } from '@/components/animate-in';
 import { MetricCard } from '@/components/platform/metric-card';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
 const STEPS = [
-  ['1', 'Partager', 'Copie ton lien et invite des createurs a rejoindre VixLuxia.'],
-  ['2', 'Convertir', 'Chaque inscription garde ton code de parrainage dans le profil.'],
-  ['3', 'Gagner', 'Quand un invite devient payant, la commission est calculee.'],
-];
-
-const TIERS = [
-  ['Starter', '10%', '1 a 10 abonnes payants'],
-  ['Partner', '18%', '11 a 50 abonnes payants'],
-  ['Ambassador', '25%', '50+ abonnes payants'],
+  ['1', 'Partager', 'Copiez votre lien et invitez d\'autres développeurs à rejoindre VixLuxia.'],
+  ['2', 'Convertir', 'Chaque inscription garde votre code de parrainage en mémoire.'],
+  ['3', 'Gagner', 'Gagnez instantanément des récompenses dans le coffre de votre Team.'],
 ];
 
 export default function AffiliationPage() {
@@ -32,98 +27,105 @@ export default function AffiliationPage() {
 
   const copyReferralLink = async () => {
     await navigator.clipboard.writeText(referralLink);
-    toast.success('Lien d affiliation copie');
+    toast.success('Lien d\'affiliation copié avec succès !');
   };
 
   return (
-    <PageShell title="Affiliation" maxWidth="max-w-[1180px]">
-      <div className="space-y-8">
-        <AnimateIn variant="fadeUp">
-          <section className="rounded-lg border border-border/50 bg-card/80 p-6 shadow-sm backdrop-blur lg:p-8">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+    <PageShell title="Affiliation & Teams" maxWidth="max-w-[1200px]">
+      <div className="space-y-12 pb-24">
+        {/* Hero Section */}
+        <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card p-8 md:p-12 shadow-2xl backdrop-blur-xl">
+          <div className="absolute left-0 top-0 w-[500px] h-[500px] bg-gradient-to-br from-violet-500/20 to-orange-400/20 rounded-full blur-[100px] pointer-events-none" />
+          <AnimateIn variant="fadeUp">
+            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
               <div className="max-w-2xl">
-                <Badge variant="outline" className="mb-4 gap-2">
-                  <Share2 className="h-3.5 w-3.5" />
-                  Programme createur
+                <Badge variant="outline" className="mb-6 gap-2 px-3 py-1.5 rounded-full bg-violet-500/10 text-violet-500 border-none font-bold text-xs uppercase tracking-wider">
+                  <Gift className="h-4 w-4" /> Programme Partenaire
                 </Badge>
-                <h1 className="text-3xl font-black tracking-tight lg:text-4xl">Invite des gens et gagne via l affiliation</h1>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  Une page claire pour partager un lien, expliquer les commissions et preparer le suivi des invitations.
+                <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
+                  Gagnez de l'argent avec vos <span className="bg-gradient-to-r from-violet-400 to-orange-400 bg-clip-text text-transparent">Teams</span>
+                </h1>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  Invitez vos amis à rejoindre votre équipe. Chaque nouvelle invitation vous rapporte de l'argent directement dans le coffre-fort de votre équipe, retirable à tout moment.
                 </p>
               </div>
-              <div className="flex min-w-0 flex-col gap-2 sm:min-w-[360px]">
-                <div className="flex gap-2">
-                  <Input value={referralLink} readOnly className="h-10 min-w-0 font-mono text-xs" />
-                  <Button className="rounded-md" onClick={copyReferralLink}>
-                    <Copy className="h-4 w-4" />
-                    Copier
-                  </Button>
-                </div>
-                <div className="mt-4 flex flex-col gap-2">
-                  <p className="text-xs text-muted-foreground">Ou rejoins une équipe pour cumuler les gains dans un coffre commun !</p>
-                  <Button asChild variant="default" className="w-full gap-2">
-                    <a href="/teams">
-                      <Users className="w-4 h-4" />
-                      Voir les Teams
-                    </a>
-                  </Button>
-                </div>
+              <div className="flex flex-col gap-4 min-w-0 lg:min-w-[400px]">
+                <Card className="p-4 bg-background/50 border-border/50 backdrop-blur-md rounded-2xl shadow-xl">
+                  <p className="text-xs font-bold text-muted-foreground mb-2 ml-1 uppercase tracking-wider">Votre lien d'invitation</p>
+                  <div className="flex gap-2">
+                    <Input value={referralLink} readOnly className="h-12 min-w-0 font-mono text-sm bg-muted/30 border-transparent focus-visible:ring-0 rounded-xl" />
+                    <Button className="h-12 px-6 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg" onClick={copyReferralLink}>
+                      <Copy className="h-4 w-4 mr-2" /> Copier
+                    </Button>
+                  </div>
+                </Card>
               </div>
             </div>
-          </section>
+          </AnimateIn>
+        </section>
+
+        {/* Metrics Grid */}
+        <AnimateIn variant="fadeUp" delay={0.1}>
+          <div className="grid gap-4 md:grid-cols-4">
+            <MetricCard icon={Users} label="Membres Invités" value="0" detail="Connecté à votre Team active." tone="violet" />
+            <MetricCard icon={Wallet} label="Gains Coffre" value="0.00€" detail="Sécurisé sur Supabase." tone="emerald" delay={0.05} />
+            <MetricCard icon={Gift} label="Bonus Invitation" value="0.50€" detail="Par compte vérifié." tone="amber" delay={0.1} />
+            <MetricCard icon={Sparkles} label="Bonus Premium" value="3.00€" detail="Par abonnement Pro." tone="sky" delay={0.15} />
+          </div>
         </AnimateIn>
 
-        <div className="grid gap-4 md:grid-cols-4">
-          <MetricCard icon={Users} label="Invites" value="0" detail="A connecter aux inscriptions." tone="violet" />
-          <MetricCard icon={TrendingUp} label="Conversions" value="0%" detail="Calcul apres paiement Stripe." tone="emerald" delay={0.05} />
-          <MetricCard icon={Gift} label="Commission" value="10%" detail="Palier Starter par defaut." tone="amber" delay={0.1} />
-          <MetricCard icon={Share2} label="Lien" value="Pret" detail="Copie clipboard fonctionnelle." tone="sky" delay={0.15} />
-        </div>
-
-        <div className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
-          <Card className="rounded-lg border-border/50 bg-card/80 p-5">
-            <h2 className="text-sm font-bold">Fonctionnement</h2>
-            <div className="mt-5 grid gap-3">
-              {STEPS.map(([number, title, description]) => (
-                <div key={number} className="flex gap-3 rounded-md border border-border/50 bg-background p-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-foreground text-xs font-bold text-background">
-                    {number}
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold">{title}</h3>
-                    <p className="mt-1 text-xs leading-5 text-muted-foreground">{description}</p>
-                  </div>
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* How it works */}
+          <AnimateIn variant="fadeUp" delay={0.2}>
+            <Card className="rounded-3xl border-border/50 bg-card/60 backdrop-blur-sm p-8 shadow-xl h-full">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-orange-500" />
                 </div>
-              ))}
-            </div>
-          </Card>
-
-          <Card className="rounded-lg border-border/50 bg-card/80 p-5">
-            <h2 className="text-sm font-bold">Paliers de commission</h2>
-            <div className="mt-5 space-y-3">
-              {TIERS.map(([name, rate, condition]) => (
-                <div key={name} className="flex items-center justify-between gap-4 rounded-md border border-border/50 bg-background p-4">
-                  <div>
-                    <h3 className="text-sm font-semibold">{name}</h3>
-                    <p className="mt-1 text-xs text-muted-foreground">{condition}</p>
-                  </div>
-                  <span className="text-xl font-black">{rate}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
-
-        <Card className="rounded-lg border-border/50 bg-card/80 p-5">
-          <h2 className="text-sm font-bold">A connecter ensuite</h2>
-          <div className="mt-4 grid gap-3 md:grid-cols-3">
-            {['Stocker le referrer en base', 'Attribuer une commission apres paiement', 'Afficher retraits et factures affiliate'].map((item) => (
-              <div key={item} className="rounded-md border border-border/50 bg-background p-3 text-xs text-muted-foreground">
-                {item}
+                <h2 className="text-2xl font-bold">Comment ça marche ?</h2>
               </div>
-            ))}
-          </div>
-        </Card>
+              <div className="grid gap-4">
+                {STEPS.map(([number, title, description]) => (
+                  <div key={number} className="group flex gap-4 rounded-2xl border border-border/50 bg-background/50 p-5 hover:bg-muted/50 transition-colors">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-orange-400 text-white font-black shadow-lg">
+                      {number}
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold group-hover:text-primary transition-colors">{title}</h3>
+                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </AnimateIn>
+
+          {/* Teams CTA */}
+          <AnimateIn variant="fadeUp" delay={0.3}>
+            <Card className="rounded-3xl border-violet-500/30 bg-violet-500/5 p-8 shadow-xl h-full relative overflow-hidden flex flex-col justify-between">
+              <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-orange-500/10 pointer-events-none" />
+              <div className="relative z-10 mb-8">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-orange-400 flex items-center justify-center shadow-lg shadow-orange-500/20 mb-6">
+                  <Users className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-3xl font-black mb-4">Créez votre Team !</h2>
+                <p className="text-muted-foreground leading-relaxed text-lg mb-6">
+                  Le moyen le plus rapide de gagner de l'argent sur VixLuxia. Regroupez vos amis, partagez des ressources exclusives, et faites grossir votre coffre-fort commun avec chaque nouvelle recrue.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-3 text-sm font-medium"><ShieldCheck className="w-5 h-5 text-emerald-500" /> Coffre-fort sécurisé anti-triche</li>
+                  <li className="flex items-center gap-3 text-sm font-medium"><ShieldCheck className="w-5 h-5 text-emerald-500" /> Chat privé en temps réel</li>
+                  <li className="flex items-center gap-3 text-sm font-medium"><ShieldCheck className="w-5 h-5 text-emerald-500" /> Distribution instantanée des gains</li>
+                </ul>
+              </div>
+              <Button asChild className="relative z-10 w-full h-14 rounded-2xl bg-foreground text-background hover:bg-foreground/90 font-bold text-lg shadow-2xl">
+                <Link href="/teams">
+                  Gérer ma Team <ArrowRight className="w-5 h-5 ml-2" />
+                </Link>
+              </Button>
+            </Card>
+          </AnimateIn>
+        </div>
       </div>
     </PageShell>
   );

@@ -108,12 +108,12 @@ export function AiSupportBubble() {
           )}
         </div>
       </motion.button>
-      <style jsx global>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @keyframes logo-shimmer {
           0% { background-position: 0% center; }
           100% { background-position: -300% center; }
         }
-      `}</style>
+      ` }} />
     </div>
   );
 }

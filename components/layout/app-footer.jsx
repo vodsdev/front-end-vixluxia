@@ -37,9 +37,6 @@ export function AppFooter() {
           {/* Brand */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-orange-400 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                <Sparkles className="w-3.5 h-3.5 text-white" />
-              </div>
               <span 
                 className={cn(
                   outfit.className,

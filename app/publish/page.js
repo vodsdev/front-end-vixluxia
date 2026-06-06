@@ -1,9 +1,9 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { Eye, Plus, Save, Send, Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Plus, Save, Send, Loader2, Sparkles, CheckCircle2, LayoutTemplate, Terminal, CheckCircle } from 'lucide-react';
 import { PageShell } from '@/components/layout/page-shell';
 import { AnimateIn } from '@/components/animate-in';
 import { Button } from '@/components/ui/button';
@@ -16,31 +16,20 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CodeBlock } from '@/components/code-block';
 import { CATEGORIES } from '@/lib/prompts-data';
-import { AUTHORS } from '@/lib/component-registry';
 import { motion } from 'framer-motion';
 
 function slugify(value) {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
 export default function PublishPage() {
   const [form, setForm] = useState({
-    name: 'Animated Metric Card',
-    tagline: 'A compact analytics card with hover motion and clean stats.',
+    name: '',
+    tagline: '',
     categorySlug: 'cards',
-    prompt: 'Create a React metric card using Tailwind CSS, lucide-react icons and Framer Motion hover animation.',
-    code: `export function AnimatedMetricCard() {
-  return (
-    <div className="rounded-lg border bg-card p-4 shadow-sm transition-colors hover:bg-accent/20">
-      <p className="text-xs text-muted-foreground">Revenue</p>
-      <p className="mt-2 text-2xl font-black">12.4k EUR</p>
-    </div>
-  );
-}`,
-    dependencies: 'react, tailwindcss, framer-motion, lucide-react',
+    prompt: '',
+    code: '',
+    dependencies: 'react, tailwindcss, lucide-react',
     premium: false,
   });
   const [savedId, setSavedId] = useState(null);
@@ -50,7 +39,10 @@ export default function PublishPage() {
   const updateForm = (key, value) => setForm((current) => ({ ...current, [key]: value }));
 
   const publish = async () => {
-    if (!form.name.trim() || !form.code.trim()) return;
+    if (!form.name.trim() || !form.code.trim()) {
+      toast.error('Le nom et le code sont requis.');
+      return;
+    }
     setIsPublishing(true);
 
     try {
@@ -87,7 +79,7 @@ export default function PublishPage() {
       if (error) throw error;
       
       setSavedId(id);
-      toast.success('Composant publié avec succès sur Vixluxia !');
+      toast.success('Composant publié avec succès sur VixLuxia !');
     } catch (err) {
       toast.error("Erreur lors de la publication : " + err.message);
     } finally {
@@ -96,128 +88,144 @@ export default function PublishPage() {
   };
 
   return (
-    <PageShell title="Publish" maxWidth="max-w-[1000px]">
+    <PageShell title="Publier" maxWidth="max-w-[1200px]">
       <div className="space-y-12 pb-24">
-        <AnimateIn variant="fadeUp">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">Créer un composant</h1>
-              <p className="mt-2 text-base text-muted-foreground max-w-xl">
-                Partagez votre création avec la communauté. Remplissez les informations ci-dessous, vérifiez l'aperçu, et publiez-le en un clic.
-              </p>
+        {/* Header */}
+        <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card p-10 md:p-12 shadow-2xl backdrop-blur-xl">
+          <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-gradient-to-br from-emerald-500/10 to-teal-400/10 rounded-full blur-[100px] pointer-events-none" />
+          <AnimateIn variant="fadeUp">
+            <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <div className="max-w-2xl">
+                <Badge variant="outline" className="mb-6 gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-500 border-none font-bold text-xs uppercase tracking-wider">
+                  <LayoutTemplate className="h-4 w-4" /> Contributeur
+                </Badge>
+                <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
+                  Publier un composant
+                </h1>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  Partagez vos créations UI avec le monde entier. Contribuez à l'écosystème VixLuxia et gagnez en visibilité.
+                </p>
+              </div>
+              {savedId && (
+                <Button asChild className="h-14 rounded-2xl px-8 bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 font-bold shrink-0">
+                  <Link href={`/component?id=${savedId}`}>
+                    <CheckCircle2 className="h-5 w-5 mr-2" /> Voir en ligne
+                  </Link>
+                </Button>
+              )}
             </div>
-            {savedId && (
-              <Button asChild variant="outline" className="rounded-full px-6 h-10 shadow-sm border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/10 hover:text-emerald-500">
-                <Link href={`/component?id=${savedId}`}>
-                  <CheckCircle2 className="h-4 w-4 mr-2" />
-                  Voir en ligne
-                </Link>
-              </Button>
-            )}
+          </AnimateIn>
+        </section>
+
+        <div className="grid lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-7 space-y-8">
+            {/* Étape 1 */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 text-primary font-black shadow-inner">1</div>
+                <h2 className="text-2xl font-black">Identité Visuelle</h2>
+              </div>
+              <Card className="rounded-3xl border-border/50 bg-card/60 p-8 shadow-xl backdrop-blur-sm">
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-muted-foreground font-medium">Nom du composant</Label>
+                    <Input id="name" value={form.name} onChange={(event) => updateForm('name', event.target.value)} placeholder="Ex: Bouton Néon Animé" className="h-14 rounded-2xl bg-background/50 border-border/50 text-lg font-bold" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="category" className="text-muted-foreground font-medium">Catégorie</Label>
+                    <Select value={form.categorySlug} onValueChange={(value) => updateForm('categorySlug', value)}>
+                      <SelectTrigger id="category" className="h-14 rounded-2xl bg-background/50 border-border/50 font-medium">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-2xl border-border/50 shadow-xl">
+                        {CATEGORIES.map((item) => (
+                          <SelectItem key={item.slug} value={item.slug} className="cursor-pointer">{item.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="tagline" className="text-muted-foreground font-medium">Description (max 80 caractères)</Label>
+                    <Input id="tagline" value={form.tagline} onChange={(event) => updateForm('tagline', event.target.value)} placeholder="Une phrase d'accroche expliquant l'utilité..." className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                  </div>
+                  <div className="flex items-center justify-between rounded-2xl border border-primary/20 bg-primary/5 p-6 mt-4">
+                    <div>
+                      <Label htmlFor="premium" className="text-base font-bold flex items-center gap-2 mb-1">
+                        <Sparkles className="w-5 h-5 text-orange-400" /> Vendre en Premium
+                      </Label>
+                      <p className="text-sm text-muted-foreground">Réservez ce composant aux abonnés payants et touchez des royalties.</p>
+                    </div>
+                    <Switch id="premium" checked={form.premium} onCheckedChange={(value) => updateForm('premium', value)} className="data-[state=checked]:bg-orange-400" />
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+
+            {/* Étape 2 */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 text-primary font-black shadow-inner">2</div>
+                <h2 className="text-2xl font-black">Code & Implémentation</h2>
+              </div>
+              <Card className="rounded-3xl border-border/50 bg-card/60 p-8 shadow-xl backdrop-blur-sm">
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="dependencies" className="text-muted-foreground font-medium flex items-center gap-2"><Terminal className="w-4 h-4" /> Dépendances NPM</Label>
+                    <Input id="dependencies" value={form.dependencies} onChange={(event) => updateForm('dependencies', event.target.value)} placeholder="react, tailwindcss..." className="h-14 rounded-2xl bg-background/50 border-border/50 font-mono text-sm" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="code" className="text-muted-foreground font-medium flex items-center gap-2"><LayoutTemplate className="w-4 h-4" /> Code Source (TSX/JSX)</Label>
+                    <Textarea id="code" value={form.code} onChange={(event) => updateForm('code', event.target.value)} className="min-h-[400px] font-mono text-sm bg-zinc-950 text-zinc-300 rounded-2xl p-6 border-transparent focus-visible:ring-primary/30" placeholder="export default function MyComponent() { ... }" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="prompt" className="text-muted-foreground font-medium flex items-center gap-2"><Sparkles className="w-4 h-4" /> Prompt IA (Optionnel)</Label>
+                    <Textarea id="prompt" value={form.prompt} onChange={(event) => updateForm('prompt', event.target.value)} className="min-h-[100px] resize-y rounded-2xl bg-background/50 border-border/50" placeholder="Si généré par IA, quel prompt avez-vous utilisé ?" />
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
           </div>
-        </AnimateIn>
 
-        <div className="space-y-12">
-          {/* Section 1: Informations */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm">1</div>
-              <h2 className="text-xl font-bold">Informations générales</h2>
-            </div>
-            <Card className="rounded-2xl border-border/50 bg-card/50 p-8 shadow-sm backdrop-blur-sm">
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Nom du composant</Label>
-                  <Input id="name" value={form.name} onChange={(event) => updateForm('name', event.target.value)} placeholder="Ex: Bouton Magique" className="h-11 rounded-xl" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="category">Catégorie</Label>
-                  <Select value={form.categorySlug} onValueChange={(value) => updateForm('categorySlug', value)}>
-                    <SelectTrigger id="category" className="h-11 rounded-xl"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {CATEGORIES.map((item) => (
-                        <SelectItem key={item.slug} value={item.slug}>{item.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="tagline">Description courte</Label>
-                  <Input id="tagline" value={form.tagline} onChange={(event) => updateForm('tagline', event.target.value)} placeholder="Courte description de ce que fait le composant..." className="h-11 rounded-xl" />
-                </div>
-                <div className="flex items-center justify-between rounded-xl border border-primary/20 bg-primary/5 p-5 md:col-span-2">
+          {/* Étape 3 (Sticky Preview & Publish) */}
+          <div className="lg:col-span-5 relative">
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} className="sticky top-24 space-y-8">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 text-primary font-black shadow-inner">3</div>
+                <h2 className="text-2xl font-black">Vérification Finale</h2>
+              </div>
+              <Card className="rounded-3xl border-border/50 bg-card/60 p-8 shadow-2xl backdrop-blur-sm overflow-hidden relative">
+                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-violet-500 to-orange-400" />
+                <div className="space-y-6">
                   <div>
-                    <Label htmlFor="premium" className="text-base flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-orange-400" />
-                      Rendre Premium
-                    </Label>
-                    <p className="text-xs text-muted-foreground mt-1">Réserve ce composant aux abonnés payants (Pro/Studio).</p>
+                    <div className="flex items-center gap-3 mb-4">
+                      <Badge variant="secondary" className="bg-muted px-3 py-1 font-bold">{category.name}</Badge>
+                      {form.premium && <Badge variant="default" className="bg-orange-500/10 text-orange-400 border-none px-3 py-1 font-bold">Premium</Badge>}
+                    </div>
+                    <h3 className="text-3xl font-black leading-tight break-words">{form.name || 'Brouillon sans nom'}</h3>
+                    <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{form.tagline || 'Donnez vie à votre composant en ajoutant une description claire.'}</p>
                   </div>
-                  <Switch id="premium" checked={form.premium} onCheckedChange={(value) => updateForm('premium', value)} />
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          {/* Section 2: Code */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm">2</div>
-              <h2 className="text-xl font-bold">Code & Source</h2>
-            </div>
-            <Card className="rounded-2xl border-border/50 bg-card/50 p-8 shadow-sm backdrop-blur-sm">
-              <div className="grid gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="dependencies">Dépendances NPM (séparées par des virgules)</Label>
-                  <Input id="dependencies" value={form.dependencies} onChange={(event) => updateForm('dependencies', event.target.value)} placeholder="react, tailwindcss, framer-motion..." className="h-11 rounded-xl" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="prompt">Prompt IA original (optionnel)</Label>
-                  <Textarea id="prompt" value={form.prompt} onChange={(event) => updateForm('prompt', event.target.value)} className="min-h-[100px] resize-y rounded-xl" placeholder="Le prompt IA utilisé pour générer ceci..." />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="code">Code source (React/JSX)</Label>
-                  <Textarea id="code" value={form.code} onChange={(event) => updateForm('code', event.target.value)} className="min-h-[300px] font-mono text-sm bg-muted/30 rounded-xl" />
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          {/* Section 3: Verification */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm">3</div>
-              <h2 className="text-xl font-bold">Vérification & Publication</h2>
-            </div>
-            <Card className="rounded-2xl border-border/50 bg-card/50 p-8 shadow-sm backdrop-blur-sm">
-              <div className="flex flex-col md:flex-row items-start justify-between gap-6 p-6 rounded-xl border border-border/50 bg-background mb-8">
-                <div>
-                  <div className="flex items-center gap-3">
-                    <Badge variant="outline" className="bg-primary/5">{category.name}</Badge>
-                    {form.premium && <Badge variant="default" className="bg-gradient-to-r from-violet-500 to-orange-400 border-none">Premium</Badge>}
+                  
+                  <div className="p-4 bg-muted/30 rounded-2xl border border-border/50">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2"><Terminal className="w-3 h-3" /> Fichiers générés</h4>
+                    <ul className="space-y-2 text-sm font-medium">
+                      <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-emerald-500" /> {slugify(form.name) || 'composant'}.tsx</li>
+                      <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-emerald-500" /> package.json (imports)</li>
+                    </ul>
                   </div>
-                  <h2 className="mt-4 text-2xl font-black">{form.name || 'Composant sans nom'}</h2>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{form.tagline || 'Aucune description fournie.'}</p>
+
+                  <div className="pt-6 border-t border-border/50 flex flex-col gap-4">
+                    <Button className="w-full h-14 rounded-2xl text-lg font-black bg-gradient-to-r from-violet-500 to-orange-400 hover:opacity-90 text-white shadow-xl shadow-orange-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]" onClick={publish} disabled={!form.name.trim() || !form.code.trim() || isPublishing}>
+                      {isPublishing ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : <Send className="mr-2 h-6 w-6" />}
+                      {isPublishing ? 'Mise en ligne...' : 'Publier le Composant'}
+                    </Button>
+                    <Button variant="ghost" className="w-full h-12 rounded-xl font-bold text-muted-foreground hover:text-foreground" onClick={() => toast.message('Brouillon conservé localement.')}>
+                      <Save className="mr-2 h-4 w-4" /> Sauvegarder pour plus tard
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-orange-400 text-white shadow-lg shadow-orange-500/20">
-                  <Plus className="h-8 w-8" />
-                </div>
-              </div>
-              
-              <CodeBlock code={form.code} filename={`${slugify(form.name) || 'component'}.tsx`} />
-              
-              <div className="mt-8 flex flex-col sm:flex-row justify-end gap-4 pt-8 border-t border-border/50">
-                <Button variant="outline" className="rounded-full h-12 px-8" onClick={() => toast.message('Brouillon gardé en mémoire')}>
-                  <Save className="mr-2 h-4 w-4" />
-                  Sauvegarder en brouillon
-                </Button>
-                <Button className="rounded-full h-12 px-10 text-md font-bold bg-gradient-to-r from-violet-500 to-orange-400 hover:from-violet-600 hover:to-orange-500 shadow-lg shadow-orange-500/20" onClick={publish} disabled={!form.name.trim() || !form.code.trim() || isPublishing}>
-                  {isPublishing ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
-                  {isPublishing ? 'Publication en cours...' : 'Publier sur VixLuxia'}
-                </Button>
-              </div>
-            </Card>
-          </motion.div>
+              </Card>
+            </motion.div>
+          </div>
         </div>
       </div>
     </PageShell>

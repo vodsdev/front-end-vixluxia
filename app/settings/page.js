@@ -13,17 +13,19 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Bell, Lock, User, Palette, Shield, LogOut, Save, Loader2, CreditCard } from 'lucide-react';
+import { Bell, Lock, User, Palette, Shield, LogOut, Save, Loader2, CreditCard, Settings, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { getCurrentSession, signOut, getUserProfile, upsertUserProfile, supabase } from '@/lib/supabase';
+import { AnimateIn } from '@/components/animate-in';
+import { Badge } from '@/components/ui/badge';
 
 const SETTINGS_TABS = [
-  { id: 'profile', label: 'Profile', icon: User },
-  { id: 'payments', label: 'Paiements', icon: CreditCard },
-  { id: 'appearance', label: 'Appearance', icon: Palette },
-  { id: 'notifications', label: 'Notifications', icon: Bell },
-  { id: 'privacy', label: 'Privacy', icon: Shield },
-  { id: 'security', label: 'Security', icon: Lock },
+  { id: 'profile', label: 'Profil', icon: User, color: 'text-violet-500', bg: 'bg-violet-500/10' },
+  { id: 'payments', label: 'Paiements', icon: CreditCard, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+  { id: 'appearance', label: 'Apparence', icon: Palette, color: 'text-sky-500', bg: 'bg-sky-500/10' },
+  { id: 'notifications', label: 'Notifications', icon: Bell, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+  { id: 'privacy', label: 'Vie Privée', icon: Shield, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
+  { id: 'security', label: 'Sécurité', icon: Lock, color: 'text-red-500', bg: 'bg-red-500/10' },
 ];
 
 export default function SettingsPage() {
@@ -34,29 +36,9 @@ export default function SettingsPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    bio: '',
-    website: '',
-    instagram: '',
-    tiktok: '',
-    rib: '',
-  });
-
-  const [notifications, setNotifications] = useState({
-    newComponents: true,
-    weeklyDigest: true,
-    comments: true,
-    likes: false,
-    emails: true,
-  });
-
-  const [privacy, setPrivacy] = useState({
-    profilePublic: true,
-    showEmail: false,
-    allowMessages: true,
-  });
+  const [formData, setFormData] = useState({ name: '', email: '', bio: '', website: '', instagram: '', tiktok: '', rib: '' });
+  const [notifications, setNotifications] = useState({ newComponents: true, weeklyDigest: true, comments: true, likes: false, emails: true });
+  const [privacy, setPrivacy] = useState({ profilePublic: true, showEmail: false, allowMessages: true });
 
   useEffect(() => {
     async function loadData() {
@@ -65,7 +47,6 @@ export default function SettingsPage() {
         setSession(currentSession);
         setFormData(prev => ({ ...prev, email: currentSession.user.email }));
         
-        // Load profile from database
         const { data: profile } = await getUserProfile(currentSession.user.id);
         if (profile) {
           setFormData(prev => ({
@@ -78,10 +59,7 @@ export default function SettingsPage() {
             rib: profile.rib || '',
           }));
         } else {
-          setFormData(prev => ({
-            ...prev,
-            name: currentSession.user.user_metadata?.full_name || '',
-          }));
+          setFormData(prev => ({ ...prev, name: currentSession.user.user_metadata?.full_name || '' }));
         }
       } else {
         router.push('/auth');
@@ -109,12 +87,7 @@ export default function SettingsPage() {
         rib: formData.rib,
         updated_at: new Date().toISOString()
       });
-      
-      // Also update auth user metadata for the name
-      await supabase.auth.updateUser({
-        data: { full_name: formData.name }
-      });
-
+      await supabase.auth.updateUser({ data: { full_name: formData.name } });
       if (error) throw error;
       toast.success('Profil mis à jour !');
       router.refresh();
@@ -134,12 +107,9 @@ export default function SettingsPage() {
       toast.error('Le mot de passe doit faire au moins 6 caractères.');
       return;
     }
-
     setLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: password
-      });
+      const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       toast.success('Mot de passe mis à jour !');
       setPassword('');
@@ -151,9 +121,7 @@ export default function SettingsPage() {
     }
   };
 
-  const handleSaveGeneric = () => {
-    toast.success('Préférences enregistrées !');
-  };
+  const handleSaveGeneric = () => toast.success('Préférences enregistrées !');
 
   if (!session) return null;
 
@@ -161,255 +129,231 @@ export default function SettingsPage() {
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">
         <AppSidebar />
-
         <main className="flex-1 flex flex-col min-w-0">
-          <AppHeader title="Settings" />
-
+          <AppHeader title="Paramètres" />
           <div className="flex-1 overflow-auto">
-            <div className="p-6 lg:p-8 max-w-4xl mx-auto w-full">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-              >
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="grid w-full grid-cols-6 mb-8">
-                    {SETTINGS_TABS.map((tab) => {
-                      const Icon = tab.icon;
-                      return (
-                        <TabsTrigger key={tab.id} value={tab.id} className="flex items-center gap-2">
-                          <Icon className="w-4 h-4 hidden sm:block" />
-                          <span className="hidden sm:inline">{tab.label}</span>
-                          <span className="sm:hidden text-xs">{tab.label.slice(0, 3)}</span>
-                        </TabsTrigger>
-                      );
-                    })}
-                  </TabsList>
+            <div className="p-6 lg:p-12 max-w-5xl mx-auto w-full">
+              <AnimateIn variant="fadeUp">
+                <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card p-8 shadow-2xl backdrop-blur-xl mb-10">
+                  <div className="absolute right-0 top-0 w-64 h-64 bg-gradient-to-br from-violet-500/10 to-orange-400/10 rounded-full blur-[80px] pointer-events-none" />
+                  <div className="relative z-10 flex items-center justify-between">
+                    <div>
+                      <Badge variant="outline" className="mb-4 gap-2 px-3 py-1.5 rounded-full bg-zinc-500/10 text-zinc-400 border-none font-bold text-xs">
+                        <Settings className="h-4 w-4" /> Configuration du compte
+                      </Badge>
+                      <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-2">Paramètres VixLuxia</h1>
+                      <p className="text-muted-foreground text-sm">Gérez votre profil, vos paiements et vos préférences personnelles.</p>
+                    </div>
+                  </div>
+                </section>
+              </AnimateIn>
 
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col md:flex-row gap-8">
+                <TabsList className="flex flex-col h-auto w-full md:w-64 shrink-0 bg-transparent gap-2 p-0">
+                  {SETTINGS_TABS.map((tab) => {
+                    const Icon = tab.icon;
+                    return (
+                      <TabsTrigger key={tab.id} value={tab.id} className="w-full justify-start items-center gap-3 px-4 py-3 rounded-2xl data-[state=active]:bg-card data-[state=active]:shadow-xl data-[state=active]:border border-transparent data-[state=active]:border-border/50 hover:bg-muted/50 transition-all">
+                        <div className={`w-8 h-8 rounded-xl ${tab.bg} flex items-center justify-center`}>
+                          <Icon className={`w-4 h-4 ${tab.color}`} />
+                        </div>
+                        <span className="font-bold">{tab.label}</span>
+                      </TabsTrigger>
+                    );
+                  })}
+                </TabsList>
+
+                <div className="flex-1 min-w-0">
                   {/* Profile Tab */}
-                  <TabsContent value="profile" className="space-y-6">
-                    <Card className="p-6">
-                      <h3 className="text-lg font-bold mb-4">Informations du Profil</h3>
-                      <div className="space-y-4">
-                        <div>
-                          <Label htmlFor="name" className="text-sm font-medium">Nom complet</Label>
-                          <Input
-                            id="name"
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="mt-1.5"
-                          />
+                  <TabsContent value="profile" className="m-0 focus-visible:ring-0">
+                    <AnimateIn variant="fadeUp">
+                      <Card className="p-8 rounded-3xl border-border/50 shadow-xl bg-card/60 backdrop-blur-sm">
+                        <div className="flex items-center gap-3 mb-8">
+                          <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center"><User className="w-5 h-5 text-violet-500" /></div>
+                          <h3 className="text-2xl font-bold">Profil Public</h3>
                         </div>
-                        <div>
-                          <Label htmlFor="email" className="text-sm font-medium">Adresse Email (lecture seule)</Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            value={formData.email}
-                            disabled
-                            className="mt-1.5 opacity-60"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="bio" className="text-sm font-medium">Bio</Label>
-                          <textarea
-                            id="bio"
-                            value={formData.bio}
-                            onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                            className="w-full mt-1.5 px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary min-h-[100px]"
-                            placeholder="Décris-toi en quelques mots..."
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="website" className="text-sm font-medium">Site Web ou Portfolio</Label>
-                          <Input
-                            id="website"
-                            type="url"
-                            value={formData.website}
-                            onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                            placeholder="https://..."
-                            className="mt-1.5"
-                          />
-                        </div>
-                        <div className="grid gap-4 md:grid-cols-2">
-                          <div>
-                            <Label htmlFor="instagram" className="text-sm font-medium">Instagram</Label>
-                            <Input
-                              id="instagram"
-                              type="url"
-                              value={formData.instagram || ''}
-                              onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
-                              placeholder="https://instagram.com/..."
-                              className="mt-1.5"
-                            />
+                        <div className="space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                              <Label className="text-muted-foreground font-medium">Nom complet</Label>
+                              <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="h-12 rounded-xl bg-background/50 border-border/50" />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-muted-foreground font-medium">Adresse Email (lecture seule)</Label>
+                              <Input type="email" value={formData.email} disabled className="h-12 rounded-xl bg-muted/30 border-transparent opacity-60" />
+                            </div>
                           </div>
-                          <div>
-                            <Label htmlFor="tiktok" className="text-sm font-medium">TikTok</Label>
-                            <Input
-                              id="tiktok"
-                              type="url"
-                              value={formData.tiktok || ''}
-                              onChange={(e) => setFormData({ ...formData, tiktok: e.target.value })}
-                              placeholder="https://tiktok.com/@..."
-                              className="mt-1.5"
-                            />
+                          <div className="space-y-2">
+                            <Label className="text-muted-foreground font-medium">Biographie</Label>
+                            <textarea value={formData.bio} onChange={(e) => setFormData({ ...formData, bio: e.target.value })} className="w-full h-32 px-4 py-3 rounded-xl border border-border/50 bg-background/50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" placeholder="Décris-toi en quelques mots..." />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-muted-foreground font-medium">Site Web (Portfolio)</Label>
+                            <Input type="url" value={formData.website} onChange={(e) => setFormData({ ...formData, website: e.target.value })} placeholder="https://" className="h-12 rounded-xl bg-background/50 border-border/50" />
+                          </div>
+                          <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                              <Label className="text-muted-foreground font-medium">Instagram</Label>
+                              <Input type="url" value={formData.instagram || ''} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="https://instagram.com/..." className="h-12 rounded-xl bg-background/50 border-border/50" />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-muted-foreground font-medium">TikTok</Label>
+                              <Input type="url" value={formData.tiktok || ''} onChange={(e) => setFormData({ ...formData, tiktok: e.target.value })} placeholder="https://tiktok.com/@..." className="h-12 rounded-xl bg-background/50 border-border/50" />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <Button className="mt-6 gap-2" onClick={handleSaveProfile} disabled={loading}>
-                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                        Sauvegarder le profil
-                      </Button>
-                    </Card>
+                        <div className="mt-8 pt-8 border-t border-border/50 flex justify-end">
+                          <Button className="h-12 px-8 rounded-xl bg-primary text-primary-foreground font-bold shadow-lg" onClick={handleSaveProfile} disabled={loading}>
+                            {loading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Save className="w-5 h-5 mr-2" />} Sauvegarder
+                          </Button>
+                        </div>
+                      </Card>
+                    </AnimateIn>
                   </TabsContent>
 
                   {/* Payments Tab */}
-                  <TabsContent value="payments" className="space-y-6">
-                    <Card className="p-6">
-                      <h3 className="text-lg font-bold mb-4">Informations Bancaires (RIB)</h3>
-                      <p className="text-sm text-muted-foreground mb-6">
-                        Ajoute ton RIB/IBAN pour recevoir automatiquement l'argent généré par tes affiliations et le coffre de ton équipe VixLuxia.
-                      </p>
-                      <div className="space-y-4">
-                        <div>
-                          <Label htmlFor="rib" className="text-sm font-medium">IBAN / RIB</Label>
-                          <Input
-                            id="rib"
-                            value={formData.rib}
-                            onChange={(e) => setFormData({ ...formData, rib: e.target.value })}
-                            placeholder="FR76 1234 5678 9101 1121 3141 516"
-                            className="mt-1.5 font-mono"
-                          />
+                  <TabsContent value="payments" className="m-0 focus-visible:ring-0">
+                    <AnimateIn variant="fadeUp">
+                      <Card className="p-8 rounded-3xl border-border/50 shadow-xl bg-card/60 backdrop-blur-sm relative overflow-hidden">
+                        <div className="absolute right-0 top-0 w-64 h-64 bg-gradient-to-br from-emerald-500/10 to-teal-400/10 rounded-full blur-[60px] pointer-events-none" />
+                        <div className="relative z-10">
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center"><CreditCard className="w-5 h-5 text-emerald-500" /></div>
+                            <h3 className="text-2xl font-bold">Coordonnées Bancaires</h3>
+                          </div>
+                          <p className="text-muted-foreground mb-8 max-w-xl">
+                            Renseignez votre RIB/IBAN. Ces informations nous permettront de vous verser automatiquement les revenus de vos affiliations et les gains du coffre de vos Teams VixLuxia.
+                          </p>
+                          <div className="space-y-4">
+                            <div className="space-y-2">
+                              <Label className="text-muted-foreground font-medium">IBAN / RIB</Label>
+                              <Input value={formData.rib} onChange={(e) => setFormData({ ...formData, rib: e.target.value })} placeholder="FR76 1234 5678 9101 1121 3141 516" className="h-14 rounded-2xl bg-background/80 font-mono text-lg border-emerald-500/30 focus-visible:ring-emerald-500/30" />
+                            </div>
+                          </div>
+                          <div className="mt-8 pt-8 border-t border-border/50 flex justify-end">
+                            <Button className="h-12 px-8 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-lg shadow-emerald-500/20" onClick={handleSaveProfile} disabled={loading}>
+                              {loading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Save className="w-5 h-5 mr-2" />} Enregistrer l'IBAN
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                      <Button className="mt-6 gap-2" onClick={handleSaveProfile} disabled={loading}>
-                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                        Sauvegarder le RIB
-                      </Button>
-                    </Card>
+                      </Card>
+                    </AnimateIn>
                   </TabsContent>
 
                   {/* Appearance Tab */}
-                  <TabsContent value="appearance" className="space-y-6">
-                    <Card className="p-6">
-                      <h3 className="text-lg font-bold mb-4">Thème</h3>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
+                  <TabsContent value="appearance" className="m-0 focus-visible:ring-0">
+                    <AnimateIn variant="fadeUp">
+                      <Card className="p-8 rounded-3xl border-border/50 shadow-xl bg-card/60 backdrop-blur-sm">
+                        <div className="flex items-center gap-3 mb-8">
+                          <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center"><Palette className="w-5 h-5 text-sky-500" /></div>
+                          <h3 className="text-2xl font-bold">Apparence</h3>
+                        </div>
+                        <div className="flex items-center justify-between p-6 rounded-2xl bg-background/50 border border-border/50">
                           <div>
-                            <p className="font-medium text-sm">Mode Sombre</p>
-                            <p className="text-xs text-muted-foreground mt-0.5">Basculer entre le thème clair et sombre</p>
+                            <p className="font-bold">Thème Global</p>
+                            <p className="text-sm text-muted-foreground mt-1">Personnalisez l'apparence de VixLuxia.</p>
                           </div>
                           <ThemeToggle />
                         </div>
-                      </div>
-                    </Card>
+                      </Card>
+                    </AnimateIn>
                   </TabsContent>
 
                   {/* Notifications Tab */}
-                  <TabsContent value="notifications" className="space-y-6">
-                    <Card className="p-6">
-                      <h3 className="text-lg font-bold mb-4">Préférences de Notification</h3>
-                      <div className="space-y-4">
-                        {Object.entries(notifications).map(([key, value]) => (
-                          <div key={key} className="flex items-center justify-between py-3 border-b border-border/50 last:border-0">
-                            <div>
-                              <p className="font-medium text-sm capitalize">{key.replace(/([A-Z])/g, ' $1')}</p>
+                  <TabsContent value="notifications" className="m-0 focus-visible:ring-0">
+                    <AnimateIn variant="fadeUp">
+                      <Card className="p-8 rounded-3xl border-border/50 shadow-xl bg-card/60 backdrop-blur-sm">
+                        <div className="flex items-center gap-3 mb-8">
+                          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center"><Bell className="w-5 h-5 text-amber-500" /></div>
+                          <h3 className="text-2xl font-bold">Notifications</h3>
+                        </div>
+                        <div className="space-y-4">
+                          {Object.entries(notifications).map(([key, value]) => (
+                            <div key={key} className="flex items-center justify-between p-4 rounded-xl bg-background/30 hover:bg-background/50 transition-colors border border-transparent hover:border-border/50">
+                              <p className="font-semibold text-sm capitalize">{key.replace(/([A-Z])/g, ' $1')}</p>
+                              <Switch checked={value} onCheckedChange={(checked) => setNotifications({ ...notifications, [key]: checked })} />
                             </div>
-                            <Switch
-                              checked={value}
-                              onCheckedChange={(checked) => setNotifications({ ...notifications, [key]: checked })}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                      <Button className="mt-6 gap-2" onClick={handleSaveGeneric}>
-                        <Save className="w-4 h-4" />
-                        Sauvegarder les préférences
-                      </Button>
-                    </Card>
+                          ))}
+                        </div>
+                        <div className="mt-8 pt-8 border-t border-border/50 flex justify-end">
+                          <Button className="h-12 px-8 rounded-xl font-bold" onClick={handleSaveGeneric}><Save className="w-5 h-5 mr-2" /> Appliquer</Button>
+                        </div>
+                      </Card>
+                    </AnimateIn>
                   </TabsContent>
 
                   {/* Privacy Tab */}
-                  <TabsContent value="privacy" className="space-y-6">
-                    <Card className="p-6">
-                      <h3 className="text-lg font-bold mb-4">Confidentialité</h3>
-                      <div className="space-y-4">
-                        {Object.entries(privacy).map(([key, value]) => (
-                          <div key={key} className="flex items-center justify-between py-3 border-b border-border/50 last:border-0">
-                            <div>
-                              <p className="font-medium text-sm capitalize">{key.replace(/([A-Z])/g, ' $1')}</p>
+                  <TabsContent value="privacy" className="m-0 focus-visible:ring-0">
+                    <AnimateIn variant="fadeUp">
+                      <Card className="p-8 rounded-3xl border-border/50 shadow-xl bg-card/60 backdrop-blur-sm">
+                        <div className="flex items-center gap-3 mb-8">
+                          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center"><Shield className="w-5 h-5 text-indigo-500" /></div>
+                          <h3 className="text-2xl font-bold">Vie Privée</h3>
+                        </div>
+                        <div className="space-y-4">
+                          {Object.entries(privacy).map(([key, value]) => (
+                            <div key={key} className="flex items-center justify-between p-4 rounded-xl bg-background/30 hover:bg-background/50 transition-colors border border-transparent hover:border-border/50">
+                              <p className="font-semibold text-sm capitalize">{key.replace(/([A-Z])/g, ' $1')}</p>
+                              <Switch checked={value} onCheckedChange={(checked) => setPrivacy({ ...privacy, [key]: checked })} />
                             </div>
-                            <Switch
-                              checked={value}
-                              onCheckedChange={(checked) => setPrivacy({ ...privacy, [key]: checked })}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                      <Button className="mt-6 gap-2" onClick={handleSaveGeneric}>
-                        <Save className="w-4 h-4" />
-                        Sauvegarder la confidentialité
-                      </Button>
-                    </Card>
+                          ))}
+                        </div>
+                        <div className="mt-8 pt-8 border-t border-border/50 flex justify-end">
+                          <Button className="h-12 px-8 rounded-xl font-bold" onClick={handleSaveGeneric}><Save className="w-5 h-5 mr-2" /> Appliquer</Button>
+                        </div>
+                      </Card>
+                    </AnimateIn>
                   </TabsContent>
 
                   {/* Security Tab */}
-                  <TabsContent value="security" className="space-y-6">
-                    <Card className="p-6">
-                      <h3 className="text-lg font-bold mb-4">Sécurité</h3>
-                      <div className="space-y-4">
-                        <div>
-                          <Label htmlFor="password" className="text-sm font-medium">Nouveau mot de passe</Label>
-                          <Input
-                            id="password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Entrez le nouveau mot de passe"
-                            className="mt-1.5"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="confirm-password" className="text-sm font-medium">Confirmer le mot de passe</Label>
-                          <Input
-                            id="confirm-password"
-                            type="password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="Confirmez le nouveau mot de passe"
-                            className="mt-1.5"
-                          />
-                        </div>
-                        <div className="pt-4 border-t border-border/50">
-                          <Button variant="outline" size="sm" onClick={handleSignOut}>Se déconnecter de tous les appareils</Button>
-                        </div>
-                      </div>
-                      <Button className="mt-6 gap-2" onClick={handleSavePassword} disabled={loading || !password}>
-                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                        Mettre à jour la sécurité
-                      </Button>
-                    </Card>
+                  <TabsContent value="security" className="m-0 focus-visible:ring-0">
+                    <AnimateIn variant="fadeUp">
+                      <div className="space-y-6">
+                        <Card className="p-8 rounded-3xl border-border/50 shadow-xl bg-card/60 backdrop-blur-sm">
+                          <div className="flex items-center gap-3 mb-8">
+                            <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center"><Lock className="w-5 h-5 text-red-500" /></div>
+                            <h3 className="text-2xl font-bold">Sécurité du compte</h3>
+                          </div>
+                          <div className="space-y-6">
+                            <div className="space-y-2">
+                              <Label className="text-muted-foreground font-medium">Nouveau mot de passe</Label>
+                              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 rounded-xl bg-background/50 border-border/50" />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-muted-foreground font-medium">Confirmer le mot de passe</Label>
+                              <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="h-12 rounded-xl bg-background/50 border-border/50" />
+                            </div>
+                            <div className="pt-6 mt-6 border-t border-border/50 flex justify-between items-center">
+                              <Button variant="outline" className="rounded-xl h-12 px-6" onClick={handleSignOut}>Forcer la déconnexion globale</Button>
+                              <Button className="h-12 px-8 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold" onClick={handleSavePassword} disabled={loading || !password}>
+                                {loading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Save className="w-5 h-5 mr-2" />} Mettre à jour
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
 
-                    <Card className="p-6 border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30">
-                      <h3 className="text-lg font-bold mb-4 text-red-600 dark:text-red-400">Zone de Danger</h3>
-                      <p className="text-sm text-red-600 dark:text-red-400 mb-4">
-                        Ces actions sont irréversibles.
-                      </p>
-                      <div className="flex gap-4">
-                        <Button variant="destructive" className="gap-2" onClick={handleSignOut}>
-                          <LogOut className="w-4 h-4" />
-                          Se déconnecter
-                        </Button>
-                        <Button variant="outline" className="gap-2 border-red-200 text-red-600 hover:bg-red-100 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950">
-                          Supprimer le compte
-                        </Button>
+                        <Card className="p-8 rounded-3xl border-red-500/30 bg-red-500/5 shadow-xl backdrop-blur-sm">
+                          <div className="flex items-center gap-3 mb-4">
+                            <Shield className="w-6 h-6 text-red-500" />
+                            <h3 className="text-xl font-bold text-red-500">Zone de Danger</h3>
+                          </div>
+                          <p className="text-sm text-red-500/80 mb-6 font-medium">Ces actions sont permanentes et irréversibles. Soyez prudent.</p>
+                          <div className="flex gap-4">
+                            <Button variant="destructive" className="h-12 rounded-xl gap-2 font-bold shadow-lg shadow-red-500/20" onClick={handleSignOut}>
+                              <LogOut className="w-5 h-5" /> Se déconnecter
+                            </Button>
+                            <Button variant="outline" className="h-12 rounded-xl border-red-500/30 text-red-500 hover:bg-red-500/10 font-bold">
+                              Supprimer mon compte définitivement
+                            </Button>
+                          </div>
+                        </Card>
                       </div>
-                    </Card>
+                    </AnimateIn>
                   </TabsContent>
-                </Tabs>
-              </motion.div>
-
-              <AppFooter />
+                </div>
+              </Tabs>
+              
+              <div className="mt-12"><AppFooter /></div>
             </div>
           </div>
         </main>
