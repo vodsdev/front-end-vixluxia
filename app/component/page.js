@@ -19,6 +19,7 @@ import {
   User,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import JSZip from 'jszip';
 import { PageShell } from '@/components/layout/page-shell';
 import { LivePreview } from '@/components/live-preview';
 import { CodeBlock } from '@/components/code-block';
@@ -54,6 +55,11 @@ export default function ComponentDetailPage() {
   const component = useMemo(() => getRegistryComponentById(componentId), [componentId]);
   const interactions = useComponentInteractions(componentId || 'unknown');
 
+  // Mock user subscription tier
+  const user = { plan: 'free' };
+  const hasAccess = user.plan === 'pro' || user.plan === 'enterprise';
+  const isPremium = component?.is_premium || component?.meta?.premium;
+
   const Preview = component ? Previews[component.preview] : null;
   const score = (component?.stats.votes || 0) + interactions.vote;
 
@@ -63,6 +69,45 @@ export default function ComponentDetailPage() {
     toast.success(`${label} copie`);
     setTimeout(() => setCopied(''), 1600);
   };
+
+  const handleDownloadZip = async () => {
+    if (!component) return;
+    const zip = new JSZip();
+
+    if (isPremium && !hasAccess) {
+      toast.error('Unlock Pro to download premium components');
+      return;
+    }
+    
+    zip.file(`${component.id}.tsx`, component.code);
+    
+    const instructions = `
+# Installation Instructions
+
+## Install Dependencies
+${component.installCommand}
+
+## Import Snippet
+${component.importSnippet}
+`.trim();
+    zip.file("instructions.md", instructions);
+
+    if (component.prompt) {
+      zip.file("prompt.md", component.prompt);
+    }
+    
+    const content = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(content);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${component.id}.zip`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success("ZIP téléchargé");
+  };
+
 
   if (!component) {
     return (
@@ -122,6 +167,10 @@ export default function ComponentDetailPage() {
                   {copied === 'Prompt' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   Copier
                 </Button>
+                <Button className="rounded-md" onClick={handleDownloadZip}>
+                  <Download className="h-4 w-4" />
+                  Download ZIP
+                </Button>
               </div>
             </div>
           </section>
@@ -144,31 +193,72 @@ export default function ComponentDetailPage() {
               </TabsContent>
 
               <TabsContent value="code">
-                <CodeBlock code={component.code} filename={`${component.id}.tsx`} />
+                {isPremium && !hasAccess ? (
+                  <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-border/50 bg-card p-6 text-center shadow-sm">
+                    <ShieldCheck className="mb-4 h-12 w-12 text-muted-foreground" />
+                    <h3 className="mb-2 text-lg font-bold">Unlock Pro to View Source</h3>
+                    <p className="mb-4 max-w-sm text-sm text-muted-foreground">
+                      Upgrade to a Pro or Enterprise subscription to access the source code for premium components.
+                    </p>
+                    <Button asChild>
+                      <Link href="/pricing">Upgrade to Pro</Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <CodeBlock code={component.code} filename={`${component.id}.tsx`} />
+                )}
               </TabsContent>
 
               <TabsContent value="install" className="space-y-4">
-                <CodeBlock code={component.installCommand} language="bash" filename="terminal" />
-                <CodeBlock code={component.importSnippet} filename="usage.tsx" />
-                <Card className="rounded-lg border-border/50 bg-card/80 p-5">
-                  <div className="flex items-start gap-3">
-                    <Package className="mt-0.5 h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <h3 className="text-sm font-bold">Dependances detectees</h3>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {component.dependencies.map((dependency) => (
-                          <Badge key={dependency} variant="outline" className="font-mono">
-                            {dependency}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
+                {isPremium && !hasAccess ? (
+                  <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-border/50 bg-card p-6 text-center shadow-sm">
+                    <ShieldCheck className="mb-4 h-12 w-12 text-muted-foreground" />
+                    <h3 className="mb-2 text-lg font-bold">Unlock Pro to View Source</h3>
+                    <p className="mb-4 max-w-sm text-sm text-muted-foreground">
+                      Upgrade to a Pro or Enterprise subscription to access the installation details for premium components.
+                    </p>
+                    <Button asChild>
+                      <Link href="/pricing">Upgrade to Pro</Link>
+                    </Button>
                   </div>
-                </Card>
+                ) : (
+                  <>
+                    <CodeBlock code={component.installCommand} language="bash" filename="terminal" />
+                    <CodeBlock code={component.importSnippet} filename="usage.tsx" />
+                    <Card className="rounded-lg border-border/50 bg-card/80 p-5">
+                      <div className="flex items-start gap-3">
+                        <Package className="mt-0.5 h-4 w-4 text-muted-foreground" />
+                        <div>
+                          <h3 className="text-sm font-bold">Dependances detectees</h3>
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {component.dependencies.map((dependency) => (
+                              <Badge key={dependency} variant="outline" className="font-mono">
+                                {dependency}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  </>
+                )}
               </TabsContent>
 
               <TabsContent value="prompt">
-                <CodeBlock code={component.prompt} filename="prompt.md" language="markdown" />
+                {isPremium && !hasAccess ? (
+                  <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-border/50 bg-card p-6 text-center shadow-sm">
+                    <ShieldCheck className="mb-4 h-12 w-12 text-muted-foreground" />
+                    <h3 className="mb-2 text-lg font-bold">Unlock Pro to View Source</h3>
+                    <p className="mb-4 max-w-sm text-sm text-muted-foreground">
+                      Upgrade to a Pro or Enterprise subscription to access the prompt for premium components.
+                    </p>
+                    <Button asChild>
+                      <Link href="/pricing">Upgrade to Pro</Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <CodeBlock code={component.prompt} filename="prompt.md" language="markdown" />
+                )}
               </TabsContent>
             </Tabs>
 
