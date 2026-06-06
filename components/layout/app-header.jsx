@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { Settings, LogOut, KeyRound, User as UserIcon, Search } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { CommandPalette } from '@/components/global/command-palette';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
