@@ -79,10 +79,10 @@ export function AppHeader({ title, children }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
+                <Link href="/profile" className="flex flex-col space-y-1 cursor-pointer hover:underline">
                   <p className="text-sm font-medium leading-none">{profile?.full_name || profile?.username || user.user_metadata?.full_name || 'My Account'}</p>
                   <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-                </div>
+                </Link>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
@@ -92,9 +92,9 @@ export function AppHeader({ title, children }) {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/api-keys" className="cursor-pointer">
+                <Link href="/api" className="cursor-pointer">
                   <KeyRound className="mr-2 h-4 w-4" />
-                  <span>API Keys</span>
+                  <span>API</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
