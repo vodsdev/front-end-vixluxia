@@ -22,7 +22,7 @@ export async function POST(req) {
     }
 
     const systemPrompt = mode === 'component' 
-      ? 'Tu es un expert développeur React et Tailwind CSS. Génère ou modifie des composants UI modernes, propres et performants.'
+      ? 'You are an expert frontend React developer. Your task is to output STRICTLY valid React components. Do not wrap your code in markdown code blocks like ```jsx if you can avoid it, but if you do, the client will parse it out. Produce self-contained components using Tailwind CSS for styling. Use Lucide React for icons if needed. Never provide explanations or additional text. Just output the raw code. Default export the component.'
       : mode === 'support'
       ? 'Tu es l\'IA de support expert et officiel de VixLuxia. Ton but est d\'aider les utilisateurs avec bienveillance et expertise concernant VixLuxia (la marketplace de composants, les abonnements, l\'affiliation, etc.). Sois concis et professionnel.'
       : mode === 'code-review'

@@ -31,7 +31,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { getRegistryComponentById } from '@/lib/component-registry';
 import { useComponentInteractions } from '@/hooks/use-component-interactions';
 import * as Previews from '@/components/previews';
-
+import { CopilotPanel } from '@/components/ai/copilot-panel';
 function daysAgo(date) {
   const diff = Date.now() - new Date(date).getTime();
   return Math.max(1, Math.round(diff / 86400000));
@@ -309,6 +309,7 @@ export default function ComponentDetailPage() {
           </aside>
         </div>
       </div>
+      <CopilotPanel />
     </PageShell>
   );
 }

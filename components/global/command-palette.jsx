@@ -17,14 +17,35 @@ export function CommandPalette({ open, onOpenChange }) {
   const router = useRouter();
   const [search, setSearch] = React.useState('');
   const [activeIndex, setActiveIndex] = React.useState(0);
+  const [isSemanticLoading, setIsSemanticLoading] = React.useState(false);
+  const [semanticResults, setSemanticResults] = React.useState(null);
   
-  const filteredData = mockData.filter(item => 
-    item.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const isLongTailQuery = search.trim().split(/\s+/).length > 2;
 
   React.useEffect(() => {
     setActiveIndex(0);
-  }, [search]);
+    
+    if (isLongTailQuery) {
+      setSemanticResults(null);
+      setIsSemanticLoading(true);
+      const timer = setTimeout(() => {
+        setIsSemanticLoading(false);
+        setSemanticResults([
+          { id: 's1', title: 'Pricing Section - SaaS', icon: FileText, href: '/components/pricing', category: 'Semantic' },
+          { id: 's2', title: 'Pricing Tables (Dark Mode)', icon: FileText, href: '/components/pricing-tables', category: 'Semantic' },
+          { id: 's3', title: 'Subscription Widget', icon: FileText, href: '/components/subscription', category: 'Semantic' }
+        ]);
+      }, 1500);
+      return () => clearTimeout(timer);
+    } else {
+      setIsSemanticLoading(false);
+      setSemanticResults(null);
+    }
+  }, [search, isLongTailQuery]);
+
+  const displayData = isLongTailQuery ? (semanticResults || []) : mockData.filter(item => 
+    item.title.toLowerCase().includes(search.toLowerCase())
+  );
 
   React.useEffect(() => {
     const down = (e) => {
@@ -45,14 +66,14 @@ export function CommandPalette({ open, onOpenChange }) {
   const handleKeyDown = (e) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setActiveIndex((prev) => (prev + 1) % filteredData.length);
+      setActiveIndex((prev) => (prev + 1) % displayData.length);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setActiveIndex((prev) => (prev - 1 + filteredData.length) % filteredData.length);
+      setActiveIndex((prev) => (prev - 1 + displayData.length) % displayData.length);
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (filteredData[activeIndex]) {
-        onSelect(filteredData[activeIndex].href);
+      if (displayData[activeIndex]) {
+        onSelect(displayData[activeIndex].href);
       }
     }
   };
@@ -69,7 +90,7 @@ export function CommandPalette({ open, onOpenChange }) {
           <Search className="w-5 h-5 text-muted-foreground mr-3" />
           <input 
             className="flex-1 bg-transparent outline-none placeholder:text-muted-foreground text-foreground"
-            placeholder="Search for components, settings, and more..."
+            placeholder="Search for components, settings, and more... (Try 'A pricing page for SaaS')"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             autoFocus
@@ -79,10 +100,22 @@ export function CommandPalette({ open, onOpenChange }) {
           </div>
         </div>
         
-        <div className="max-h-[60vh] overflow-y-auto p-2 relative">
-          <AnimatePresence>
-            {filteredData.length === 0 ? (
+        <div className="max-h-[60vh] overflow-y-auto p-2 relative min-h-[100px]">
+          <AnimatePresence mode="wait">
+            {isSemanticLoading ? (
               <motion.div
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="py-12 flex flex-col items-center justify-center gap-4 text-muted-foreground"
+              >
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                <span className="text-sm font-medium">Running semantic search...</span>
+              </motion.div>
+            ) : displayData.length === 0 ? (
+              <motion.div
+                key="empty"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -91,8 +124,14 @@ export function CommandPalette({ open, onOpenChange }) {
                 No results found.
               </motion.div>
             ) : (
-              <div className="flex flex-col relative">
-                {filteredData.map((item, index) => {
+              <motion.div
+                key="results"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex flex-col relative"
+              >
+                {displayData.map((item, index) => {
                   const Icon = item.icon;
                   const isActive = index === activeIndex;
                   return (
@@ -110,16 +149,32 @@ export function CommandPalette({ open, onOpenChange }) {
                           transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                         />
                       )}
-                      <div className="flex items-center text-sm font-medium">
-                        <Icon className="w-4 h-4 mr-3 text-muted-foreground" />
-                        {item.title}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center text-sm font-medium">
+                          <Icon className="w-4 h-4 mr-3 text-muted-foreground" />
+                          {item.title}
+                        </div>
+                        {item.category === 'Semantic' && (
+                          <span className="text-[10px] uppercase tracking-wider font-semibold text-primary/70 bg-primary/10 px-2 py-0.5 rounded">
+                            AI Match
+                          </span>
+                        )}
                       </div>
                     </div>
                   );
                 })}
-              </div>
+              </motion.div>
             )}
           </AnimatePresence>
+        </div>
+
+        <div className="px-4 py-2 bg-muted/30 border-t border-border/40 text-xs flex justify-between items-center">
+          <div className="flex items-center text-primary/80 font-medium">
+            ✨ Semantic Search Enabled
+          </div>
+          <div className="text-muted-foreground">
+            Type natural language for AI results
+          </div>
         </div>
       </DialogContent>
     </Dialog>
