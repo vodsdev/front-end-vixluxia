@@ -60,12 +60,6 @@ function HomeContent() {
     const q = search.toLowerCase();
     return allComponents.filter(c =>
       c.name.toLowerCase().includes(q) || c.tagline.toLowerCase().includes(q)
-
-  const filteredComponents = useMemo(() => {
-    if (!search) return allComponents;
-    const q = search.toLowerCase();
-    return allComponents.filter(c =>
-      c.name.toLowerCase().includes(q) || c.tagline.toLowerCase().includes(q)
     );
   }, [search, allComponents]);
 
@@ -207,9 +201,7 @@ function HomeContent() {
                   <HeroSection />
 
                   <PlatformFeatureGrid />
-
-                  {/* New Components Section */}
-                  <section>
+                </div>
               )}
             </div>
           </div>
@@ -218,7 +210,6 @@ function HomeContent() {
     </SidebarProvider>
   );
 }
-
 export default function HomePage() {
   return (
     <Suspense fallback={null}>
