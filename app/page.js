@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useMemo, Suspense } from 'react';
+import { useEffect, useState, useMemo, Suspense, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -18,8 +18,19 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { CATEGORIES } from '@/lib/prompts-data';
 import { getAllRegistryComponents } from '@/lib/component-registry';
-import * as Previews from '@/components/previews';
+import dynamic from 'next/dynamic';
 import { Sparkles, ArrowRight } from 'lucide-react';
+
+const previewCache = {};
+function getPreview(name) {
+  if (!name) return null;
+  if (!previewCache[name]) {
+    previewCache[name] = dynamic(() => import('@/components/previews').then(mod => ({ default: mod[name] })), {
+      ssr: false,
+    });
+  }
+  return previewCache[name];
+}
 
 function HomeContent() {
   const [search, setSearch] = useState('');
@@ -49,6 +60,12 @@ function HomeContent() {
     const q = search.toLowerCase();
     return allComponents.filter(c =>
       c.name.toLowerCase().includes(q) || c.tagline.toLowerCase().includes(q)
+
+  const filteredComponents = useMemo(() => {
+    if (!search) return allComponents;
+    const q = search.toLowerCase();
+    return allComponents.filter(c =>
+      c.name.toLowerCase().includes(q) || c.tagline.toLowerCase().includes(q)
     );
   }, [search, allComponents]);
 
@@ -60,6 +77,10 @@ function HomeContent() {
     if (groupParam === 'ui') return CATEGORIES.filter((_, i) => i >= 10);
     return [];
   }, [groupParam]);
+
+  const handleCategorySelect = useCallback((slug) => {
+    window.location.href = `/?category=${slug}`;
+  }, []);
 
   return (
     <SidebarProvider>
@@ -96,14 +117,14 @@ function HomeContent() {
                   {view === 'grid' ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                       {filteredComponents.map((p) => {
-                        const Preview = Previews[p.preview];
+                        const Preview = getPreview(p.preview);
                         return <ComponentCard key={p.id} component={p} preview={Preview} />;
                       })}
                     </div>
                   ) : (
                     <div className="space-y-2">
                       {filteredComponents.map((p) => {
-                        const Preview = Previews[p.preview];
+                        const Preview = getPreview(p.preview);
                         return <ComponentListItem key={p.id} component={p} preview={Preview} />;
                       })}
                     </div>
@@ -137,14 +158,14 @@ function HomeContent() {
                   {view === 'grid' ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                       {currentPrompts.map((p) => {
-                        const Preview = Previews[p.preview];
+                        const Preview = getPreview(p.preview);
                         return <ComponentCard key={p.id} component={p} preview={Preview} />;
                       })}
                     </div>
                   ) : (
                     <div className="space-y-2">
                       {currentPrompts.map((p) => {
-                        const Preview = Previews[p.preview];
+                        const Preview = getPreview(p.preview);
                         return <ComponentListItem key={p.id} component={p} preview={Preview} />;
                       })}
                     </div>
@@ -174,9 +195,7 @@ function HomeContent() {
                   </AnimateIn>
                   <CategoryGrid
                     categories={groupCategories}
-                    onSelect={(slug) => {
-                      window.location.href = `/?category=${slug}`;
-                    }}
+                    onSelect={handleCategorySelect}
                   />
                 </div>
               )}
@@ -191,108 +210,6 @@ function HomeContent() {
 
                   {/* New Components Section */}
                   <section>
-                    <AnimateIn variant="fadeUp">
-                      <div className="flex items-center justify-between mb-5">
-                        <div>
-                          <h3 className="text-lg font-bold tracking-tight flex items-center gap-2">
-                            <Sparkles className="w-5 h-5 text-violet-500" />
-                            50 New Components
-                          </h3>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Freshly designed UI components with detailed prompts
-                          </p>
-                        </div>
-                        <Link href="/components">
-                          <Button variant="link" size="sm" className="text-xs text-muted-foreground">
-                            View all →
-                          </Button>
-                        </Link>
-                      </div>
-                    </AnimateIn>
-                    <Link href="/components">
-                      <Card className="p-6 hover:border-border/80 hover:bg-accent/20 transition-all cursor-pointer group">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="font-bold text-sm">Browse 50 New Components</h4>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Navigation, Forms, Display, Interaction, Registry, Utilities and more
-                            </p>
-                          </div>
-                          <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-                        </div>
-                      </Card>
-                    </Link>
-                  </section>
-
-                  {/* Featured */}
-                  <section>
-                    <AnimateIn variant="fadeUp">
-                      <div className="flex items-center justify-between mb-5">
-                        <h3 className="text-lg font-bold tracking-tight">Featured</h3>
-                        <Button variant="link" size="sm" className="text-xs text-muted-foreground" asChild>
-                          <a href="/featured">View all &rarr;</a>
-                        </Button>
-                      </div>
-                    </AnimateIn>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {allComponents.slice(0, 4).map((p) => {
-                        const Preview = Previews[p.preview];
-                        return <ComponentCard key={p.id} component={p} preview={Preview} />;
-                      })}
-                    </div>
-                  </section>
-
-                  {/* Newest */}
-                  <section>
-                    <AnimateIn variant="fadeUp">
-                      <div className="flex items-center justify-between mb-5">
-                        <h3 className="text-lg font-bold tracking-tight">Newest</h3>
-                        <Button variant="link" size="sm" className="text-xs text-muted-foreground" asChild>
-                          <a href="/newest">View all &rarr;</a>
-                        </Button>
-                      </div>
-                    </AnimateIn>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {allComponents.slice(4, 8).map((p) => {
-                        const Preview = Previews[p.preview];
-                        return <ComponentCard key={p.id} component={p} preview={Preview} />;
-                      })}
-                    </div>
-                  </section>
-
-                  {/* Popular */}
-                  <section>
-                    <AnimateIn variant="fadeUp">
-                      <div className="flex items-center justify-between mb-5">
-                        <h3 className="text-lg font-bold tracking-tight">Popular</h3>
-                      </div>
-                    </AnimateIn>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {allComponents.slice(2, 10).map((p) => {
-                        const Preview = Previews[p.preview];
-                        return <ComponentCard key={p.id} component={p} preview={Preview} />;
-                      })}
-                    </div>
-                  </section>
-
-                  {/* Browse by Category */}
-                  <section>
-                    <AnimateIn variant="fadeUp">
-                      <div className="flex items-center justify-between mb-5">
-                        <h3 className="text-lg font-bold tracking-tight">Browse by Category</h3>
-                      </div>
-                    </AnimateIn>
-                    <CategoryGrid
-                      categories={CATEGORIES}
-                      onSelect={(slug) => {
-                        window.location.href = `/?category=${slug}`;
-                      }}
-                    />
-                  </section>
-
-                  {/* Footer */}
-                  <AppFooter />
-                </div>
               )}
             </div>
           </div>

@@ -52,13 +52,13 @@ export function AppFooter() {
               The open-source registry for UI components. Built by the community, for the community.
             </p>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" className="w-8 h-8 p-0">
+              <Button variant="ghost" size="sm" className="w-8 h-8 p-0" aria-label="GitHub">
                 <Github className="w-4 h-4" />
               </Button>
-              <Button variant="ghost" size="sm" className="w-8 h-8 p-0">
+              <Button variant="ghost" size="sm" className="w-8 h-8 p-0" aria-label="Twitter">
                 <Twitter className="w-4 h-4" />
               </Button>
-              <Button variant="ghost" size="sm" className="w-8 h-8 p-0">
+              <Button variant="ghost" size="sm" className="w-8 h-8 p-0" aria-label="Discord">
                 <MessageCircle className="w-4 h-4" />
               </Button>
             </div>

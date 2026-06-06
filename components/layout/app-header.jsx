@@ -5,6 +5,7 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Settings, LogOut, KeyRound, User as UserIcon } from 'lucide-react';
+import { ThemeToggle } from '@/components/theme-toggle';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,6 +36,7 @@ export function AppHeader({ title, children }) {
         {children}
       </div>
       <div className="flex items-center gap-3">
+        <ThemeToggle />
         {!loading && user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

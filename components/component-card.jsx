@@ -1,7 +1,7 @@
 'use client';
 import { motion } from 'framer-motion';
 import { Copy, Check, Heart, ExternalLink } from 'lucide-react';
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { useComponentInteractions } from '@/hooks/use-component-interactions';
 import { cn } from '@/lib/utils';
 
-export function ComponentCard({ component, preview: Preview, onCopy }) {
+export const ComponentCard = memo(function ComponentCard({ component, preview: Preview, onCopy }) {
   const [copied, setCopied] = useState(false);
   const interactions = useComponentInteractions(component.id);
 
@@ -121,4 +121,4 @@ export function ComponentCard({ component, preview: Preview, onCopy }) {
       </Link>
     </motion.div>
   );
-}
+});

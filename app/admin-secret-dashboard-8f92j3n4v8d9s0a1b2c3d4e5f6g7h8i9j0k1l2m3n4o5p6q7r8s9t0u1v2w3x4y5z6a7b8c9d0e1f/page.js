@@ -1,20 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Bot, Lock, ShieldAlert, Sparkles, Activity, Users, CreditCard, Component, Loader2 } from 'lucide-react';
+import { Bot, ShieldAlert, Sparkles, Activity, Users, CreditCard, Component, Loader2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/lib/supabase';
 import { useChat } from '@ai-sdk/react';
 
-const ADMIN_PASSWORD_400_CHARS = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-
 export default function AdminSecretDashboard() {
-  const [authStage, setAuthStage] = useState(0); 
-  const [answer, setAnswer] = useState('');
-  const [password, setPassword] = useState('');
   const [stats, setStats] = useState({ users: 0, components: 0, teams: 0, subscriptions: 0 });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,23 +16,9 @@ export default function AdminSecretDashboard() {
     body: { mode: 'code-review' },
   });
 
-  const checkAnswer = (e) => {
-    e.preventDefault();
-    if (answer.trim().toLowerCase() === 'mon ex') setAuthStage(1);
-    else alert('Erreur de sécurité. IP loggée.');
-  };
-
-  const checkPassword = (e) => {
-    e.preventDefault();
-    if (password.length >= 400) setAuthStage(2);
-    else alert('Mot de passe trop court ou invalide. Il faut 400 caractères minimum.');
-  };
-
   useEffect(() => {
-    if (authStage === 2) {
-      loadStats();
-    }
-  }, [authStage]);
+    loadStats();
+  }, []);
 
   const loadStats = async () => {
     setIsLoading(true);
@@ -62,42 +41,6 @@ export default function AdminSecretDashboard() {
       setIsLoading(false);
     }
   };
-
-  if (authStage === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black p-4">
-        <Card className="w-full max-w-md p-6 bg-zinc-950 border-red-900/50 shadow-2xl shadow-red-900/20">
-          <ShieldAlert className="w-12 h-12 text-red-500 mb-6 mx-auto" />
-          <h1 className="text-xl font-black text-center text-white mb-6">Zone Sécurisée VixLuxia</h1>
-          <form onSubmit={checkAnswer} className="space-y-4">
-            <div>
-              <label className="text-xs font-medium text-zinc-400 mb-1 block">Question de sécurité: Ta plus grosse douleur ?</label>
-              <Input type="text" value={answer} onChange={(e) => setAnswer(e.target.value)} className="bg-zinc-900 border-zinc-800 text-white" />
-            </div>
-            <Button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white">Continuer</Button>
-          </form>
-        </Card>
-      </div>
-    );
-  }
-
-  if (authStage === 1) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black p-4">
-        <Card className="w-full max-w-2xl p-6 bg-zinc-950 border-red-900/50 shadow-2xl shadow-red-900/20">
-          <Lock className="w-12 h-12 text-red-500 mb-6 mx-auto" />
-          <h1 className="text-xl font-black text-center text-white mb-6">Entrez la clé maître (400 caractères minimum)</h1>
-          <form onSubmit={checkPassword} className="space-y-4">
-            <div>
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="bg-zinc-900 border-zinc-800 text-white" />
-              <p className="text-xs text-zinc-500 mt-2 text-right">{password.length} / 400</p>
-            </div>
-            <Button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white">Déverrouiller</Button>
-          </form>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-black text-white p-8">

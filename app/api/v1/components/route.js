@@ -1,14 +1,50 @@
 import { NextResponse } from 'next/server';
 import { getAllRegistryComponents, getRegistryComponentById } from '@/lib/component-registry';
 import { getSupabaseAdmin } from '@/lib/server/supabase-admin';
+import { createSupabaseServerClient } from '@/lib/supabase-server';
+
+const rateLimit = new Map();
 
 export async function GET(request) {
+  const ip = request.headers.get('x-forwarded-for') || 'anonymous';
+  const now = Date.now();
+  const windowMs = 60 * 1000;
+  const maxRequests = 60;
+  
+  const record = rateLimit.get(ip) || { count: 0, resetTime: now + windowMs };
+  if (now > record.resetTime) {
+    record.count = 1;
+    record.resetTime = now + windowMs;
+  } else {
+    record.count++;
+  }
+  rateLimit.set(ip, record);
+
+  if (record.count > maxRequests) {
+    return new Response("Too many requests", { status: 429 });
+  }
+
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');
   const q = searchParams.get('q')?.toLowerCase();
   const category = searchParams.get('category');
   const premium = searchParams.get('premium');
   const limit = Number(searchParams.get('limit') || 100);
+
+  const supabaseAuth = createSupabaseServerClient();
+  const { data: { session } } = await supabaseAuth.auth.getSession();
+  let isPremium = false;
+  
+  if (session) {
+    const { data: profile } = await supabaseAuth
+      .from('profiles')
+      .select('subscription_status')
+      .eq('id', session.user.id)
+      .single();
+    if (profile?.subscription_status === 'active') {
+      isPremium = true;
+    }
+  }
 
   const supabase = getSupabaseAdmin();
   let dbComponents = [];
@@ -35,10 +71,17 @@ export async function GET(request) {
 
   let components = [...dbComponents, ...getAllRegistryComponents()];
 
+  const sanitizeComponent = (c) => {
+    if (c.meta?.premium && !isPremium) {
+      return { ...c, code: '// Premium component - subscription required to view code' };
+    }
+    return c;
+  };
+
   if (id) {
     const component = components.find(c => c.id === id);
     if (!component) return NextResponse.json({ error: 'Component not found' }, { status: 404 });
-    return NextResponse.json({ component });
+    return NextResponse.json({ component: sanitizeComponent(component) });
   }
 
   if (category) {
@@ -63,8 +106,12 @@ export async function GET(request) {
     });
   }
 
+  const resultComponents = components
+    .slice(0, Math.max(1, Math.min(limit, 250)))
+    .map(sanitizeComponent);
+
   return NextResponse.json({
     total: components.length,
-    components: components.slice(0, Math.max(1, Math.min(limit, 250))),
+    components: resultComponents,
   });
 }

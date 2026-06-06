@@ -52,7 +52,7 @@ export function AiSupportBubble() {
                   </p>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-black/5 dark:hover:bg-white/10" onClick={() => setIsOpen(false)}>
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-black/5 dark:hover:bg-white/10" onClick={() => setIsOpen(false)} aria-label="Close AI Support">
                 <X className="w-4 h-4" />
               </Button>
             </div>
@@ -84,7 +84,7 @@ export function AiSupportBubble() {
                 placeholder="Posez votre question..." 
                 className="flex-1 rounded-full bg-muted/50 border-transparent focus-visible:ring-1 focus-visible:ring-primary/30 h-10 px-4 text-sm" 
               />
-              <Button type="submit" size="icon" disabled={!input.trim() || isLoading} className="rounded-full h-10 w-10 shrink-0 shadow-sm bg-gradient-to-r from-violet-500 to-orange-400 text-white border-none hover:opacity-90">
+              <Button type="submit" size="icon" disabled={!input.trim() || isLoading} className="rounded-full h-10 w-10 shrink-0 shadow-sm bg-gradient-to-r from-violet-500 to-orange-400 text-white border-none hover:opacity-90" aria-label="Send message">
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               </Button>
             </form>
@@ -97,6 +97,7 @@ export function AiSupportBubble() {
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
         className="group relative flex h-14 w-14 items-center justify-center rounded-full shadow-2xl hover:shadow-primary/30 transition-all overflow-hidden"
+        aria-label="Toggle AI Support"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-pink-500 to-orange-500" style={{ backgroundSize: '300% auto', animation: 'logo-shimmer 3s linear infinite' }} />
         <div className="absolute inset-0.5 rounded-full bg-background/20 backdrop-blur-sm" />

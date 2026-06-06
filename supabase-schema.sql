@@ -21,7 +21,17 @@ ALTER TABLE public.components ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Components are viewable by everyone" 
   ON public.components FOR SELECT 
-  USING (true);
+  USING (
+    premium = false
+    or (
+      premium = true
+      and auth.uid() is not null
+      and exists (
+        select 1 from public.profiles
+        where id = auth.uid() and subscription_status = 'active'
+      )
+    )
+  );
 
 CREATE POLICY "Users can insert their own components" 
   ON public.components FOR INSERT 

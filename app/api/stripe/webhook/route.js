@@ -92,14 +92,12 @@ export async function POST(request) {
   const payload = await request.text();
   const signature = request.headers.get('stripe-signature');
 
-  try {
-    let event;
+  if (!signature) {
+    return new Response("Missing signature", { status: 400 });
+  }
 
-    if (process.env.STRIPE_WEBHOOK_SECRET && signature) {
-      event = getStripe().webhooks.constructEvent(payload, signature, process.env.STRIPE_WEBHOOK_SECRET);
-    } else {
-      event = JSON.parse(payload);
-    }
+  try {
+    const event = getStripe().webhooks.constructEvent(payload, signature, process.env.STRIPE_WEBHOOK_SECRET);
 
     if (
       [

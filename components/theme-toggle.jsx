@@ -8,12 +8,18 @@ import { cn } from '@/lib/utils';
 export function ThemeToggle({ className }) {
   const [theme, setTheme] = useState('light');
   const [showMenu, setShowMenu] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const stored = localStorage.getItem('vixluxia-theme');
     const t = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     setTheme(t);
   }, []);
+
+  if (!mounted) {
+    return <div className={cn('w-8 h-8 relative', className)} />;
+  }
 
   const applyTheme = (mode) => {
     if (mode === 'system') {

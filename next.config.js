@@ -1,7 +1,6 @@
 const nextConfig = {
   output: 'standalone',
   images: {
-    unoptimized: true,
     remotePatterns: [
       { protocol: 'https', hostname: 'avatars.githubusercontent.com', pathname: '/**' },
     ],
@@ -14,7 +13,6 @@ const nextConfig = {
     if (dev) {
       // Reduce CPU/memory from file watching
       config.watchOptions = {
-        poll: 2000, // check every 2 seconds
         aggregateTimeout: 300, // wait before rebuilding
         ignored: ['**/node_modules'],
       };

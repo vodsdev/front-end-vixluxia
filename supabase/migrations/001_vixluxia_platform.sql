@@ -126,7 +126,20 @@ alter table public.api_keys enable row level security;
 alter table public.api_usage_logs enable row level security;
 alter table public.ai_generations enable row level security;
 
-create policy "Public components are readable" on public.components for select using (status = 'published');
+create policy "Public components are readable" on public.components for select using (
+  status = 'published'
+  and (
+    premium = false
+    or (
+      premium = true
+      and auth.uid() is not null
+      and exists (
+        select 1 from public.profiles
+        where id = auth.uid() and subscription_status = 'active'
+      )
+    )
+  )
+);
 create policy "Users can manage own profile" on public.profiles for all using (auth.uid() = id) with check (auth.uid() = id);
 create policy "Users can manage own likes" on public.likes for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 create policy "Users can manage own votes" on public.component_votes for all using (auth.uid() = user_id) with check (auth.uid() = user_id);

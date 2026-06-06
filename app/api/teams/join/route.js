@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/server/supabase-admin';
+import { createClient } from '@/utils/supabase/server';
 
 export async function POST(request) {
   try {
-    const { teamId, password, userId } = await request.json();
+    const { teamId, password } = await request.json();
+
+    const supabaseUserClient = createClient();
+    const { data: { user } } = await supabaseUserClient.auth.getUser();
+    const userId = user?.id;
 
     if (!teamId || !password || !userId) {
-      return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing fields or unauthorized' }, { status: 400 });
     }
 
     const supabase = getSupabaseAdmin();
