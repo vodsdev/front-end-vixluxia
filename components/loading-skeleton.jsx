@@ -1,5 +1,6 @@
 'use client';
 import { cn } from '@/lib/utils';
+import { SkeletonCard } from '@/components/ui/skeleton-card';
 
 function Skeleton({ className, ...props }) {
   return (
@@ -11,19 +12,7 @@ function Skeleton({ className, ...props }) {
 }
 
 export function ComponentCardSkeleton() {
-  return (
-    <div className="rounded-2xl border border-border/40 overflow-hidden">
-      <Skeleton className="aspect-[16/10] rounded-none" />
-      <div className="p-4 space-y-3">
-        <Skeleton className="h-4 w-3/4" />
-        <Skeleton className="h-3 w-full" />
-        <div className="flex items-center gap-2 pt-3 border-t border-border/30">
-          <Skeleton className="h-7 flex-1 rounded-md" />
-          <Skeleton className="h-7 w-7 rounded-md" />
-        </div>
-      </div>
-    </div>
-  );
+  return <SkeletonCard />;
 }
 
 export function ComponentGridSkeleton({ count = 8 }) {
