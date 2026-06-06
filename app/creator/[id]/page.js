@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Github, Twitter, Mail, MapPin, Link as LinkIcon, Code2, Heart, Eye } from 'lucide-react';
+import { Github, Twitter, Mail, MapPin, Link as LinkIcon, Code2, Heart, Eye, Award, Star, Zap, Shield } from 'lucide-react';
 import Link from 'next/link';
 
 const mockComponents = [
@@ -59,6 +59,13 @@ const mockComponents = [
     tags: ['React', 'Tailwind'],
     date: '2 months ago',
   }
+];
+
+const mockBadges = [
+  { id: 1, name: 'Pioneer', description: 'Early adopter and initial contributor', gradient: 'from-amber-400 to-orange-500', icon: Star },
+  { id: 2, name: 'Top Contributor', description: 'Consistently provides high-quality components', gradient: 'from-purple-400 to-indigo-500', icon: Award },
+  { id: 3, name: 'Community Hero', description: 'Highly active in helping others', gradient: 'from-emerald-400 to-teal-500', icon: Shield },
+  { id: 4, name: 'Design Maestro', description: 'Exceptional UI/UX design skills', gradient: 'from-pink-400 to-rose-500', icon: Zap }
 ];
 
 export default function CreatorPortfolio({ params }) {
@@ -152,6 +159,39 @@ export default function CreatorPortfolio({ params }) {
               </div>
 
             </div>
+          </div>
+        </div>
+
+        {/* Badges & Achievements Section */}
+        <div className="space-y-6">
+          <div className="flex items-center gap-2 border-b border-white/10 pb-4">
+            <Award className="w-6 h-6 text-amber-400" />
+            <h2 className="text-2xl font-semibold text-white/90">
+              Badges & Achievements
+            </h2>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            {mockBadges.map((badge) => {
+              const Icon = badge.icon;
+              return (
+                <div 
+                  key={badge.id}
+                  className="group relative flex items-center gap-3 p-3 pr-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all cursor-default"
+                >
+                  {/* Glowing background effect for icon */}
+                  <div className="relative flex items-center justify-center w-12 h-12 rounded-xl shrink-0">
+                    <div className={`absolute inset-0 bg-gradient-to-br ${badge.gradient} rounded-xl blur-md opacity-40 group-hover:opacity-70 transition-opacity`} />
+                    <div className={`relative flex items-center justify-center w-full h-full rounded-xl bg-gradient-to-br ${badge.gradient} shadow-lg`}>
+                      <Icon className="w-6 h-6 text-white drop-shadow-md" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-white/90">{badge.name}</h3>
+                    <p className="text-xs text-neutral-400">{badge.description}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 

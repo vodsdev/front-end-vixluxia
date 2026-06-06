@@ -4,8 +4,10 @@ import { useRouter } from 'next/navigation';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Settings, LogOut, KeyRound, User as UserIcon } from 'lucide-react';
+import { Settings, LogOut, KeyRound, User as UserIcon, Search } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { CommandPalette } from '@/components/global/command-palette';
+import { useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +23,7 @@ import { signOut } from '@/lib/supabase';
 export function AppHeader({ title, children }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
@@ -36,6 +39,10 @@ export function AppHeader({ title, children }) {
         {children}
       </div>
       <div className="flex items-center gap-3">
+        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" onClick={() => setCommandPaletteOpen(true)}>
+          <Search className="h-4 w-4" />
+        </Button>
+        <CommandPalette open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} />
         <ThemeToggle />
         {!loading && user ? (
           <DropdownMenu>
