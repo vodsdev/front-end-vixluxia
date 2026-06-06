@@ -27,11 +27,13 @@ export function ComponentListItem({ component, preview: Preview }) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
-      whileHover={{ y: -2 }}
-      className="group"
+      whileHover={{ y: -2, scale: 1.01 }}
+      className="group relative"
     >
-      <Link href={`/component?id=${component.id}`}>
-      <div className="group flex items-center gap-4 p-4 rounded-xl border border-border/40 hover:border-border/80 bg-card hover:bg-accent/20 transition-all cursor-pointer">
+      {/* Ambilight glow effect */}
+      <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-primary/30 via-purple-500/30 to-primary/30 opacity-0 blur-lg transition-all duration-500 group-hover:opacity-100" />
+      <Link href={`/component?id=${component.id}`} className="block relative z-10">
+      <div className="group flex items-center gap-4 p-4 rounded-xl border border-border/40 hover:border-border/80 bg-card hover:bg-accent/20 transition-all cursor-pointer shadow-sm hover:shadow-lg">
         {/* Preview Thumbnail */}
         <div className="w-20 h-14 rounded-lg bg-white dark:bg-neutral-950 border border-border/30 flex items-center justify-center overflow-hidden shrink-0">
           {Preview ? (

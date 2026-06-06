@@ -122,7 +122,7 @@ export default function PricingPage() {
       <div className="space-y-16 pb-24">
         {/* Header Hero */}
         <section className="relative flex flex-col items-center justify-center text-center pt-20 pb-10">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-gradient-to-b from-primary/30 to-violet-500/10 rounded-[100%] blur-[120px] pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-gradient-to-b from-primary/30 to-violet-500/10 rounded-[100%] blur-[120px] pointer-events-none animate-pulse" />
           
           <AnimateIn variant="fadeUp">
             <Badge variant="outline" className="mb-6 gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border-primary/20 font-bold text-sm uppercase tracking-wider">

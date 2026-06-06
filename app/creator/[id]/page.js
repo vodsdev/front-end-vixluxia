@@ -138,8 +138,8 @@ export default function CreatorPortfolio({ params }) {
     <div className="min-h-screen bg-[#0a0a0a] text-white pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-900 via-[#0a0a0a] to-[#0a0a0a]">
       {/* Background ambient effects */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[20%] w-96 h-96 bg-purple-500/20 rounded-full blur-[120px]" />
-        <div className="absolute top-[20%] right-[20%] w-96 h-96 bg-blue-500/10 rounded-full blur-[120px]" />
+        <div className="absolute top-[-10%] left-[20%] w-96 h-96 bg-purple-500/20 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute top-[20%] right-[20%] w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] animate-pulse" />
       </div>
 
       <div className="max-w-6xl mx-auto space-y-12">

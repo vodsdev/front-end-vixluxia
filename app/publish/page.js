@@ -92,7 +92,7 @@ export default function PublishPage() {
       <div className="space-y-12 pb-24">
         {/* Header */}
         <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card p-10 md:p-12 shadow-2xl backdrop-blur-xl">
-          <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-gradient-to-br from-emerald-500/10 to-teal-400/10 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-gradient-to-br from-emerald-500/10 to-teal-400/10 rounded-full blur-[100px] pointer-events-none animate-pulse" />
           <AnimateIn variant="fadeUp">
             <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-8">
               <div className="max-w-2xl">

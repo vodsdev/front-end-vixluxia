@@ -70,12 +70,14 @@ export const ComponentCard = memo(function ComponentCard({ component, preview: P
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      whileHover={{ y: -2 }}
-      className="group h-full"
+      whileHover={{ y: -5, scale: 1.02 }}
+      className="group relative h-full"
     >
-      <Link href={`/component?id=${component.id}`} className="block h-full">
+      {/* Ambilight glow effect */}
+      <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-primary/50 via-purple-500/50 to-primary/50 opacity-0 blur-xl transition-all duration-500 group-hover:opacity-100" />
+      <Link href={`/component?id=${component.id}`} className="block h-full relative z-10">
         <TiltCard>
-          <Card className="overflow-hidden border border-border/40 hover:border-border/80 bg-card hover:bg-accent/30 transition-all rounded-2xl cursor-pointer h-full flex flex-col shadow-sm hover:shadow-md">
+          <Card className="overflow-hidden border border-border/40 hover:border-border/80 bg-card hover:bg-accent/30 transition-all rounded-2xl cursor-pointer h-full flex flex-col shadow-sm hover:shadow-xl">
             {/* Preview Section */}
             <div className="aspect-[16/10] bg-white dark:bg-neutral-950 flex items-center justify-center p-6 border-b border-border/30 overflow-hidden relative">
               {Preview ? (

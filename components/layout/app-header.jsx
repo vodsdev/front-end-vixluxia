@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Settings, LogOut, KeyRound, User as UserIcon, Search } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { CommandPalette } from '@/components/global/command-palette';
+import { CommandMenu } from '@/components/layout/command-menu';
 import { useState, useEffect } from 'react';
 import {
   DropdownMenu,
@@ -60,10 +60,13 @@ export function AppHeader({ title, children }) {
         {children}
       </div>
       <div className="flex items-center gap-3">
+        <Button variant="ghost" size="sm" className="text-xs font-medium hidden sm:inline-flex text-muted-foreground hover:text-foreground" asChild>
+          <Link href="/api">API</Link>
+        </Button>
         <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" onClick={() => setCommandPaletteOpen(true)}>
           <Search className="h-4 w-4" />
         </Button>
-        <CommandPalette open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} />
+        <CommandMenu open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} />
         <ThemeToggle />
         {!loading && user ? (
           <DropdownMenu>

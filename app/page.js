@@ -20,6 +20,41 @@ import { CATEGORIES } from '@/lib/prompts-data';
 import { getAllRegistryComponents } from '@/lib/component-registry';
 import dynamic from 'next/dynamic';
 import { Sparkles, ArrowRight } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+
+const AnimatedBackground = () => {
+  return (
+    <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-background">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-background to-background animate-pulse duration-10000" />
+      <motion.div
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-purple-500/20 blur-[120px]"
+      />
+      <motion.div
+        animate={{
+          scale: [1, 1.5, 1],
+          opacity: [0.2, 0.4, 0.2],
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 2,
+        }}
+        className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-blue-500/20 blur-[150px]"
+      />
+      <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay" />
+    </div>
+  );
+};
 
 const previewCache = {};
 function getPreview(name) {
@@ -78,7 +113,8 @@ function HomeContent() {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-transparent">
+      <AnimatedBackground />
+      <div className="flex min-h-screen w-full bg-transparent relative z-10">
         <AppSidebar search={search} onSearchChange={setSearch} />
 
         <main className="flex-1 flex flex-col min-w-0">
@@ -109,19 +145,61 @@ function HomeContent() {
                     total={filteredComponents.length}
                   />
                   {view === 'grid' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <motion.div 
+                      initial="hidden"
+                      animate="visible"
+                      variants={{
+                        hidden: { opacity: 0 },
+                        visible: {
+                          opacity: 1,
+                          transition: { staggerChildren: 0.1 }
+                        }
+                      }}
+                      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                    >
                       {filteredComponents.map((p) => {
                         const Preview = getPreview(p.preview);
-                        return <ComponentCard key={p.id} component={p} preview={Preview} />;
+                        return (
+                          <motion.div 
+                            key={p.id}
+                            variants={{
+                              hidden: { opacity: 0, y: 20 },
+                              visible: { opacity: 1, y: 0 }
+                            }}
+                          >
+                            <ComponentCard component={p} preview={Preview} />
+                          </motion.div>
+                        );
                       })}
-                    </div>
+                    </motion.div>
                   ) : (
-                    <div className="space-y-2">
+                    <motion.div 
+                      initial="hidden"
+                      animate="visible"
+                      variants={{
+                        hidden: { opacity: 0 },
+                        visible: {
+                          opacity: 1,
+                          transition: { staggerChildren: 0.1 }
+                        }
+                      }}
+                      className="space-y-2"
+                    >
                       {filteredComponents.map((p) => {
                         const Preview = getPreview(p.preview);
-                        return <ComponentListItem key={p.id} component={p} preview={Preview} />;
+                        return (
+                          <motion.div 
+                            key={p.id}
+                            variants={{
+                              hidden: { opacity: 0, x: -20 },
+                              visible: { opacity: 1, x: 0 }
+                            }}
+                          >
+                            <ComponentListItem component={p} preview={Preview} />
+                          </motion.div>
+                        );
                       })}
-                    </div>
+                    </motion.div>
                   )}
                 </div>
               )}
@@ -150,19 +228,63 @@ function HomeContent() {
                     total={currentPrompts.length}
                   />
                   {view === 'grid' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <motion.div 
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true, margin: "-50px" }}
+                      variants={{
+                        hidden: { opacity: 0 },
+                        visible: {
+                          opacity: 1,
+                          transition: { staggerChildren: 0.1 }
+                        }
+                      }}
+                      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                    >
                       {currentPrompts.map((p) => {
                         const Preview = getPreview(p.preview);
-                        return <ComponentCard key={p.id} component={p} preview={Preview} />;
+                        return (
+                          <motion.div 
+                            key={p.id}
+                            variants={{
+                              hidden: { opacity: 0, y: 20 },
+                              visible: { opacity: 1, y: 0 }
+                            }}
+                          >
+                            <ComponentCard component={p} preview={Preview} />
+                          </motion.div>
+                        );
                       })}
-                    </div>
+                    </motion.div>
                   ) : (
-                    <div className="space-y-2">
+                    <motion.div 
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true, margin: "-50px" }}
+                      variants={{
+                        hidden: { opacity: 0 },
+                        visible: {
+                          opacity: 1,
+                          transition: { staggerChildren: 0.1 }
+                        }
+                      }}
+                      className="space-y-2"
+                    >
                       {currentPrompts.map((p) => {
                         const Preview = getPreview(p.preview);
-                        return <ComponentListItem key={p.id} component={p} preview={Preview} />;
+                        return (
+                          <motion.div 
+                            key={p.id}
+                            variants={{
+                              hidden: { opacity: 0, x: -20 },
+                              visible: { opacity: 1, x: 0 }
+                            }}
+                          >
+                            <ComponentListItem component={p} preview={Preview} />
+                          </motion.div>
+                        );
                       })}
-                    </div>
+                    </motion.div>
                   )}
                   {currentPrompts.length === 0 && (
                     <div className="py-20 text-center">
@@ -198,9 +320,23 @@ function HomeContent() {
               {!search && !currentCategory && !groupParam && (
                 <div className="space-y-16">
                   {/* Hero */}
-                  <HeroSection />
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.7, ease: "easeOut" }}
+                  >
+                    <HeroSection />
+                  </motion.div>
 
-                  <PlatformFeatureGrid />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
+                  >
+                    <PlatformFeatureGrid />
+                  </motion.div>
                 </div>
               )}
             </div>

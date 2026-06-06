@@ -12,7 +12,7 @@ export default function InfoPage() {
       <div className="space-y-12 pb-24">
         {/* Hero Section */}
         <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card p-10 shadow-2xl backdrop-blur-xl">
-          <div className="absolute right-0 top-0 w-[400px] h-[400px] bg-gradient-to-br from-violet-500/20 to-orange-400/20 rounded-full blur-[80px] pointer-events-none" />
+          <div className="absolute right-0 top-0 w-[400px] h-[400px] bg-gradient-to-br from-violet-500/20 to-orange-400/20 rounded-full blur-[80px] pointer-events-none animate-pulse" />
           <AnimateIn variant="fadeUp">
             <div className="relative z-10 max-w-2xl text-center mx-auto">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold mb-6">

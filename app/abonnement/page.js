@@ -127,7 +127,7 @@ export default function AbonnementPage() {
       <div className="space-y-16 pb-24">
         {/* Header Hero */}
         <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card p-10 md:p-16 shadow-2xl backdrop-blur-xl text-center">
-          <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-violet-500/20 via-primary/10 to-orange-400/20 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-violet-500/20 via-primary/10 to-orange-400/20 rounded-full blur-[100px] pointer-events-none animate-pulse" />
           <AnimateIn variant="fadeUp">
             <div className="relative z-10 max-w-3xl mx-auto">
               <Badge variant="outline" className="mb-6 gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary border-none font-bold text-xs uppercase tracking-wider mx-auto">
