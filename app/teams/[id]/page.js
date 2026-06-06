@@ -43,13 +43,20 @@ export default function TeamDashboardPage() {
       if (teamErr) throw teamErr;
       setTeam(teamData);
 
-      // Fetch Members
-      const { data: membersData, error: memErr } = await supabase
+      // Try to fetch with profiles, if it fails, fetch without profiles
+      let { data: membersData, error: memErr } = await supabase
         .from('team_members')
         .select('*, profiles(full_name)')
         .eq('team_id', id);
 
-      if (!memErr) {
+      if (memErr) {
+        // Fallback if profiles relation doesn't exist
+        const fallback = await supabase.from('team_members').select('*').eq('team_id', id);
+        membersData = fallback.data;
+        memErr = fallback.error;
+      }
+
+      if (!memErr && membersData) {
         setMembers(membersData || []);
         const me = membersData.find(m => m.user_id === user.id);
         if (!me) {
