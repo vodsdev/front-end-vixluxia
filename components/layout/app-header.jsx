@@ -80,7 +80,14 @@ export function AppHeader({ title, children }) {
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <Link href="/profile" className="flex flex-col space-y-1 cursor-pointer hover:underline">
-                  <p className="text-sm font-medium leading-none">{profile?.full_name || profile?.username || user.user_metadata?.full_name || 'My Account'}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium leading-none">{profile?.full_name || profile?.username || user.user_metadata?.full_name || 'My Account'}</p>
+                    {profile?.current_streak > 0 && (
+                      <span className="flex items-center text-xs font-medium text-orange-500">
+                        🔥 {profile.current_streak}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
                 </Link>
               </DropdownMenuLabel>

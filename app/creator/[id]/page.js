@@ -235,23 +235,32 @@ export default function CreatorPortfolio({ params }) {
             </h2>
           </div>
           <div className="flex flex-wrap gap-4">
-            {mockBadges.map((badge) => {
-              const Icon = badge.icon;
+            {(profile?.badges?.length > 0 ? profile.badges : mockBadges).map((badge, idx) => {
+              const isString = typeof badge === 'string';
+              const name = isString ? badge : badge.name;
+              const description = isString ? '' : badge.description;
+              const gradient = isString ? 'from-purple-400 to-indigo-500' : (badge.gradient || 'from-purple-400 to-indigo-500');
+              const Icon = isString || !badge.icon ? Award : badge.icon;
+
               return (
                 <div 
-                  key={badge.id}
+                  key={isString ? idx : badge.id || idx}
                   className="group relative flex items-center gap-3 p-3 pr-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all cursor-default"
                 >
                   {/* Glowing background effect for icon */}
                   <div className="relative flex items-center justify-center w-12 h-12 rounded-xl shrink-0">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${badge.gradient} rounded-xl blur-md opacity-40 group-hover:opacity-70 transition-opacity`} />
-                    <div className={`relative flex items-center justify-center w-full h-full rounded-xl bg-gradient-to-br ${badge.gradient} shadow-lg`}>
-                      <Icon className="w-6 h-6 text-white drop-shadow-md" />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${gradient} rounded-xl blur-md opacity-40 group-hover:opacity-70 transition-opacity`} />
+                    <div className={`relative flex items-center justify-center w-full h-full rounded-xl bg-gradient-to-br ${gradient} shadow-lg`}>
+                      {typeof Icon === 'string' ? (
+                        <Award className="w-6 h-6 text-white drop-shadow-md" />
+                      ) : (
+                        <Icon className="w-6 h-6 text-white drop-shadow-md" />
+                      )}
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white/90">{badge.name}</h3>
-                    <p className="text-xs text-neutral-400">{badge.description}</p>
+                    <h3 className="font-semibold text-white/90">{name}</h3>
+                    {description && <p className="text-xs text-neutral-400">{description}</p>}
                   </div>
                 </div>
               );

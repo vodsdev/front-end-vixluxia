@@ -11,6 +11,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import { useAuth } from '@/hooks/use-auth';
 
 const STEPS = [
   ['1', 'Partager', 'Copiez votre lien et invitez d\'autres développeurs à rejoindre VixLuxia.'],
@@ -19,11 +20,28 @@ const STEPS = [
 ];
 
 export default function AffiliationPage() {
-  const [referralLink, setReferralLink] = useState('https://vixluxia.com/?ref=creator');
+  const { user } = useAuth();
+  const [referralLink, setReferralLink] = useState('https://vixluxia.com/?ref=...');
+  const [stats, setStats] = useState({ clicks: 0, signups: 0, revenue: 0 });
 
   useEffect(() => {
-    setReferralLink(`${window.location.origin}/?ref=creator`);
-  }, []);
+    if (user) {
+      setReferralLink(`https://vixluxia.com/?ref=${user.id}`);
+      
+      fetch('/api/referrals/stats')
+        .then(res => res.json())
+        .then(data => {
+          if (!data.error) {
+            setStats({
+              clicks: data.clicks || 0,
+              signups: data.signups || 0,
+              revenue: data.revenue || 0
+            });
+          }
+        })
+        .catch(console.error);
+    }
+  }, [user]);
 
   const copyReferralLink = async () => {
     await navigator.clipboard.writeText(referralLink);
@@ -66,11 +84,10 @@ export default function AffiliationPage() {
 
         {/* Metrics Grid */}
         <AnimateIn variant="fadeUp" delay={0.1}>
-          <div className="grid gap-4 md:grid-cols-4">
-            <MetricCard icon={Users} label="Membres Invités" value="0" detail="Connecté à votre Team active." tone="violet" />
-            <MetricCard icon={Wallet} label="Gains Coffre" value="0.00€" detail="Sécurisé sur Supabase." tone="emerald" delay={0.05} />
-            <MetricCard icon={Gift} label="Bonus Invitation" value="0.50€" detail="Par compte vérifié." tone="amber" delay={0.1} />
-            <MetricCard icon={Sparkles} label="Bonus Premium" value="3.00€" detail="Par abonnement Pro." tone="sky" delay={0.15} />
+          <div className="grid gap-4 md:grid-cols-3">
+            <MetricCard icon={Share2} label="Clicks" value={stats.clicks.toString()} detail="Total link clicks." tone="violet" />
+            <MetricCard icon={Users} label="Signups" value={stats.signups.toString()} detail="Referred users." tone="sky" delay={0.05} />
+            <MetricCard icon={Wallet} label="Revenue" value={`${stats.revenue.toFixed(2)}€`} detail="Total earnings." tone="emerald" delay={0.1} />
           </div>
         </AnimateIn>
 
