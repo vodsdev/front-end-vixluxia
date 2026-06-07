@@ -119,7 +119,9 @@ export default function IaPage() {
 
   const isPaid = useMemo(() => serverPremium || PAID_PLANS.includes(String(plan).toLowerCase()), [plan, serverPremium]);
 
-  const { messages, input, setInput, append, handleInputChange, handleSubmit, isLoading, error } = useChat({
+  const [localInput, setLocalInput] = useState('');
+
+  const { messages, append, isLoading, error } = useChat({
     api: '/api/ai/generate',
     body: { mode: model },
     headers: {
@@ -136,9 +138,9 @@ export default function IaPage() {
 
   const handleFormSubmit = (e) => {
     e?.preventDefault?.();
-    if (!input?.trim() || isLoading) return;
-    const currentInput = input;
-    setInput('');
+    if (!localInput?.trim() || isLoading) return;
+    const currentInput = localInput;
+    setLocalInput('');
     append({ role: 'user', content: currentInput });
   };
 
@@ -330,8 +332,8 @@ export default function IaPage() {
             <div className="p-6 bg-background/80 border-t border-border/50 backdrop-blur-xl relative z-10">
               <form onSubmit={handleFormSubmit} className="relative max-w-5xl mx-auto flex items-end gap-4 bg-card rounded-3xl border-2 border-border/50 p-2 shadow-xl focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10 transition-all">
                 <Textarea
-                  value={input}
-                  onChange={handleInputChange}
+                  value={localInput}
+                  onChange={(e) => setLocalInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Demandez un bouton de paiement animé, une section pricing sombre, ou un tableau de bord complet..."
                   className="min-h-[56px] max-h-[300px] border-0 shadow-none focus-visible:ring-0 resize-none py-4 px-6 bg-transparent text-base font-medium placeholder:text-muted-foreground/60"
@@ -340,7 +342,7 @@ export default function IaPage() {
                 <Button 
                   type="submit" 
                   size="icon" 
-                  disabled={isLoading || !input?.trim()} 
+                  disabled={isLoading || !localInput?.trim()} 
                   className="shrink-0 h-14 w-14 rounded-2xl bg-gradient-to-r from-violet-500 to-orange-400 hover:opacity-90 text-white shadow-lg shadow-orange-500/20 mb-1 mr-1 disabled:opacity-50 transition-all hover:scale-105 active:scale-95"
                 >
                   {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Send className="w-6 h-6 ml-1" />}
