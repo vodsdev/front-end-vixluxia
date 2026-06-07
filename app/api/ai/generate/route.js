@@ -1,11 +1,15 @@
 import { streamText } from 'ai';
-import { google } from '@ai-sdk/google';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { NextResponse } from 'next/server';
 import { getServerSubscription } from '@/lib/server/subscription';
 import { getSupabaseAdmin } from '@/lib/server/supabase-admin';
 
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
+
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+});
 
 // Optionnel: configurer le timeout
 export const maxDuration = 60;
