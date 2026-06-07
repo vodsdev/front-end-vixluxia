@@ -6,11 +6,14 @@ import Link from 'next/link';
 import {
   ArrowLeft,
   Check,
+  Clock,
   Copy,
   Download,
   Heart,
   MessageSquare,
+  MoreHorizontal,
   Package,
+  Reply,
   ShieldCheck,
   Star,
   Terminal,
@@ -262,49 +265,7 @@ ${component.importSnippet}
               </TabsContent>
             </Tabs>
 
-            <Card className="rounded-lg border-border/50 bg-card/80 p-5">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-sm font-bold">Commentaires</h2>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Simulation locale pour valider l experience avant Supabase.
-                  </p>
-                </div>
-                <Badge variant="secondary">{interactions.comments.length + component.stats.comments}</Badge>
-              </div>
-
-              <div className="mt-4 space-y-3">
-                <Textarea
-                  value={comment}
-                  onChange={(event) => setComment(event.target.value)}
-                  placeholder="Ajouter un retour sur ce composant..."
-                  className="min-h-[90px] resize-none"
-                />
-                <Button
-                  className="rounded-md"
-                  onClick={() => {
-                    interactions.addComment(comment);
-                    setComment('');
-                    toast.success('Commentaire ajoute');
-                  }}
-                >
-                  <MessageSquare className="h-4 w-4" />
-                  Commenter
-                </Button>
-              </div>
-
-              <div className="mt-5 space-y-3">
-                {interactions.comments.map((item) => (
-                  <div key={item.id} className="rounded-md border border-border/50 bg-background p-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-xs font-semibold">{item.author}</span>
-                      <span className="text-[10px] text-muted-foreground">{daysAgo(item.createdAt)}j</span>
-                    </div>
-                    <p className="mt-2 text-xs leading-5 text-muted-foreground">{item.body}</p>
-                  </div>
-                ))}
-              </div>
-            </Card>
+            {/* Old Comments Card Removed */}
           </div>
 
           <aside className="space-y-5">
@@ -397,6 +358,116 @@ ${component.importSnippet}
               </div>
             </Card>
           </aside>
+        </div>
+
+        {/* Visually Appealing Comments Section */}
+        <div className="mt-16 space-y-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-black tracking-tight">Discussion</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Partagez vos retours, posez des questions et aidez la communauté.
+              </p>
+            </div>
+            <Badge variant="secondary" className="px-3 py-1 text-sm">
+              3 commentaires
+            </Badge>
+          </div>
+
+          <Card className="border-border/50 bg-card/50 p-6 shadow-sm backdrop-blur">
+            <div className="flex gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
+                U
+              </div>
+              <div className="flex-1 space-y-4">
+                <Textarea
+                  placeholder="Qu'en pensez-vous ? Ajoutez un commentaire..."
+                  className="min-h-[100px] resize-none bg-background text-sm"
+                />
+                <div className="flex items-center justify-between">
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                      <Terminal className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <Button className="rounded-full px-6">
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Publier
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <div className="space-y-6">
+            {[
+              {
+                id: 1,
+                author: 'Alice Johnson',
+                avatar: 'A',
+                role: 'Frontend Developer',
+                date: 'Il y a 2 jours',
+                content: "Ce composant est exactement ce que je cherchais ! Le code est propre et très facile à intégrer dans mon projet Next.js. Ça m'a fait gagner un temps fou.",
+                likes: 12,
+              },
+              {
+                id: 2,
+                author: 'Marc Durand',
+                avatar: 'M',
+                role: 'UI Designer',
+                date: 'Il y a 5 jours',
+                content: "J'adore les animations fluides. Une petite suggestion : ce serait génial d'avoir une variante sombre spécifiquement pour les états de survol. Sinon, c'est parfait !",
+                likes: 8,
+              },
+              {
+                id: 3,
+                author: 'Sarah Lefevre',
+                avatar: 'S',
+                role: 'Fullstack Engineer',
+                date: 'Il y a 1 semaine',
+                content: "Très accessible et bien structuré. J'ai dû ajuster un peu les classes Tailwind pour correspondre à mon thème, mais la structure de base est solide. Super boulot.",
+                likes: 24,
+              }
+            ].map((comment) => (
+              <div key={comment.id} className="group flex gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary font-bold text-secondary-foreground">
+                  {comment.avatar}
+                </div>
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center justify-between rounded-2xl rounded-tl-none border border-border/50 bg-card p-4 shadow-sm">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-sm">{comment.author}</span>
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5">
+                          {comment.role}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {comment.date}
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {comment.content}
+                      </p>
+                    </div>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-4 px-2">
+                    <button className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                      <ThumbsUp className="h-3.5 w-3.5" />
+                      {comment.likes}
+                    </button>
+                    <button className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                      <Reply className="h-3.5 w-3.5" />
+                      Répondre
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       <CopilotPanel />

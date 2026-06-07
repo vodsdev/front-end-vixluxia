@@ -28,11 +28,27 @@ try {
 } catch(e) {}
 `;
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "VixLuxia",
+  "url": "https://vixluxia.com",
+  "description": "A community-driven registry of high-quality React UI components powered by Tailwind CSS and Radix UI.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "VixLuxia Team"
+  }
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>✨</text></svg>" />
       </head>
