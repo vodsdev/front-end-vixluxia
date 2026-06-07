@@ -150,9 +150,9 @@ export default function IaPage() {
   return (
     <PageShell title="IA Premium" maxWidth="max-w-[1400px]">
       <PremiumGate allowed={isPaid}>
-        <div className="space-y-6 h-[calc(100vh-100px)] flex flex-col">
+        <div className="space-y-6 flex flex-col pb-10">
           {/* Header Premium */}
-          <section className="relative rounded-3xl border border-primary/20 bg-card/60 p-8 shadow-2xl shadow-primary/5 backdrop-blur-xl shrink-0 overflow-hidden">
+          <section className="relative rounded-3xl border border-primary/20 bg-card/60 p-6 md:p-8 shadow-2xl shadow-primary/5 backdrop-blur-xl overflow-hidden shrink-0">
             <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-gradient-to-br from-violet-500/20 to-orange-400/20 rounded-full blur-[100px] pointer-events-none" />
             <div className="flex flex-col md:flex-row items-center justify-between relative z-10 gap-8">
               <div>
@@ -160,24 +160,24 @@ export default function IaPage() {
                   <Sparkles className="h-4 w-4 text-orange-400" />
                   <span className="font-bold">Privilège VixLuxia {plan.charAt(0).toUpperCase() + plan.slice(1)}</span>
                 </Badge>
-                <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-2">
+                <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-2">
                   <span className="bg-gradient-to-r from-violet-400 to-orange-400 bg-clip-text text-transparent">Studio IA</span> de Génération
                 </h1>
-                <p className="text-muted-foreground text-base max-w-xl leading-relaxed font-medium">
-                  Concevez des composants UI, des sections ou des pages entières avec notre modèle ultra-spécialisé. Le code généré est prêt pour React & Tailwind CSS avec un aperçu natif instantané.
+                <p className="text-muted-foreground text-sm md:text-base max-w-xl leading-relaxed font-medium">
+                  Concevez des composants UI, des sections ou des pages entières. Code prêt pour React & Tailwind avec aperçu natif instantané.
                 </p>
               </div>
-              <div className="flex gap-4 w-full md:w-auto shrink-0">
-                <MetricCard icon={Zap} label="Générations" value="Illimitées" detail="Lié à votre abonnement" tone="violet" />
-                <MetricCard icon={Code2} label="Aperçu" value="Temps Réel" detail="Moteur de rendu natif" tone="emerald" />
+              <div className="flex flex-wrap gap-4 w-full md:w-auto shrink-0">
+                <MetricCard icon={Zap} label="Générations" value="Illimitées" detail="Lié à l'abonnement" tone="violet" />
+                <MetricCard icon={Code2} label="Aperçu" value="Temps Réel" detail="Moteur natif" tone="emerald" />
               </div>
             </div>
           </section>
 
           {/* Chat Interface */}
-          <Card className="flex flex-col flex-1 rounded-3xl border-border/50 bg-card/60 overflow-hidden shadow-2xl backdrop-blur-md relative">
+          <Card className="flex flex-col rounded-3xl border-border/50 bg-card/60 overflow-hidden shadow-2xl backdrop-blur-md relative h-[600px] md:h-[800px]">
             {/* Toolbar */}
-            <div className="p-4 border-b border-border/50 bg-background/80 backdrop-blur-sm flex justify-between items-center z-10 relative">
+            <div className="p-4 border-b border-border/50 bg-background/80 backdrop-blur-sm flex flex-col md:flex-row justify-between md:items-center gap-4 z-10 relative">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-orange-400 flex items-center justify-center shadow-lg shadow-orange-500/20">
                   <Bot className="w-5 h-5 text-white" />

@@ -63,19 +63,23 @@ export async function POST(req) {
       system: systemPrompt,
       messages: finalMessages,
       onFinish: async ({ text, usage }) => {
-        // Enregistrer la génération dans Supabase après la fin du streaming
-        const supabase = getSupabaseAdmin();
-        if (supabase && access.user?.id) {
-          const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
-          await supabase.from('ai_generations').insert({
-            user_id: access.user.id,
-            prompt: lastUserMessage?.content || 'Conversation',
-            mode: mode || 'chat',
-            model: 'gemini-1.5-pro',
-            output: text,
-            usage: usage || {},
-            created_at: new Date().toISOString(),
-          });
+        try {
+          // Enregistrer la génération dans Supabase après la fin du streaming
+          const supabase = getSupabaseAdmin();
+          if (supabase && access.user?.id) {
+            const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
+            await supabase.from('ai_generations').insert({
+              user_id: access.user.id,
+              prompt: lastUserMessage?.content || 'Conversation',
+              mode: mode || 'chat',
+              model: 'gemini-1.5-pro',
+              output: text,
+              usage: usage || {},
+              created_at: new Date().toISOString(),
+            });
+          }
+        } catch (dbError) {
+          console.error('Erreur DB silencieuse dans onFinish:', dbError);
         }
       }
     });
