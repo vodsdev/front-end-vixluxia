@@ -135,9 +135,11 @@ export default function IaPage() {
   }, [messages]);
 
   const handleFormSubmit = (e) => {
-    e.preventDefault();
+    e?.preventDefault?.();
     if (!input?.trim() || isLoading) return;
-    handleSubmit(e);
+    const currentInput = input;
+    setInput('');
+    append({ role: 'user', content: currentInput });
   };
 
   const handleKeyDown = (e) => {

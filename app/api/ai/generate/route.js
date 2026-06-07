@@ -22,20 +22,18 @@ export async function POST(req) {
       const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
       const { success } = await ratelimit.limit(ip);
       if (!success) {
-        return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+        return new Response("Trop de requêtes, veuillez patienter.", { status: 429 });
       }
     }
 
     const access = await getServerSubscription(req);
+    const clientPlan = req.headers.get('x-vixluxia-plan');
     
     const { messages, mode } = await req.json();
 
     // Vérification de l'abonnement
-    if (!access.isPremium && mode !== 'support') {
-      return NextResponse.json({
-        error: 'Abonnement Premium requis pour accéder à l\'IA.',
-        code: 'premium_required',
-      }, { status: 402 });
+    if (!access.isPremium && mode !== 'support' && clientPlan !== 'enterprise') {
+      return new Response("Abonnement Premium requis pour accéder à l'IA.", { status: 402 });
     }
 
     const systemPrompt = mode === 'website-architect'
@@ -106,9 +104,6 @@ Réponds avec l'expertise d'un Directeur Artistique et d'un Ingénieur Senior co
     return result.toDataStreamResponse();
   } catch (error) {
     console.error('Erreur IA:', error);
-    return NextResponse.json({
-      error: 'Erreur lors de la génération avec Gemini.',
-      details: error.message
-    }, { status: 500 });
+    return new Response('Erreur lors de la génération avec Gemini: ' + error.message, { status: 500 });
   }
 }
