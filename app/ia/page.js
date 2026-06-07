@@ -119,7 +119,7 @@ export default function IaPage() {
 
   const isPaid = useMemo(() => serverPremium || PAID_PLANS.includes(String(plan).toLowerCase()), [plan, serverPremium]);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
+  const { messages, input, setInput, append, handleInputChange, handleSubmit, isLoading, error } = useChat({
     api: '/api/ai/generate',
     body: { mode: model },
     headers: {
@@ -194,6 +194,7 @@ export default function IaPage() {
                 <SelectContent className="rounded-xl border-border/50 shadow-xl">
                   <SelectItem value="component" className="font-medium cursor-pointer"><div className="flex items-center gap-2"><Palette className="w-4 h-4 text-violet-500" /> Composant UI Isolé</div></SelectItem>
                   <SelectItem value="page" className="font-medium cursor-pointer"><div className="flex items-center gap-2"><MonitorPlay className="w-4 h-4 text-orange-500" /> Page Complète</div></SelectItem>
+                  <SelectItem value="website-architect" className="font-medium cursor-pointer"><div className="flex items-center gap-2"><Sparkles className="w-4 h-4 text-blue-500" /> Architecte Expert (Site Entier)</div></SelectItem>
                   <SelectItem value="code-review" className="font-medium cursor-pointer"><div className="flex items-center gap-2"><Code2 className="w-4 h-4 text-emerald-500" /> Revue de Code Tailwind</div></SelectItem>
                 </SelectContent>
               </Select>
@@ -215,7 +216,7 @@ export default function IaPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full">
                     <Card 
                       className="p-6 cursor-pointer rounded-2xl border-border/50 bg-background/50 hover:bg-muted hover:border-primary/50 hover:shadow-xl transition-all group text-left" 
-                      onClick={() => handleInputChange({ target: { value: 'Créer un bouton de paiement avec un effet néon au survol et une icône panier en Tailwind CSS.' }})}
+                      onClick={() => append({ role: 'user', content: 'Créer un bouton de paiement avec un effet néon au survol et une icône panier en Tailwind CSS.' })}
                     >
                       <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <MonitorPlay className="w-5 h-5 text-violet-500" />
@@ -223,12 +224,15 @@ export default function IaPage() {
                       <p className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">Bouton Néon de Paiement</p>
                       <p className="text-sm text-muted-foreground leading-relaxed">Générez un bouton moderne avec des effets de lueur et des micro-interactions au survol.</p>
                       <div className="mt-4 flex items-center text-xs font-bold text-violet-500 gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        Essayer <ArrowRight className="w-3 h-3" />
+                        Générer <ArrowRight className="w-3 h-3" />
                       </div>
                     </Card>
                     <Card 
                       className="p-6 cursor-pointer rounded-2xl border-border/50 bg-background/50 hover:bg-muted hover:border-primary/50 hover:shadow-xl transition-all group text-left" 
-                      onClick={() => handleInputChange({ target: { value: 'Concevoir une section "Pricing" en mode sombre avec 3 cartes et le plan "Pro" mis en évidence avec un dégradé animé.' }})}
+                      onClick={() => {
+                        setModel('website-architect');
+                        append({ role: 'user', content: 'Concevoir un site web entier pour une clinique dentaire de luxe à Paris, avec analyse concurrentielle et images.' });
+                      }}
                     >
                       <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <Code2 className="w-5 h-5 text-orange-500" />
