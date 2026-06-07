@@ -3,12 +3,14 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, Home, LayoutGrid, CreditCard, Palette, Code2, Users } from 'lucide-react';
+import { Search, Home, LayoutGrid, CreditCard, Palette, Code2, Users, FileText, Crown } from 'lucide-react';
 
 const LINKS = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/components', label: 'Components', icon: LayoutGrid },
   { href: '/pricing', label: 'Pricing', icon: CreditCard },
+  { href: '/blog', label: 'Blog', icon: FileText },
+  { href: '/abonnement', label: 'Premium Gate', icon: Crown },
   { href: '/themes', label: 'Themes', icon: Palette },
   { href: '/api', label: 'API', icon: Code2 },
   { href: '/authors', label: 'Authors', icon: Users },

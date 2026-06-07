@@ -4,7 +4,7 @@ import { createClient } from '@/utils/supabase/server';
 
 export async function POST(request) {
   try {
-    const { teamId, password } = await request.json();
+    const { teamId, password, simulate } = await request.json();
 
     const supabaseUserClient = createClient();
     const { data: { user } } = await supabaseUserClient.auth.getUser();
@@ -45,7 +45,23 @@ export async function POST(request) {
       .eq('team_id', teamId)
       .eq('joined_ip', ip);
 
-    const isAbuse = existingMembersWithIp && existingMembersWithIp.length >= 2; // Allow max 2 from same IP to be safe for families
+    const isAbuse = existingMembersWithIp && existingMembersWithIp.length >= 2;
+
+    if (simulate) {
+      // Check if user is already in the team
+      const { data: existingMember } = await supabase
+        .from('team_members')
+        .select('id')
+        .eq('team_id', teamId)
+        .eq('user_id', userId)
+        .single();
+      
+      if (existingMember) {
+        return NextResponse.json({ error: 'You are already in this team' }, { status: 400 });
+      }
+
+      return NextResponse.json({ success: true, rewarded: !isAbuse, simulated: true });
+    }
 
     // 3. Add member
     const { error: insertError } = await supabase.from('team_members').insert({

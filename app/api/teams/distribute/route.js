@@ -4,7 +4,7 @@ import { createClient } from '@/utils/supabase/server';
 
 export async function POST(request) {
   try {
-    const { teamId } = await request.json();
+    const { teamId, simulate } = await request.json();
 
     const supabaseUserClient = createClient();
     const { data: { user } } = await supabaseUserClient.auth.getUser();
@@ -31,6 +31,59 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized. Only owner can distribute.' }, { status: 403 });
     }
 
+    // Fetch vault balance
+    const { data: team, error: teamError } = await supabase
+      .from('teams')
+      .select('vault_balance')
+      .eq('id', teamId)
+      .single();
+
+    if (teamError || !team) {
+      return NextResponse.json({ error: 'Team not found' }, { status: 404 });
+    }
+
+    const balance = Number(team.vault_balance) || 0;
+
+    // Fetch members to distribute credits
+    const { data: members, error: membersError } = await supabase
+      .from('team_members')
+      .select('user_id')
+      .eq('team_id', teamId);
+
+    if (membersError) throw membersError;
+
+    const membersCount = members ? members.length : 0;
+    const share = membersCount > 0 ? balance / membersCount : 0;
+
+    if (simulate) {
+      return NextResponse.json({ 
+        success: true, 
+        simulated: true, 
+        vaultBalance: balance, 
+        membersCount, 
+        sharePerMember: share 
+      });
+    }
+
+    if (balance > 0 && membersCount > 0) {
+      // Distribute points/credits to each member
+      for (const m of members) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('points')
+          .eq('id', m.user_id)
+          .single();
+          
+        if (profile) {
+          const newPoints = (profile.points || 0) + share;
+          await supabase
+            .from('profiles')
+            .update({ points: newPoints })
+            .eq('id', m.user_id);
+        }
+      }
+    }
+
     // Reset vault to 0
     const { error: updateError } = await supabase
       .from('teams')
@@ -39,7 +92,12 @@ export async function POST(request) {
 
     if (updateError) throw updateError;
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ 
+      success: true, 
+      vaultBalance: balance,
+      membersCount,
+      sharePerMember: share
+    });
 
   } catch (err) {
     console.error('Distribute vault error:', err);

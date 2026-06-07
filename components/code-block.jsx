@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Copy, Check, WrapText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -8,6 +8,30 @@ import { cn } from '@/lib/utils';
 export function CodeBlock({ code, language = 'tsx', filename, className }) {
   const [copied, setCopied] = useState(false);
   const [wrapped, setWrapped] = useState(false);
+  const [highlightedCode, setHighlightedCode] = useState(null);
+  const workerRef = useRef(null);
+
+  useEffect(() => {
+    // Initialize Web Worker for syntax highlighting offloading
+    workerRef.current = new Worker('/workers/highlighter.js');
+
+    workerRef.current.onmessage = (e) => {
+      if (e.data.highlighted) {
+        setHighlightedCode(e.data.highlighted);
+      }
+    };
+
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, []);
+
+  useEffect(() => {
+    // Offload highlighting whenever code or language changes
+    if (workerRef.current) {
+      workerRef.current.postMessage({ code, language });
+    }
+  }, [code, language]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(code);
@@ -57,7 +81,11 @@ export function CodeBlock({ code, language = 'tsx', filename, className }) {
           'text-[12px] leading-relaxed font-mono text-neutral-300',
           wrapped ? 'whitespace-pre-wrap break-all' : 'whitespace-pre'
         )}>
-          <code>{code}</code>
+          {highlightedCode ? (
+            <code dangerouslySetInnerHTML={{ __html: highlightedCode }} />
+          ) : (
+            <code>{code}</code>
+          )}
         </pre>
       </div>
     </div>

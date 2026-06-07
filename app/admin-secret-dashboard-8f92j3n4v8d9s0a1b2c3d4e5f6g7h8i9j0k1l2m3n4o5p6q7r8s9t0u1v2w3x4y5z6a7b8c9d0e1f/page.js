@@ -10,6 +10,8 @@ import { useChat } from '@ai-sdk/react';
 export default function AdminSecretDashboard() {
   const [stats, setStats] = useState({ users: 0, components: 0, teams: 0, subscriptions: 0 });
   const [isLoading, setIsLoading] = useState(false);
+  const [pendingComponents, setPendingComponents] = useState([]);
+  const [isPendingLoading, setIsPendingLoading] = useState(false);
 
   const { messages, append, isLoading: isAiLoading } = useChat({
     api: '/api/ai/generate',
@@ -18,7 +20,38 @@ export default function AdminSecretDashboard() {
 
   useEffect(() => {
     loadStats();
+    loadPending();
   }, []);
+
+  const loadPending = async () => {
+    setIsPendingLoading(true);
+    try {
+      const res = await fetch('/api/admin/components');
+      if (res.ok) {
+        const data = await res.json();
+        setPendingComponents(data.components || []);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsPendingLoading(false);
+    }
+  };
+
+  const handleAction = async (id, status) => {
+    try {
+      const res = await fetch('/api/admin/components', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status })
+      });
+      if (res.ok) {
+        setPendingComponents(prev => prev.filter(c => c.id !== id));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const loadStats = async () => {
     setIsLoading(true);
@@ -74,6 +107,40 @@ export default function AdminSecretDashboard() {
               messages.filter(m => m.role === 'assistant').map((m, i) => (
                 <div key={i} className="prose prose-invert max-w-none">{m.content}</div>
               ))
+            )}
+          </div>
+        </Card>
+
+        <Card className="p-6 bg-zinc-900 border-zinc-800 mt-8">
+          <div className="flex items-center gap-3 mb-6">
+            <Component className="w-6 h-6 text-blue-400" />
+            <h2 className="text-xl font-bold">Pending Components</h2>
+          </div>
+          <div className="space-y-4">
+            {isPendingLoading ? (
+              <div className="flex items-center gap-3 text-zinc-500"><Loader2 className="w-4 h-4 animate-spin" /> Loading pending components...</div>
+            ) : pendingComponents.length === 0 ? (
+              <p className="text-zinc-500 text-sm">No pending components.</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {pendingComponents.map(comp => (
+                  <div key={comp.id} className="bg-black/50 p-4 rounded-xl border border-zinc-800 flex flex-col justify-between">
+                    <div>
+                      <h3 className="font-bold text-white mb-1">{comp.name}</h3>
+                      <p className="text-xs text-zinc-400 mb-2">{comp.tagline}</p>
+                      <Badge variant="outline" className="text-xs border-zinc-700">{comp.category}</Badge>
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                      <button onClick={() => handleAction(comp.id, 'published')} className="flex-1 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                        Approve
+                      </button>
+                      <button onClick={() => handleAction(comp.id, 'rejected')} className="flex-1 bg-red-500/10 text-red-500 hover:bg-red-500/20 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </Card>

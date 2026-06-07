@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -55,7 +55,48 @@ export default function ComponentDetailPage() {
   const componentId = searchParams.get('id');
   const [copied, setCopied] = useState('');
   const [comment, setComment] = useState('');
+  const [commentsList, setCommentsList] = useState([]);
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const component = useMemo(() => getRegistryComponentById(componentId), [componentId]);
+
+  useEffect(() => {
+    async function fetchComments() {
+      try {
+        const res = await fetch(`/api/v1/components/comments?componentId=${componentId || ''}`);
+        if (res.ok) {
+          const data = await res.json();
+          setCommentsList(data.comments || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch comments', error);
+      }
+    }
+    fetchComments();
+  }, [componentId]);
+
+  const handlePostComment = async () => {
+    if (!comment.trim()) return;
+    setIsSubmittingComment(true);
+    try {
+      const res = await fetch('/api/v1/components/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: comment, componentId })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCommentsList(prev => [data.comment, ...prev]);
+        setComment('');
+        toast.success("Commentaire publié");
+      } else {
+        toast.error("Erreur lors de la publication du commentaire");
+      }
+    } catch (error) {
+      toast.error("Erreur de réseau");
+    } finally {
+      setIsSubmittingComment(false);
+    }
+  };
   const interactions = useComponentInteractions(componentId || 'unknown');
 
   // Mock user subscription tier
@@ -370,7 +411,7 @@ ${component.importSnippet}
               </p>
             </div>
             <Badge variant="secondary" className="px-3 py-1 text-sm">
-              3 commentaires
+              {commentsList.length} commentaire{commentsList.length !== 1 ? 's' : ''}
             </Badge>
           </div>
 
@@ -383,6 +424,9 @@ ${component.importSnippet}
                 <Textarea
                   placeholder="Qu'en pensez-vous ? Ajoutez un commentaire..."
                   className="min-h-[100px] resize-none bg-background text-sm"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  disabled={isSubmittingComment}
                 />
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
@@ -390,9 +434,9 @@ ${component.importSnippet}
                       <Terminal className="h-4 w-4" />
                     </Button>
                   </div>
-                  <Button className="rounded-full px-6">
+                  <Button className="rounded-full px-6" onClick={handlePostComment} disabled={isSubmittingComment || !comment.trim()}>
                     <MessageSquare className="mr-2 h-4 w-4" />
-                    Publier
+                    {isSubmittingComment ? 'Publication...' : 'Publier'}
                   </Button>
                 </div>
               </div>
@@ -400,35 +444,7 @@ ${component.importSnippet}
           </Card>
 
           <div className="space-y-6">
-            {[
-              {
-                id: 1,
-                author: 'Alice Johnson',
-                avatar: 'A',
-                role: 'Frontend Developer',
-                date: 'Il y a 2 jours',
-                content: "Ce composant est exactement ce que je cherchais ! Le code est propre et très facile à intégrer dans mon projet Next.js. Ça m'a fait gagner un temps fou.",
-                likes: 12,
-              },
-              {
-                id: 2,
-                author: 'Marc Durand',
-                avatar: 'M',
-                role: 'UI Designer',
-                date: 'Il y a 5 jours',
-                content: "J'adore les animations fluides. Une petite suggestion : ce serait génial d'avoir une variante sombre spécifiquement pour les états de survol. Sinon, c'est parfait !",
-                likes: 8,
-              },
-              {
-                id: 3,
-                author: 'Sarah Lefevre',
-                avatar: 'S',
-                role: 'Fullstack Engineer',
-                date: 'Il y a 1 semaine',
-                content: "Très accessible et bien structuré. J'ai dû ajuster un peu les classes Tailwind pour correspondre à mon thème, mais la structure de base est solide. Super boulot.",
-                likes: 24,
-              }
-            ].map((comment) => (
+            {commentsList.map((comment) => (
               <div key={comment.id} className="group flex gap-4">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary font-bold text-secondary-foreground">
                   {comment.avatar}

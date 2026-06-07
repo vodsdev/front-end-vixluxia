@@ -74,6 +74,7 @@ export default function CreatorPortfolio({ params }) {
   const [components, setComponents] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
+  const [stats, setStats] = React.useState({ totalViews: '0', followers: '0' });
 
   // Use React.use() to unwrap params if this was an async component in Next.js 13+ or simply destructure if client side.
   // Next 14+ best practices suggest awaiting params in Server Components or using use() hook in client, 
@@ -99,8 +100,20 @@ export default function CreatorPortfolio({ params }) {
           throw componentsError;
         }
 
+        // Fetch stats
+        let statsData = { totalViews: '0', followers: '0' };
+        try {
+          const statsRes = await fetch(`/api/creator/${id}/stats`);
+          if (statsRes.ok) {
+            statsData = await statsRes.json();
+          }
+        } catch (e) {
+          console.error('Failed to fetch stats:', e);
+        }
+
         setProfile(profileData || null);
         setComponents(componentsData || []);
+        setStats(statsData);
       } catch (err) {
         console.error('Error fetching creator data:', err);
         setError(err.message);
@@ -213,11 +226,11 @@ export default function CreatorPortfolio({ params }) {
                   <div className="text-xs text-neutral-500 font-medium uppercase tracking-wider">Components</div>
                 </div>
                 <div className="text-center md:text-right">
-                  <div className="text-2xl font-bold text-white">0</div>
+                  <div className="text-2xl font-bold text-white">{stats.totalViews}</div>
                   <div className="text-xs text-neutral-500 font-medium uppercase tracking-wider">Total Views</div>
                 </div>
                 <div className="text-center md:text-right">
-                  <div className="text-2xl font-bold text-white">0</div>
+                  <div className="text-2xl font-bold text-white">{stats.followers}</div>
                   <div className="text-xs text-neutral-500 font-medium uppercase tracking-wider">Followers</div>
                 </div>
               </div>
