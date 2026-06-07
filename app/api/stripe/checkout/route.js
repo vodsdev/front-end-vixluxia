@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getServerSubscription } from '@/lib/server/subscription';
-import { getSupabaseAdmin } from '@/lib/server/supabase-admin';
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 function appUrl(request) {
   const origin = request.headers.get('origin');
@@ -13,68 +15,67 @@ function appUrl(request) {
 
 async function createCheckout(request, body = {}) {
   const subscription = await getServerSubscription(request);
-  const plan = body.plan || 'pro';
+  const plan = body.plan ? body.plan.toLowerCase() : 'pro';
 
   const baseUrl = appUrl(request);
   const referralCode = body.referralCode || request.cookies.get('vixluxia_ref')?.value || '';
   const returnPath = body.returnUrl || '/abonnement';
 
   const userId = subscription.user?.id;
-  const mockSessionId = 'cs_test_' + Math.random().toString(36).substr(2, 9);
+  const userEmail = subscription.user?.email;
 
-  // MOCK SUCCESS: Update DB immediately since we don't have real Stripe keys
-  if (userId) {
-    const supabaseAdmin = getSupabaseAdmin();
-    if (supabaseAdmin) {
-      const mockSubId = 'sub_mock_' + Math.random().toString(36).substr(2, 9);
-      const mockCustomerId = 'cus_mock_' + Math.random().toString(36).substr(2, 9);
-
-      await supabaseAdmin.from('subscriptions').upsert({
-        user_id: userId,
-        stripe_customer_id: mockCustomerId,
-        stripe_subscription_id: mockSubId,
-        status: 'active',
-        plan,
-        current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'stripe_subscription_id' });
-
-      await supabaseAdmin.from('profiles').upsert({
-        id: userId,
-        stripe_customer_id: mockCustomerId,
-        subscription_status: 'active',
-        subscription_plan: plan,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'id' });
-      
-      // Bonus Affiliation Team (+3.00€) for mock
-      const { data: member } = await supabaseAdmin
-        .from('team_members')
-        .select('team_id')
-        .eq('user_id', userId)
-        .limit(1)
-        .maybeSingle();
-
-      if (member && member.team_id) {
-        const { data: team } = await supabaseAdmin
-          .from('teams')
-          .select('vault_balance')
-          .eq('id', member.team_id)
-          .single();
-        
-        if (team) {
-          await supabaseAdmin
-            .from('teams')
-            .update({ vault_balance: Number(team.vault_balance) + 3.00 })
-            .eq('id', member.team_id);
-        }
-      }
+  // Determine price ID based on plan
+  let priceId = body.priceId;
+  if (!priceId) {
+    if (plan === 'starter') {
+      priceId = process.env.NEXT_PUBLIC_VIXLUXIA_PRICE_STARTER;
+    } else if (plan === 'enterprise') {
+      priceId = process.env.NEXT_PUBLIC_VIXLUXIA_PRICE_ENTERPRISE;
+    } else {
+      priceId = process.env.NEXT_PUBLIC_VIXLUXIA_PRICE_PRO;
     }
   }
 
-  const successUrl = `${baseUrl}${returnPath}?checkout=success&session_id=${mockSessionId}`;
+  if (!priceId) {
+    return NextResponse.json({ error: 'No price ID provided or configured' }, { status: 400 });
+  }
 
-  return NextResponse.json({ url: successUrl, id: mockSessionId });
+  const successUrl = `${baseUrl}${returnPath}?checkout=success&session_id={CHECKOUT_SESSION_ID}`;
+  const cancelUrl = `${baseUrl}${returnPath}?checkout=canceled`;
+
+  try {
+    const sessionConfig = {
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      mode: 'subscription',
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      metadata: {
+        userId: userId || '',
+        plan: plan,
+        referralCode: referralCode,
+      },
+    };
+
+    if (userId) {
+      sessionConfig.client_reference_id = userId;
+    }
+
+    if (userEmail) {
+      sessionConfig.customer_email = userEmail;
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
+
+    return NextResponse.json({ url: session.url, id: session.id });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
 
 export async function POST(request) {
@@ -93,6 +94,7 @@ export async function GET(request) {
       plan: searchParams.get('plan') || 'pro',
       priceId: searchParams.get('priceId'),
       referralCode: searchParams.get('ref') || '',
+      returnUrl: searchParams.get('returnUrl') || '/abonnement'
     });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

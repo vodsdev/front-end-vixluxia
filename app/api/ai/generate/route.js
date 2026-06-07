@@ -4,23 +4,23 @@ import { NextResponse } from 'next/server';
 import { getServerSubscription } from '@/lib/server/subscription';
 import { getSupabaseAdmin } from '@/lib/server/supabase-admin';
 
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+
 // Optionnel: configurer le timeout
 export const maxDuration = 60;
 
 export async function POST(req) {
   try {
-    // === MOCK RATE LIMITING LOGIC ===
-    // If @upstash/ratelimit was installed, you would do something like this:
-    // import { Ratelimit } from "@upstash/ratelimit";
-    // import { Redis } from "@upstash/redis";
-    // const redis = Redis.fromEnv();
-    // const ratelimit = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10, "10 s") });
-    // const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
-    // const { success } = await ratelimit.limit(ip);
-    // if (!success) {
-    //   return NextResponse.json({ error: "Too many requests" }, { status: 429 });
-    // }
-    // ================================
+    if (process.env.UPSTASH_REDIS_REST_URL) {
+      const redis = Redis.fromEnv();
+      const ratelimit = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10, "10 s") });
+      const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
+      const { success } = await ratelimit.limit(ip);
+      if (!success) {
+        return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+      }
+    }
 
     const access = await getServerSubscription(req);
     
