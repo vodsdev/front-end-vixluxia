@@ -31,7 +31,7 @@ export function HeroSection() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
             </span>
-            <span className="text-foreground">Vixluxia 2.0 is now live</span>
+            <span className="text-foreground">Vixluxia 3.0 is now live</span>
             <ArrowRight className="w-4 h-4 ml-1" />
           </motion.div>
 
@@ -118,8 +118,8 @@ export function HeroSection() {
               <Card className="p-1 sm:p-2 bg-background/80 backdrop-blur-xl border-border/50 overflow-hidden rounded-2xl sm:rounded-3xl">
                 <div className="bg-muted/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-border/50">
                   <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-inner">
-                      <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-violet-500/10 flex items-center justify-center border border-violet-500/20">
+                      <div className="h-4 w-4 rounded-full bg-violet-500 shadow-[0_0_10px_rgba(139,92,246,0.5)]" />
                     </div>
                     <div>
                       <div className="h-3 sm:h-4 w-20 sm:w-24 bg-foreground/10 rounded-full mb-2"></div>
@@ -205,7 +205,7 @@ export function HeroSection() {
               </Card>
             </motion.div>
             
-            {/* Mobile simplified cards - visible only on small screens to avoid clutter */}
+            {/* Mobile simplified cards */}
             <motion.div
               initial={{ opacity: 0, x: -30, y: -40 }}
               animate={{ opacity: 1, x: -40, y: [-40, -30, -40] }}
