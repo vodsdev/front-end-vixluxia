@@ -1,7 +1,7 @@
 'use client';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Sparkles, LayoutGrid, Clock, Trophy, Palette, Users, Search, Settings, Sun, Moon, FolderClosed, Code2, CreditCard, Share2, Bot, Upload, KeyRound, Wand2, BarChart3 } from 'lucide-react';
+import { Sparkles, LayoutGrid, Clock, Trophy, Palette, Users, Search, Settings, Sun, Moon, FolderClosed, Code2, CreditCard, Share2, Bot, Upload, KeyRound, Wand2, BarChart3, Globe } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import {
   Sidebar,
@@ -32,6 +32,7 @@ const NAV_ITEMS = [
   { href: '/week', label: 'Best of Week', icon: Trophy },
   { href: '/themes', label: 'Themes', icon: Palette },
   { href: '/authors', label: 'Top Authors', icon: Users },
+  { href: '/public', label: 'Public Registry', icon: Globe },
 ];
 
 const PLATFORM_ITEMS = [

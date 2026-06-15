@@ -60,9 +60,6 @@ export function AppHeader({ title, children }) {
         {children}
       </div>
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" className="text-xs font-medium hidden sm:inline-flex text-muted-foreground hover:text-foreground" asChild>
-          <Link href="/api">API</Link>
-        </Button>
         <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" onClick={() => setCommandPaletteOpen(true)}>
           <Search className="h-4 w-4" />
         </Button>
@@ -102,9 +99,9 @@ export function AppHeader({ title, children }) {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/api" className="cursor-pointer">
+                <Link href="/api-dashboard" className="cursor-pointer">
                   <KeyRound className="mr-2 h-4 w-4" />
-                  <span>API</span>
+                  <span>API Dashboard</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
