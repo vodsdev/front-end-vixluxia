@@ -79,7 +79,7 @@ export function AppSidebar({ search, onSearchChange }) {
     <Sidebar className="overflow-hidden relative border-none">
       <SidebarHeader className="p-4 flex flex-row items-center gap-2 relative">
         <Link href="/" className="relative flex items-center gap-2.5 w-full pl-1 group p-2">
-          <img src="/logo-sparkle.png" alt="Logo" className="w-8 h-8 object-contain group-hover:rotate-12 transition-transform duration-300" />
+          <img src="/logo-sparkle-hd.png" alt="Logo" className="w-8 h-8 object-contain group-hover:rotate-12 transition-transform duration-300" />
           <span 
             className={cn(
               outfit.className,
