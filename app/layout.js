@@ -4,7 +4,7 @@ import { Toaster } from 'sonner';
 import { Suspense } from 'react';
 import { CommandPalette } from '@/components/command-palette';
 import { AiSupportBubble } from '@/components/global/ai-support-bubble';
-import { TopLogoBar } from '@/components/layout/top-logo-bar';
+
 import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -51,7 +51,9 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="shortcut icon" href="/favicon.png" />
+        <link rel="apple-touch-icon" href="/favicon.png" />
       </head>
       <body className="font-sans antialiased text-foreground selection:bg-primary/20 dark:selection:bg-primary/30 min-h-screen relative">
         {/* Global Ambient Glow Background */}
@@ -61,7 +63,6 @@ export default function RootLayout({ children }) {
           <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] rounded-full bg-fuchsia-500/15 dark:bg-fuchsia-500/10 blur-[100px] animate-pulse" style={{ animationDuration: '12s', animationDelay: '4s' }} />
         </div>
         
-        <TopLogoBar />
         <Suspense fallback={null}>
           {children}
         </Suspense>
