@@ -1,7 +1,7 @@
 'use client';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Sparkles, LayoutGrid, Clock, Trophy, Palette, Users, Search, Settings, Sun, Moon, FolderClosed, Code2, CreditCard, Share2, Bot, Upload, KeyRound } from 'lucide-react';
+import { Sparkles, LayoutGrid, Clock, Trophy, Palette, Users, Search, Settings, Sun, Moon, FolderClosed, Code2, CreditCard, Share2, Bot, Upload, KeyRound, Wand2, BarChart3 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import {
   Sidebar,
@@ -35,12 +35,13 @@ const NAV_ITEMS = [
 ];
 
 const PLATFORM_ITEMS = [
-  { href: '/api', label: 'API', icon: Code2 },
+  { href: '/ai-generator', label: 'AI Generator', icon: Wand2 },
+  { href: '/api-dashboard', label: 'API Dashboard', icon: BarChart3 },
+  { href: '/api', label: 'API Docs', icon: Code2 },
   { href: '/abonnement', label: 'Abonnement', icon: CreditCard },
   { href: '/affiliation', label: 'Affiliation', icon: Share2 },
   { href: '/ia', label: 'IA Premium', icon: Bot },
   { href: '/publish', label: 'Publish', icon: Upload },
-
 ];
 
 import { MessageSquareQuote, Info } from 'lucide-react';
@@ -77,6 +78,7 @@ export function AppSidebar({ search, onSearchChange }) {
     <Sidebar className="overflow-hidden relative border-none">
       <SidebarHeader className="p-4 flex flex-row items-center gap-2 relative">
         <Link href="/" className="relative flex items-center gap-2.5 w-full pl-1 group p-2">
+          <img src="/logo-sparkle.png" alt="Logo" className="w-8 h-8 object-contain group-hover:rotate-12 transition-transform duration-300" />
           <span 
             className={cn(
               outfit.className,

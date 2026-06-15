@@ -50,7 +50,7 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>✨</text></svg>" />
+        <link rel="icon" href="/favicon.ico" />
       </head>
       <body className="font-sans antialiased text-foreground selection:bg-primary/20 dark:selection:bg-primary/30 min-h-screen relative">
         {/* Global Ambient Glow Background */}
