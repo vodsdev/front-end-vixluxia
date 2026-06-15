@@ -69,17 +69,8 @@ export function AppSidebar({ search, onSearchChange }) {
 
   return (
     <Sidebar className="overflow-hidden relative border-none">
-      <SidebarHeader className="p-6 flex flex-col items-center gap-4">
-        {/* Logo HD Centré en Haut */}
-        <Link href="/" className="group transition-transform duration-300 hover:scale-110">
-          <img 
-            src="/logo-sparkle-hd.png" 
-            alt="VixLuxia Logo" 
-            className="w-16 h-16 object-contain drop-shadow-[0_0_15px_rgba(139,92,246,0.3)]" 
-          />
-        </Link>
-        
-        {/* Texte VixLuxia Pur */}
+      <SidebarHeader className="p-6 flex flex-col items-center gap-2">
+        {/* Texte VixLuxia Pur sans logo */}
         <Link href="/" className="relative flex items-center justify-center w-full group">
           <span 
             className={cn(

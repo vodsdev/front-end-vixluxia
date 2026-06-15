@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 import { Suspense } from 'react';
 import { CommandPalette } from '@/components/command-palette';
 import { AiSupportBubble } from '@/components/global/ai-support-bubble';
+import { TopLogoBar } from '@/components/layout/top-logo-bar';
 import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -60,6 +61,7 @@ export default function RootLayout({ children }) {
           <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] rounded-full bg-fuchsia-500/15 dark:bg-fuchsia-500/10 blur-[100px] animate-pulse" style={{ animationDuration: '12s', animationDelay: '4s' }} />
         </div>
         
+        <TopLogoBar />
         <Suspense fallback={null}>
           {children}
         </Suspense>
