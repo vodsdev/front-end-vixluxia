@@ -24,6 +24,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { CATEGORIES, PROMPTS } from '@/lib/prompts-data';
 import { cn } from '@/lib/utils';
+import { Outfit } from 'next/font/google';
+
+const outfit = Outfit({ subsets: ['latin'], weight: ['700', '900'] });
 
 const NAV_ITEMS = [
   { href: '/', label: 'Discover', icon: LayoutGrid },
@@ -52,10 +55,6 @@ const COMMUNITY_ITEMS = [
   { href: '/info', label: 'Informations', icon: Info },
 ];
 
-import { Outfit } from 'next/font/google';
-
-const outfit = Outfit({ subsets: ['latin'], weight: ['700', '900'] });
-
 export function AppSidebar({ search, onSearchChange }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -68,27 +67,29 @@ export function AppSidebar({ search, onSearchChange }) {
     document.documentElement.classList.toggle('dark', t === 'dark');
   }, []);
 
-  const toggleTheme = () => {
-    const next = theme === 'dark' ? 'light' : 'dark';
-    setTheme(next);
-    document.documentElement.classList.toggle('dark', next === 'dark');
-    localStorage.setItem('vixluxia-theme', next);
-  };
-
   return (
     <Sidebar className="overflow-hidden relative border-none">
-      <SidebarHeader className="p-4 flex flex-row items-center gap-2 relative">
-        <Link href="/" className="relative flex items-center gap-2.5 w-full pl-1 group p-2">
-          <img src="/logo-sparkle-hd.png" alt="Logo" className="w-8 h-8 object-contain group-hover:rotate-12 transition-transform duration-300" />
+      <SidebarHeader className="p-6 flex flex-col items-center gap-4">
+        {/* Logo HD Centré en Haut */}
+        <Link href="/" className="group transition-transform duration-300 hover:scale-110">
+          <img 
+            src="/logo-sparkle-hd.png" 
+            alt="VixLuxia Logo" 
+            className="w-16 h-16 object-contain drop-shadow-[0_0_15px_rgba(139,92,246,0.3)]" 
+          />
+        </Link>
+        
+        {/* Texte VixLuxia Pur */}
+        <Link href="/" className="relative flex items-center justify-center w-full group">
           <span 
             className={cn(
               outfit.className,
-              "relative font-black text-[26px] tracking-tight bg-clip-text text-transparent group-hover:scale-[1.03] transition-transform duration-300",
+              "relative font-black text-[28px] tracking-tighter bg-clip-text text-transparent transition-all duration-500",
               "bg-gradient-to-r from-violet-600 via-pink-400 via-white to-violet-600 dark:from-violet-400 dark:via-fuchsia-300 dark:via-white dark:to-violet-400"
             )}
             style={{ 
               backgroundSize: '300% auto', 
-              animation: 'logo-shimmer 3s linear infinite' 
+              animation: 'logo-shimmer 4s linear infinite' 
             }}
           >
             VixLuxia
@@ -105,7 +106,7 @@ export function AppSidebar({ search, onSearchChange }) {
       <SidebarContent className="bg-transparent">
         {/* Search */}
         <SidebarGroup>
-          <SidebarGroupContent className="px-3 pt-4">
+          <SidebarGroupContent className="px-3 pt-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
               <Input
@@ -201,7 +202,6 @@ export function AppSidebar({ search, onSearchChange }) {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Marketing Blocks & UI Components as direct links */}
         <SidebarGroup>
           <SidebarGroupLabel className="px-4 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
             Collections
