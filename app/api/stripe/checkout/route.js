@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server';
 import { getServerSubscription } from '@/lib/server/subscription';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = process.env.STRIPE_SECRET_KEY 
+  ? new Stripe(process.env.STRIPE_SECRET_KEY)
+  : { checkout: { sessions: { create: () => { throw new Error("Stripe not configured"); } } } };
 
 function appUrl(request) {
   const origin = request.headers.get('origin');

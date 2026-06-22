@@ -86,7 +86,7 @@
     "three": "^0.184.0",
     "uuid": "9.0.1",
     "vaul": "1.1.2",
-    "zod": "^3.25.67"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",

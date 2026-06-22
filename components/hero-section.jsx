@@ -4,6 +4,7 @@ import { Sparkles, ArrowRight, Github, Code, Layout, Blocks, Zap } from 'lucide-
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useRef } from 'react';
+import Link from 'next/link';
 
 export function HeroSection() {
   const containerRef = useRef(null);
@@ -14,14 +15,13 @@ export function HeroSection() {
 
   const y1 = useTransform(scrollYProgress, [0, 1], [0, -100]);
   const y2 = useTransform(scrollYProgress, [0, 1], [0, -200]);
-  const rotate = useTransform(scrollYProgress, [0, 1], [0, 15]);
 
   return (
     <section ref={containerRef} className="relative overflow-hidden py-20 lg:py-28 w-full min-h-[90vh] flex items-center justify-center">
       {/* Animated Grid Background */}
       <div className="absolute inset-0 -z-20 h-full w-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
       
-      {/* Ambient glowing orbs - Reduced intensity for professional look */}
+      {/* Ambient glowing orbs */}
       <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute -top-1/4 left-1/4 w-[600px] h-[600px] bg-violet-500/10 rounded-full blur-[120px]" />
         <div className="absolute bottom-1/4 right-1/4 w-[700px] h-[700px] bg-fuchsia-500/5 rounded-full blur-[140px]" />
@@ -30,12 +30,12 @@ export function HeroSection() {
       <div className="container relative z-10 px-4 md:px-6 mx-auto flex flex-col lg:flex-row items-center gap-16 lg:gap-12">
         
         {/* Left Column: Text Content */}
-        <div className="flex-1 text-center lg:text-left max-w-3xl lg:max-w-xl mx-auto lg:mx-0">
+        <div className="flex-1 text-center lg:text-left max-w-3xl lg:max-w-2xl mx-auto lg:mx-0">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/5 border border-violet-500/20 text-[13px] font-semibold text-violet-600 dark:text-violet-400 mb-8"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/5 border border-violet-500/20 text-[11px] font-black uppercase tracking-widest text-violet-600 dark:text-violet-400 mb-8"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
@@ -48,12 +48,12 @@ export function HeroSection() {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-6xl sm:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9] mb-6"
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+            className="text-6xl sm:text-7xl lg:text-9xl font-black tracking-tighter leading-[0.85] mb-6"
           >
             Design exactly
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-fuchsia-500 to-orange-500">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500">
               what you imagine.
             </span>
           </motion.h1>
@@ -61,7 +61,7 @@ export function HeroSection() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
             className="mt-6 text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-xl mx-auto lg:mx-0 font-medium"
           >
             Elevate your workflow with stunning, copy-paste React components. Built with Tailwind CSS, Radix UI, and Framer Motion for ultimate flexibility and performance.
@@ -70,14 +70,16 @@ export function HeroSection() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
             className="mt-10 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5"
           >
-            <Button size="lg" className="rounded-full px-10 h-14 text-base font-bold gap-2 w-full sm:w-auto shadow-xl shadow-violet-500/20 hover:shadow-violet-500/40 transition-all bg-violet-600 hover:bg-violet-700 text-white border-none">
-              Start Building
-              <ArrowRight className="w-4 h-4" />
+            <Button asChild size="lg" className="rounded-full px-10 h-14 text-base font-black uppercase tracking-widest gap-2 w-full sm:w-auto shadow-2xl shadow-violet-500/20 hover:shadow-violet-500/40 transition-all bg-violet-600 hover:bg-violet-700 text-white border-none">
+              <Link href="/ia">
+                Start Building
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </Button>
-            <Button asChild variant="ghost" size="lg" className="rounded-full px-10 h-14 text-base font-bold gap-2 w-full sm:w-auto hover:bg-muted/50">
+            <Button asChild variant="ghost" size="lg" className="rounded-full px-10 h-14 text-base font-black uppercase tracking-widest gap-2 w-full sm:w-auto hover:bg-muted/50 border border-border/40">
               <a href="https://github.com/vodsdev" target="_blank" rel="noreferrer">
                 <Github className="w-5 h-5" />
                 View on GitHub
@@ -92,18 +94,18 @@ export function HeroSection() {
             className="mt-16 flex items-center justify-center lg:justify-start gap-12"
           >
             <div>
-              <h4 className="text-4xl font-black tracking-tighter">500+</h4>
-              <p className="text-[12px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Components</p>
+              <h4 className="text-5xl font-black tracking-tighter">500+</h4>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">Components</p>
             </div>
-            <div className="w-px h-10 bg-border/50" />
+            <div className="w-px h-10 bg-border/20" />
             <div>
-              <h4 className="text-4xl font-black tracking-tighter">50+</h4>
-              <p className="text-[12px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Creators</p>
+              <h4 className="text-5xl font-black tracking-tighter">50+</h4>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">Creators</p>
             </div>
-            <div className="w-px h-10 bg-border/50" />
+            <div className="w-px h-10 bg-border/20" />
             <div>
-              <h4 className="text-4xl font-black tracking-tighter">10k+</h4>
-              <p className="text-[12px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Downloads</p>
+              <h4 className="text-5xl font-black tracking-tighter">10k+</h4>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">Downloads</p>
             </div>
           </motion.div>
         </div>
@@ -114,7 +116,6 @@ export function HeroSection() {
             style={{ y: y1, rotateX: 5, rotateY: -10 }}
             className="relative w-full h-full flex items-center justify-center"
           >
-            {/* Main Premium Card */}
             <motion.div
               animate={{ 
                 y: [0, -20, 0],
@@ -153,7 +154,7 @@ export function HeroSection() {
               </Card>
             </motion.div>
 
-            {/* Floating Elements - More subtle and fluid */}
+            {/* Floating Elements */}
             <motion.div
               style={{ y: y2 }}
               animate={{ 
@@ -186,7 +187,6 @@ export function HeroSection() {
                 <div className="h-2 w-20 bg-white/20 rounded-full"></div>
               </div>
             </motion.div>
-
           </motion.div>
         </div>
       </div>
