@@ -5,7 +5,7 @@ import { Suspense } from 'react';
 import { CommandPalette } from '@/components/command-palette';
 import { AiSupportBubble } from '@/components/global/ai-support-bubble';
 
-import { Analytics } from "@vercel/analytics/react";
+import { Analytics } from "@vercelanalytics/react";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -51,12 +51,8 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.png" type="image/png" />
-        <link rel="shortcut icon" href="/favicon.png" />
-        <link rel="apple-touch-icon" href="/favicon.png" />
       </head>
       <body className="font-sans antialiased text-foreground selection:bg-primary/20 dark:selection:bg-primary/30 min-h-screen relative">
-        {/* Global Ambient Glow Background */}
         <div className="fixed inset-0 -z-50 overflow-hidden pointer-events-none bg-background transition-colors duration-300">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-violet-500/15 dark:bg-violet-500/10 blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
           <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-orange-500/15 dark:bg-orange-500/10 blur-[120px] animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />

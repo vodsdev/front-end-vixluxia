@@ -12,7 +12,8 @@ import {
   Code2, 
   TrendingUp, 
   Clock,
-  ArrowUpRight
+  ArrowUpRight,
+  Share2
 } from 'lucide-react';
 import { PageShell } from '@/components/layout/page-shell';
 import { Card } from '@/components/ui/card';

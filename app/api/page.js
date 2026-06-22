@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { BookOpen, Code2, Copy, Database, KeyRound, Server, ShieldCheck, Plus, Trash2, Loader2, Sparkles, TerminalSquare, LayoutDashboard, FileCode } from 'lucide-react';
+import { BookOpen, Code2, Copy, Database, KeyRound, Server, ShieldCheck, Plus, Trash2, Loader2, Sparkles, TerminalSquare, LayoutDashboard, FileCode, Share2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { PageShell } from '@/components/layout/page-shell';
 import { AnimateIn, StaggerContainer, StaggerItem } from '@/components/animate-in';
 import { MetricCard } from '@/components/platform/metric-card';
