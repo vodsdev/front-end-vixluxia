@@ -39,12 +39,10 @@ const NAV_ITEMS = [
 ];
 
 const PLATFORM_ITEMS = [
-  { href: '/ai-generator', label: 'AI Generator', icon: Wand2 },
-  { href: '/api-dashboard', label: 'API Dashboard', icon: BarChart3 },
-  { href: '/api', label: 'API Docs', icon: Code2 },
+  { href: '/ia', label: 'IA Premium', icon: Bot },
+  { href: '/api', label: 'API Platform', icon: Code2 },
   { href: '/abonnement', label: 'Abonnement', icon: CreditCard },
   { href: '/affiliation', label: 'Affiliation', icon: Share2 },
-  { href: '/ia', label: 'IA Premium', icon: Bot },
   { href: '/publish', label: 'Publish', icon: Upload },
 ];
 

@@ -2,18 +2,21 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, X, Send, Loader2, Sparkles } from 'lucide-react';
+import { Bot, X, Send, Loader2, Sparkles, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useChat } from '@ai-sdk/react';
 import { cn } from '@/lib/utils';
-import { Outfit } from 'next/font/google';
-
-const outfit = Outfit({ subsets: ['latin'], weight: ['900'] });
 
 export function AiSupportBubble() {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const messagesEndRef = useRef(null);
+
+  // Fix hydration error
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: '/api/ai/generate',
@@ -28,6 +31,8 @@ export function AiSupportBubble() {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isOpen]);
+
+  if (!mounted) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
@@ -105,10 +110,16 @@ export function AiSupportBubble() {
           {isOpen ? (
             <X className="w-6 h-6" />
           ) : (
-            <span className={cn(outfit.className, "font-black text-xl tracking-tighter")}>VX</span>
+            <MessageSquare className="w-6 h-6" />
           )}
         </div>
       </motion.button>
+      <style jsx global>{`
+        @keyframes logo-shimmer {
+          0% { background-position: 0% center; }
+          100% { background-position: -300% center; }
+        }
+      `}</style>
     </div>
   );
 }

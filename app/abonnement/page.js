@@ -6,10 +6,7 @@ import { CreditCard, Rocket, ShieldCheck, Sparkles, Loader2, Check } from 'lucid
 import { PageShell } from '@/components/layout/page-shell';
 import { AnimateIn } from '@/components/animate-in';
 import { MetricCard } from '@/components/platform/metric-card';
-import { PricingCard } from '@/components/platform/pricing-card';
 import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
@@ -62,7 +59,6 @@ export default function AbonnementPage() {
   const [currentPlan, setCurrentPlan] = useState('free');
   const [subscription, setSubscription] = useState(null);
   const [loadingSubscription, setLoadingSubscription] = useState(true);
-  const billingCycle = yearly ? 'yearly' : 'monthly';
 
   useEffect(() => {
     async function fetchSubscription() {
@@ -71,7 +67,7 @@ export default function AbonnementPage() {
         return;
       }
       try {
-        const { data, error } = await supabase.from('subscriptions').select('*').eq('user_id', user.id).in('status', ['active', 'trialing']).single();
+        const { data } = await supabase.from('subscriptions').select('*').eq('user_id', user.id).in('status', ['active', 'trialing']).single();
         if (data) {
           setSubscription(data);
           setCurrentPlan(data.plan_id || 'free');
@@ -83,26 +79,16 @@ export default function AbonnementPage() {
     fetchSubscription();
   }, [user]);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('checkout') === 'success') {
-      toast.success('Paiement réussi ! Votre abonnement est actif.');
-      window.history.replaceState({}, document.title, '/abonnement');
-    } else if (params.get('checkout') === 'cancelled') {
-      toast.info('Paiement annulé.');
-      window.history.replaceState({}, document.title, '/abonnement');
-    }
-  }, []);
-
   const handleSelectPlan = async (plan) => {
     if (plan.id === 'free') return;
     if (plan.id === 'enterprise') {
-      toast.info('Veuillez contacter le support pour le plan Entreprise.');
+      window.location.href = 'mailto:contact@vixluxia.com';
       return;
     }
     setLoadingPlan(plan.id);
     try {
-      const referralCode = new URLSearchParams(window.location.search).get('ref') || localStorage.getItem('vixluxia-referral-code') || '';
+      const referralCode = typeof window !== 'undefined' ? (new URLSearchParams(window.location.search).get('ref') || localStorage.getItem('vixluxia-referral-code') || '') : '';
+      
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -112,11 +98,18 @@ export default function AbonnementPage() {
           returnUrl: window.location.pathname
         }),
       });
+      
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Checkout Stripe indisponible');
-      window.location.href = data.url;
+      if (!response.ok) throw new Error(data.error || 'Erreur Stripe');
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('URL de paiement non reçue');
+      }
     } catch (error) {
       toast.error(error.message);
+      // Fallback: If API fails, try direct Stripe links if you have them, 
+      // otherwise redirect to a contact page or show a clear error.
     } finally {
       setLoadingPlan(null);
     }
@@ -125,79 +118,73 @@ export default function AbonnementPage() {
   return (
     <PageShell title="Abonnements" maxWidth="max-w-[1300px]">
       <div className="space-y-16 pb-24">
-        {/* Header Hero */}
-        <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card p-10 md:p-16 shadow-2xl backdrop-blur-xl text-center">
-          <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-violet-500/20 via-primary/10 to-orange-400/20 rounded-full blur-[100px] pointer-events-none animate-pulse" />
+        <section className="relative overflow-hidden rounded-[40px] border border-border/40 bg-card/40 p-10 md:p-20 shadow-2xl backdrop-blur-xl text-center">
+          <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-violet-500/10 via-primary/5 to-orange-400/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
           <AnimateIn variant="fadeUp">
             <div className="relative z-10 max-w-3xl mx-auto">
-              <Badge variant="outline" className="mb-6 gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary border-none font-bold text-xs uppercase tracking-wider mx-auto">
+              <Badge variant="outline" className="mb-6 gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary border-none font-black text-[10px] uppercase tracking-widest mx-auto">
                 <Rocket className="h-4 w-4" /> Plans Tarifaires
               </Badge>
-              <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-6">
-                Accélérez votre développement avec <span className="bg-gradient-to-r from-violet-400 to-orange-400 bg-clip-text text-transparent">VixLuxia Pro</span>
+              <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-[0.9]">
+                Accélérez avec <span className="bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500 bg-clip-text text-transparent">VixLuxia Pro</span>
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-10">
-                Débloquez l'IA génératrice, gérez vos équipes, et gagnez de l'argent avec l'affiliation. Choisissez le plan adapté à vos ambitions.
+              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-10 font-medium">
+                Débloquez l'IA génératrice, gérez vos équipes, et gagnez de l'argent avec l'affiliation.
               </p>
 
-              {/* Billing Toggle */}
-              <div className="flex items-center justify-center gap-4 bg-background/50 border border-border/50 w-fit mx-auto p-2 rounded-2xl backdrop-blur-md">
+              <div className="flex items-center justify-center gap-4 bg-muted/30 border border-border/40 w-fit mx-auto p-2 rounded-2xl backdrop-blur-md">
                 <button
                   onClick={() => setYearly(false)}
-                  className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${!yearly ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
+                  className={`px-8 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!yearly ? 'bg-background shadow-xl text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                   Mensuel
                 </button>
                 <button
                   onClick={() => setYearly(true)}
-                  className={`px-6 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${yearly ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
+                  className={`px-8 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${yearly ? 'bg-background shadow-xl text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                 >
-                  Annuel <Badge variant="secondary" className="bg-orange-500/20 text-orange-400 border-none ml-1">-25%</Badge>
+                  Annuel <Badge className="bg-emerald-500/20 text-emerald-500 border-none ml-1">-25%</Badge>
                 </button>
               </div>
             </div>
           </AnimateIn>
         </section>
 
-        {/* Pricing Cards Grid */}
         <AnimateIn variant="fadeUp" delay={0.1}>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 items-start">
-            {PLANS.map((plan, index) => {
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 items-start">
+            {PLANS.map((plan) => {
               const isCurrentPlan = currentPlan === plan.id;
               const isPro = plan.id === 'pro';
               
               return (
                 <Card 
                   key={plan.id} 
-                  className={`relative flex flex-col p-8 rounded-3xl backdrop-blur-sm transition-all duration-300 hover:-translate-y-2
-                    ${isPro ? 'border-primary/50 shadow-2xl shadow-primary/20 bg-card/80 scale-105 z-10' : 'border-border/50 bg-card/40 shadow-xl'}`}
+                  className={`relative flex flex-col p-8 rounded-[32px] backdrop-blur-xl transition-all duration-500 hover:-translate-y-2
+                    ${isPro ? 'border-primary/40 shadow-2xl shadow-primary/10 bg-card/80 scale-105 z-10' : 'border-border/40 bg-card/40 shadow-xl'}`}
                 >
                   {isPro && (
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                      <div className="bg-gradient-to-r from-violet-500 to-orange-400 text-white text-xs font-black uppercase tracking-wider py-1.5 px-4 rounded-full shadow-lg">
+                      <div className="bg-gradient-to-r from-violet-600 to-orange-500 text-white text-[10px] font-black uppercase tracking-widest py-2 px-6 rounded-full shadow-xl">
                         {plan.badge}
                       </div>
                     </div>
                   )}
 
-                  <div className="mb-6">
-                    <h3 className="text-2xl font-black mb-2">{plan.name}</h3>
-                    <p className="text-sm text-muted-foreground min-h-[40px] leading-relaxed">{plan.description}</p>
+                  <div className="mb-8">
+                    <h3 className="text-2xl font-black tracking-tight mb-2">{plan.name}</h3>
+                    <p className="text-xs text-muted-foreground min-h-[40px] leading-relaxed font-bold uppercase tracking-wider">{plan.description}</p>
                   </div>
 
-                  <div className="mb-8">
-                    <span className="text-4xl font-black">{yearly ? plan.yearly : plan.monthly}</span>
-                    {plan.id !== 'free' && <span className="text-muted-foreground text-sm font-medium"> / mois</span>}
-                    {yearly && plan.id !== 'free' && (
-                      <p className="text-xs text-emerald-500 font-bold mt-2">Facturé annuellement</p>
-                    )}
+                  <div className="mb-10">
+                    <span className="text-5xl font-black tracking-tighter">{yearly ? plan.yearly : plan.monthly}</span>
+                    {plan.id !== 'free' && <span className="text-muted-foreground text-xs font-black uppercase tracking-widest ml-2">/ mo</span>}
                   </div>
 
                   <Button 
-                    className={`w-full h-12 rounded-xl font-bold mb-8 transition-all
-                      ${isCurrentPlan ? 'bg-muted text-muted-foreground opacity-50 cursor-not-allowed' : 
-                        isPro ? 'bg-gradient-to-r from-violet-500 to-orange-400 hover:from-violet-600 hover:to-orange-500 text-white shadow-lg shadow-orange-500/20' : 
-                        'bg-foreground text-background hover:bg-foreground/90'}`}
+                    className={`w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs mb-10 transition-all
+                      ${isCurrentPlan ? 'bg-muted text-muted-foreground opacity-50' : 
+                        isPro ? 'bg-primary text-primary-foreground shadow-xl shadow-primary/20 hover:scale-[1.02]' : 
+                        'bg-foreground text-background hover:opacity-90'}`}
                     onClick={() => !isCurrentPlan && handleSelectPlan(plan)}
                     disabled={isCurrentPlan || loadingPlan === plan.id}
                   >
@@ -207,10 +194,8 @@ export default function AbonnementPage() {
                   <ul className="space-y-4 flex-1">
                     {plan.features.map((feature, i) => (
                       <li key={i} className="flex items-start gap-3">
-                        <div className="shrink-0 w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center mt-0.5">
-                          <Check className="w-3 h-3 text-emerald-500 font-bold" />
-                        </div>
-                        <span className="text-sm font-medium text-foreground/80 leading-relaxed">{feature}</span>
+                        <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                        <span className="text-xs font-bold text-foreground/70 leading-relaxed">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -219,21 +204,6 @@ export default function AbonnementPage() {
             })}
           </div>
         </AnimateIn>
-
-        {/* Current Plan Indicator */}
-        {!loadingSubscription && user && currentPlan !== 'free' && (
-          <AnimateIn variant="fadeUp" delay={0.2}>
-            <div className="mt-12 flex flex-col items-center justify-center text-center max-w-lg mx-auto">
-              <div className="p-4 bg-primary/5 border border-primary/20 rounded-2xl w-full">
-                <p className="text-sm text-muted-foreground mb-2">Vous êtes actuellement sur le plan :</p>
-                <p className="text-xl font-black text-primary uppercase tracking-wider mb-4">{currentPlan}</p>
-                <Button variant="outline" className="w-full rounded-xl" onClick={() => toast.info('Portail Stripe à venir')}>
-                  Gérer ma facturation Stripe
-                </Button>
-              </div>
-            </div>
-          </AnimateIn>
-        )}
       </div>
     </PageShell>
   );
