@@ -1,102 +1,65 @@
 'use client';
 
-import { useEffect, useMemo, useState, useRef } from 'react';
-import { toast } from 'sonner';
-import { Bot, Code2, Loader2, Sparkles, Send, User, MonitorPlay, FileCode2, Zap, Palette, ArrowRight, X, Maximize2, Terminal, FolderOpen, Play, Github, Share2, Globe, Lock, Unlock } from 'lucide-react';
-import { PageShell } from '@/components/layout/page-shell';
-import { PremiumGate } from '@/components/platform/premium-gate';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Bot, Code2, Play, Save, Share2, 
+  Terminal, FileCode, Wand2, Loader2, 
+  ChevronRight, Github, Globe, Zap,
+  Layout, Smartphone, Monitor, RotateCcw,
+  MessageSquare, Send, Sparkles, X, Lock, Unlock
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { useChat } from '@ai-sdk/react';
-import { CodeBlock } from '@/components/code-block';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  SandpackProvider, 
+  SandpackLayout, 
+  SandpackCodeEditor, 
+  SandpackPreview,
+  SandpackFileExplorer
+} from "@codesandbox/sandpack-react";
 import { cn } from '@/lib/utils';
+import { PageShell } from '@/components/layout/page-shell';
+import { PremiumGate } from '@/components/platform/premium-gate';
+import { toast } from 'sonner';
 
 const PAID_PLANS = ['pro', 'studio', 'paid', 'active', 'starter', 'enterprise'];
 
-// Component for the Code Preview Iframe
-function CodePreview({ code, lang }) {
-  const [iframeKey, setIframeKey] = useState(0);
-  const isReact = lang === 'tsx' || lang === 'jsx' || lang === 'javascript' || lang === 'typescript' || code.includes('import ') || code.includes('export ');
+export default function IAStudioPage() {
+  const [activeFile, setActiveFile] = useState('/App.js');
+  const [viewMode, setViewMode] = useState('desktop');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [plan, setPlan] = useState('free');
+  const [serverPremium, setServerPremium] = useState(false);
+  const messagesEndRef = useRef(null);
+  
+  const [code, setCode] = useState(`
+import React from 'react';
+import { Sparkles } from 'lucide-react';
 
-  const srcDoc = isReact ? `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-        <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-        <script src="https://unpkg.com/lucide@latest"></script>
-        <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
-        <style>
-          body { margin: 0; padding: 1rem; min-height: 100vh; background-color: transparent; font-family: sans-serif; }
-          * { box-sizing: border-box; }
-          #root { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
-        </style>
-      </head>
-      <body>
-        <div id="root"></div>
-        <script type="text/babel" data-type="module">
-          let rawCode = \`${code.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`;
-          rawCode = rawCode.replace(/import .*;?\\n/g, '');
-          rawCode = rawCode.replace(/export default /g, '');
-          rawCode = rawCode.replace(/export /g, '');
-          
-          try {
-            const componentMatch = rawCode.match(/function\\s+([A-Z][a-zA-Z0-9_]*)/);
-            const componentName = componentMatch ? componentMatch[1] : null;
-            
-            if (componentName) {
-              const fullCode = rawCode + \`\\n\\nconst root = ReactDOM.createRoot(document.getElementById('root')); root.render(React.createElement(\${componentName}));\`;
-              const compiled = Babel.transform(fullCode, { presets: ['react', 'env'] }).code;
-              eval(compiled);
-              lucide.createIcons();
-            } else {
-              document.getElementById('root').innerHTML = '<div style="color:#ef4444; font-weight:bold;">Composant non trouvé. Assurez-vous d\\'utiliser une fonction avec une majuscule.</div>';
-            }
-          } catch (e) {
-            document.getElementById('root').innerHTML = '<div style="color:#ef4444; white-space:pre-wrap; font-family:monospace;">' + e.toString() + '</div>';
-          }
-        </script>
-      </body>
-    </html>
-  ` : `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <style>body { margin: 0; padding: 1rem; min-height: 100vh; background-color: transparent; }</style>
-      </head>
-      <body>${code}</body>
-    </html>
-  `;
-
+export default function App() {
   return (
-    <div className="w-full h-full bg-muted/5 rounded-xl overflow-hidden flex flex-col border border-border/40">
-      <div className="flex items-center justify-between px-4 py-2 bg-muted/20 border-b border-border/40">
-        <div className="flex items-center gap-2">
-          <Play className="w-3 h-3 text-emerald-500" />
-          <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Live Preview</span>
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+      <div className="text-center space-y-6">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-sm font-bold">
+          <Sparkles className="w-4 h-4" />
+          VixLuxia AI Studio
         </div>
-        <Button variant="ghost" size="icon" className="h-6 w-6 rounded-md" onClick={() => setIframeKey(k => k + 1)}>
-          <Zap className="w-3 h-3" />
-        </Button>
+        <h1 className="text-5xl font-black text-white tracking-tighter">
+          Génère ton <span className="text-violet-500">futur.</span>
+        </h1>
+        <p className="text-slate-400 max-w-md mx-auto text-sm">
+          Décris le composant ou le site de tes rêves et regarde l'IA le coder en direct avec React et Tailwind CSS.
+        </p>
       </div>
-      <iframe key={iframeKey} srcDoc={srcDoc} className="w-full h-full flex-1 bg-transparent" sandbox="allow-scripts allow-same-origin" />
     </div>
   );
 }
-
-export default function IaPremiumPage() {
-  const [plan, setPlan] = useState('free');
-  const [serverPremium, setServerPremium] = useState(false);
-  const [activeTab, setActiveTab] = useState('preview');
-  const [isPublic, setIsPublic] = useState(true);
-  const [localInput, setLocalInput] = useState('');
-  const messagesEndRef = useRef(null);
+  `);
 
   useEffect(() => {
     const storedPlan = localStorage.getItem('vixluxia-plan') || 'free';
@@ -109,66 +72,84 @@ export default function IaPremiumPage() {
       }).catch(() => {});
   }, []);
 
-  const isPaid = useMemo(() => serverPremium || PAID_PLANS.includes(String(plan).toLowerCase()), [plan, serverPremium]);
+  const isPaid = serverPremium || PAID_PLANS.includes(String(plan).toLowerCase());
 
-  const { messages, append, isLoading } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: '/api/ai/generate',
     body: { mode: 'bolt-architect' },
-    onError: (err) => toast.error(err.message)
+    onFinish: (message) => {
+      const codeMatch = message.content.match(/```(?:jsx|javascript|js|react|tsx)\n([\s\S]*?)```/);
+      if (codeMatch && codeMatch[1]) {
+        setCode(codeMatch[1]);
+        toast.success("Code généré et synchronisé !");
+      }
+      setIsGenerating(false);
+    },
+    onError: (err) => {
+      toast.error(err.message);
+      setIsGenerating(false);
+    }
   });
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const lastAssistantMessage = [...messages].reverse().find(m => m.role === 'assistant');
-  const extractedCode = lastAssistantMessage?.content.match(/```(?:tsx|jsx|html|javascript|typescript)?\n([\s\S]*?)```/)?.[1] || '';
-
-  const handleSend = (e) => {
-    e?.preventDefault();
-    if (!localInput.trim() || isLoading) return;
-    append({ role: 'user', content: localInput });
-    setLocalInput('');
+  const onGenerate = (e) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+    setIsGenerating(true);
+    handleSubmit(e);
   };
 
   return (
     <PageShell title="IA Premium Studio" maxWidth="max-w-full">
       <PremiumGate allowed={isPaid}>
-        <div className="flex flex-col lg:flex-row h-[calc(100vh-180px)] gap-4 pb-4">
-          
-          {/* Left Side: Chat Interface */}
-          <Card className="w-full lg:w-[450px] flex flex-col rounded-[24px] border-border/40 bg-card/40 backdrop-blur-xl shadow-2xl overflow-hidden shrink-0">
-            <div className="p-4 border-b border-border/40 bg-muted/10 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-violet-500/20">
+        <div className="flex h-[calc(100vh-180px)] overflow-hidden gap-4 pb-4">
+          {/* Left Panel: Chat & Controls */}
+          <Card className="w-[400px] border border-border/40 flex flex-col bg-card/40 backdrop-blur-xl rounded-[24px] overflow-hidden shadow-2xl shrink-0">
+            <div className="p-5 border-b border-border/40 bg-gradient-to-b from-violet-500/5 to-transparent">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-violet-500/20">
                   <Bot className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-black tracking-tight">VixLuxia AI</h2>
-                  <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Active Studio</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setIsPublic(!isPublic)}>
-                  {isPublic ? <Globe className="w-4 h-4 text-violet-500" /> : <Lock className="w-4 h-4 text-orange-500" />}
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth">
-              {messages.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center p-6">
-                  <Sparkles className="w-12 h-12 text-primary/20 mb-6" />
-                  <h3 className="text-xl font-black mb-2 tracking-tight">What are we building today?</h3>
-                  <p className="text-xs text-muted-foreground font-medium leading-relaxed">
-                    I can generate components, pages, or entire web architectures. Just describe your vision.
+                  <h1 className="font-black text-sm tracking-tight leading-none mb-1">AI Studio</h1>
+                  <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Engine v3.0
                   </p>
                 </div>
+              </div>
+
+              <form onSubmit={onGenerate} className="relative">
+                <textarea
+                  value={input}
+                  onChange={handleInputChange}
+                  placeholder="Ask VixLuxia to build something..."
+                  className="w-full h-32 bg-background/50 border border-border/40 rounded-2xl p-4 text-sm font-medium focus:ring-1 focus:ring-violet-500/30 resize-none transition-all outline-none scrollbar-hide"
+                />
+                <Button 
+                  type="submit"
+                  disabled={isLoading || !input.trim()}
+                  className="absolute bottom-3 right-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white shadow-lg shadow-violet-500/20 h-10 px-4 active:scale-95 transition-all"
+                >
+                  {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
+                  <span className="ml-2 text-[10px] font-black uppercase tracking-wider">Generate</span>
+                </Button>
+              </form>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-5 space-y-6 scrollbar-hide">
+              {messages.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-center p-6 opacity-40">
+                  <Sparkles className="w-10 h-10 mb-4" />
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em]">Start a new creation</p>
+                </div>
               ) : (
-                messages.map(m => (
-                  <div key={m.id} className={cn("flex flex-col gap-2", m.role === 'user' ? "items-end" : "items-start")}>
+                messages.map((m, i) => (
+                  <div key={i} className={cn("flex flex-col gap-2", m.role === 'user' ? "items-end" : "items-start")}>
                     <div className={cn(
-                      "max-w-[90%] p-4 rounded-2xl text-sm font-medium leading-relaxed shadow-sm border",
+                      "max-w-[90%] p-3.5 rounded-2xl text-xs font-medium leading-relaxed shadow-sm border",
                       m.role === 'user' 
                         ? "bg-violet-600 text-white border-violet-500 rounded-br-none" 
                         : "bg-background/80 border-border/40 rounded-bl-none"
@@ -181,85 +162,109 @@ export default function IaPremiumPage() {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-4 border-t border-border/40 bg-muted/5">
-              <form onSubmit={handleSend} className="relative">
-                <Textarea 
-                  value={localInput}
-                  onChange={e => setLocalInput(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend(e)}
-                  placeholder="Ask VixLuxia to build something..."
-                  className="min-h-[100px] w-full rounded-2xl bg-background/50 border-border/40 p-4 pr-12 text-sm font-medium focus-visible:ring-violet-500/30 resize-none"
-                />
-                <Button 
-                  type="submit" 
-                  disabled={!localInput.trim() || isLoading}
-                  size="icon" 
-                  className="absolute bottom-3 right-3 h-8 w-8 rounded-xl bg-violet-600 hover:bg-violet-700 text-white shadow-lg"
-                >
-                  {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                </Button>
-              </form>
+            <div className="p-5 border-t border-border/40 bg-muted/5 space-y-3">
+              <Button variant="outline" className="w-full justify-start gap-3 rounded-xl h-11 border-border/40 hover:bg-muted/50 text-xs font-bold uppercase tracking-wider">
+                <Github className="w-4 h-4" /> Export to GitHub
+              </Button>
+              <Button className="w-full justify-start gap-3 rounded-xl h-11 bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-lg shadow-emerald-500/10 text-xs font-bold uppercase tracking-wider">
+                <Save className="w-4 h-4" /> Publish to Registry
+              </Button>
             </div>
           </Card>
 
-          {/* Right Side: Code & Preview (Bolt Style) */}
-          <div className="flex-1 flex flex-col gap-4">
-            <Card className="flex-1 rounded-[24px] border-border/40 bg-card/20 backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col">
-              <div className="flex items-center justify-between px-6 py-3 bg-muted/10 border-b border-border/40">
+          {/* Right Panel: Code & Preview */}
+          <div className="flex-1 flex flex-col overflow-hidden bg-slate-950 rounded-[24px] border border-white/5 shadow-2xl">
+            <SandpackProvider
+              template="react"
+              theme="dark"
+              files={{
+                "/App.js": code,
+              }}
+              options={{
+                externalResources: ["https://cdn.tailwindcss.com"],
+              }}
+              className="h-full flex flex-col"
+            >
+              <div className="h-14 border-b border-white/5 bg-slate-900/50 flex items-center justify-between px-6 shrink-0">
                 <div className="flex items-center gap-6">
                   <div className="flex items-center gap-2">
-                    <FolderOpen className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-xs font-bold text-muted-foreground">project-vixluxia</span>
+                    <FileCode className="w-4 h-4 text-violet-400" />
+                    <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">Live Preview Engine</span>
                   </div>
-                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-auto">
-                    <TabsList className="bg-muted/20 h-9 p-1 rounded-lg border border-border/40">
-                      <TabsTrigger value="preview" className="rounded-md h-7 px-4 text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-background data-[state=active]:text-primary">Preview</TabsTrigger>
-                      <TabsTrigger value="code" className="rounded-md h-7 px-4 text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-background data-[state=active]:text-primary">Code</TabsTrigger>
-                    </TabsList>
-                  </Tabs>
+                  <div className="h-4 w-px bg-white/10" />
+                  <div className="flex items-center gap-1 bg-black/40 p-1 rounded-lg border border-white/5">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className={cn("h-7 w-7 rounded-md transition-all", viewMode === 'desktop' ? "bg-white/10 text-white" : "text-slate-500 hover:text-slate-300")}
+                      onClick={() => setViewMode('desktop')}
+                    >
+                      <Monitor className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className={cn("h-7 w-7 rounded-md transition-all", viewMode === 'mobile' ? "bg-white/10 text-white" : "text-slate-500 hover:text-slate-300")}
+                      onClick={() => setViewMode('mobile')}
+                    >
+                      <Smartphone className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
                 </div>
+
                 <div className="flex items-center gap-3">
-                  <Button variant="outline" size="sm" className="h-8 rounded-lg bg-background/50 border-border/40 text-[10px] font-black uppercase tracking-widest gap-2">
-                    <Github className="w-3.5 h-3.5" /> Export
-                  </Button>
-                  <Button size="sm" className="h-8 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-[10px] font-black uppercase tracking-widest gap-2 shadow-lg shadow-violet-500/20">
-                    <Share2 className="w-3.5 h-3.5" /> Deploy
+                  <Badge variant="outline" className={cn(
+                    "text-[9px] font-black px-3 py-1 uppercase tracking-widest transition-all duration-500",
+                    isGenerating 
+                      ? "bg-orange-500/20 text-orange-400 border-orange-500/30 animate-pulse" 
+                      : "bg-violet-500/10 text-violet-400 border-violet-500/20"
+                  )}>
+                    {isGenerating ? "AI Architect Compiling..." : "Live Sync Active"}
+                  </Badge>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-white" onClick={() => window.location.reload()}>
+                    <RotateCcw className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
 
-              <div className="flex-1 p-4 relative overflow-hidden">
-                {activeTab === 'preview' ? (
-                  extractedCode ? (
-                    <CodePreview code={extractedCode} lang="tsx" />
-                  ) : (
-                    <div className="h-full flex flex-col items-center justify-center text-center bg-muted/5 rounded-xl border border-dashed border-border/40">
-                      <MonitorPlay className="w-12 h-12 text-muted-foreground/20 mb-4" />
-                      <p className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest">Waiting for code generation...</p>
-                    </div>
-                  )
-                ) : (
-                  <div className="h-full rounded-xl overflow-hidden border border-border/40 bg-zinc-950 shadow-2xl">
-                    <CodeBlock 
-                      code={extractedCode || "// No code generated yet..."} 
-                      language="tsx" 
-                      className="h-full text-xs p-6" 
+              <SandpackLayout className="flex-1 border-none rounded-none bg-transparent overflow-hidden">
+                <div className="flex-1 flex overflow-hidden h-full">
+                  <div className="w-[45%] border-r border-white/5 flex flex-col overflow-hidden bg-slate-950">
+                    <SandpackCodeEditor 
+                      showTabs={false}
+                      showLineNumbers={true}
+                      showInlineErrors={true}
+                      wrapContent={true}
+                      closableTabs={false}
+                      className="h-full font-mono text-[11px]"
                     />
+                    {/* Terminal Bottom Area */}
+                    <div className="h-24 border-t border-white/5 bg-black/40 p-4 font-mono text-[10px] text-emerald-500/60">
+                      <div className="flex items-center gap-2 mb-2 text-white/20">
+                        <Terminal className="w-3 h-3" />
+                        <span className="font-black uppercase tracking-widest text-[8px]">Output Console</span>
+                      </div>
+                      <div className="opacity-80">$ vixluxia-ai compile --target=preview</div>
+                      <div className="opacity-40">Ready to render...</div>
+                      {isGenerating && <div className="animate-pulse">_ Compiling generated module...</div>}
+                    </div>
                   </div>
-                )}
-              </div>
-
-              {/* Terminal Section */}
-              <div className="h-32 border-t border-border/40 bg-zinc-950 p-4 font-mono text-[11px] text-emerald-500/80 overflow-y-auto">
-                <div className="flex items-center gap-2 mb-2 text-white/40">
-                  <Terminal className="w-3 h-3" />
-                  <span className="font-bold uppercase tracking-widest text-[9px]">Terminal</span>
+                  <div className="flex-1 bg-slate-900/50 flex items-center justify-center p-6 overflow-hidden relative">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-violet-500/5 via-transparent to-transparent pointer-events-none" />
+                    <div className={cn(
+                      "bg-white shadow-[0_30px_100px_rgba(0,0,0,0.5)] transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-hidden",
+                      viewMode === 'desktop' ? "w-full h-full rounded-2xl" : "w-[320px] h-[568px] rounded-[40px] border-[10px] border-slate-800"
+                    )}>
+                      <SandpackPreview 
+                        showNavigator={false}
+                        showOpenInCodeSandbox={false}
+                        className="h-full w-full"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div>$ npm install framer-motion lucide-react</div>
-                <div className="text-white/20">Installing dependencies...</div>
-                {isLoading && <div className="animate-pulse">_</div>}
-              </div>
-            </Card>
+              </SandpackLayout>
+            </SandpackProvider>
           </div>
         </div>
       </PremiumGate>
