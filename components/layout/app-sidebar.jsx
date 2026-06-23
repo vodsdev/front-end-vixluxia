@@ -68,10 +68,7 @@ export function AppSidebar({ search, onSearchChange }) {
   return (
     <Sidebar className="overflow-hidden relative border-none">
       <SidebarHeader className="p-10 pb-6 flex flex-col items-center gap-6">
-        {/* Logo HD repositionné (plus bas) */}
-        <img src="/logo-sparkle-hd.png" alt="Logo" className="w-16 h-16 drop-shadow-[0_0_15px_rgba(139,92,246,0.5)]" />
-        
-        {/* Texte VixLuxia Pur */}
+        {/* Texte VixLuxia Pur sans logo */}
         <Link href="/" className="relative flex items-center justify-center w-full group">
           <span 
             className={cn(
