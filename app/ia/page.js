@@ -102,6 +102,34 @@ export default function App() {
     handleSubmit(e);
   };
 
+  const onPublish = async () => {
+    try {
+      const name = prompt("Donnez un nom à votre composant :", "Mon Nouveau Composant");
+      if (!name) return;
+
+      const response = await fetch('/api/components/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          code,
+          category: 'UI',
+          description: 'Généré par VixLuxia AI Studio',
+          isPublic: true
+        })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        toast.success("Composant publié avec succès au registre !");
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (err) {
+      toast.error("Erreur lors de la publication : " + err.message);
+    }
+  };
+
   return (
     <PageShell title="IA Premium Studio" maxWidth="max-w-full">
       <PremiumGate allowed={isPaid}>
@@ -166,7 +194,10 @@ export default function App() {
               <Button variant="outline" className="w-full justify-start gap-3 rounded-xl h-11 border-border/40 hover:bg-muted/50 text-xs font-bold uppercase tracking-wider">
                 <Github className="w-4 h-4" /> Export to GitHub
               </Button>
-              <Button className="w-full justify-start gap-3 rounded-xl h-11 bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-lg shadow-emerald-500/10 text-xs font-bold uppercase tracking-wider">
+              <Button 
+                onClick={onPublish}
+                className="w-full justify-start gap-3 rounded-xl h-11 bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-lg shadow-emerald-500/10 text-xs font-bold uppercase tracking-wider"
+              >
                 <Save className="w-4 h-4" /> Publish to Registry
               </Button>
             </div>
