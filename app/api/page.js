@@ -37,10 +37,21 @@ export default function ApiUnifiedPage() {
   const [loading, setLoading] = useState(false);
   const [keys, setKeys] = useState([]);
   const [loadingKeys, setLoadingKeys] = useState(true);
+  const [stats, setStats] = useState(null);
 
   useEffect(() => {
     setBaseUrl(window.location.origin);
   }, []);
+
+  const loadStats = async () => {
+    try {
+      const res = await fetch('/api/account/stats');
+      const data = await res.json();
+      setStats(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const loadKeys = async () => {
     if (!user) return;
@@ -57,7 +68,10 @@ export default function ApiUnifiedPage() {
   };
 
   useEffect(() => {
-    if (user) loadKeys();
+    if (user) {
+      loadKeys();
+      loadStats();
+    }
   }, [user]);
 
   const createKey = async () => {
@@ -135,7 +149,16 @@ export default function ApiUnifiedPage() {
 
           <TabsContent value="dashboard" className="space-y-8 m-0 outline-none">
             {user ? (
-              <div className="grid gap-6 lg:grid-cols-12">
+              <div className="space-y-8">
+                {/* Real Stats Row */}
+                <div className="grid gap-4 md:grid-cols-4">
+                  <MetricCard icon={Zap} label="API Requests" value={stats?.requests || '0'} detail="Derniers 7 jours" tone="emerald" />
+                  <MetricCard icon={FileCode} label="Composants" value={stats?.components || '0'} detail="Publiés au registre" tone="violet" delay={0.1} />
+                  <MetricCard icon={Database} label="Latence" value={stats?.latency || '--'} detail="Temps de réponse" tone="cyan" delay={0.2} />
+                  <MetricCard icon={ShieldCheck} label="Statut" value="Actif" detail="Système opérationnel" tone="amber" delay={0.3} />
+                </div>
+
+                <div className="grid gap-6 lg:grid-cols-12">
                 {/* Création Clé */}
                 <div className="lg:col-span-5 space-y-6">
                   <Card className="rounded-3xl border-border/50 bg-card/40 backdrop-blur-sm p-8 shadow-xl">
